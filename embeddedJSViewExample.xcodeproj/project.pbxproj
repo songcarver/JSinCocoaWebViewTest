@@ -50,6 +50,7 @@
 		2B99EAE61FA83B6E00E33113 /* embeddedJSViewExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = embeddedJSViewExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = embeddedJSViewExampleUITests.m; sourceTree = "<group>"; };
 		2B99EAEC1FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2B99EAFA1FA83EB500E33113 /* testFramerForComms.framer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testFramerForComms.framer; path = ../embeddedJSViewExample.xcodeproj/testFramerForComms.framer; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +106,7 @@
 				2B99EACB1FA83B6E00E33113 /* ViewController.h */,
 				2B99EACC1FA83B6E00E33113 /* ViewController.m */,
 				2B99EACE1FA83B6E00E33113 /* Assets.xcassets */,
+				2B99EAFA1FA83EB500E33113 /* testFramerForComms.framer */,
 				2B99EAD01FA83B6E00E33113 /* Main.storyboard */,
 				2B99EAD31FA83B6E00E33113 /* Info.plist */,
 				2B99EAD41FA83B6E00E33113 /* main.m */,

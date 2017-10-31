@@ -1,8 +1,5 @@
-//
-//  ViewController.m
-//  embeddedJSViewExample
-//
-//  Created by Keith Lang on 10/31/17.
+
+//  Created by Keith Lang on 10/12/17.
 //  Copyright © 2017 Keith Lang. All rights reserved.
 //
 
@@ -12,16 +9,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    // Do any additional setup after loading the view.
+    
+    self.webView = [[WebView alloc] initWithFrame:self.view.bounds];
+    self.webView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    [self.view addSubview:self.webView];
+    
+    
+    
+    NSString *resourcePath = [NSBundle mainBundle].resourcePath;
+    NSString *htmlPath = [resourcePath stringByAppendingPathComponent:@"/TestFramerForComms.framer/index.html"];
+    NSURL *url = [NSURL fileURLWithPath:htmlPath];
+    
+    [self.webView.mainFrame loadRequest:[NSURLRequest requestWithURL:url]];
+    self.webView.layer.contentsScale = self.webView.window.backingScaleFactor;
+    
+    
 }
 
-
-- (void)setRepresentedObject:(id)representedObject {
-    [super setRepresentedObject:representedObject];
-
-    // Update the view, if already loaded.
-}
 
 
 @end
+
