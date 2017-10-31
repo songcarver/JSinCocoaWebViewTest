@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:testFramerForComms.framer">
-   </FileRef>
-   <FileRef
-      location = "self:embeddedJSViewExample.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

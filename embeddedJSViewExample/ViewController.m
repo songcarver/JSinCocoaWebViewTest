@@ -17,7 +17,7 @@
     
     
     NSString *resourcePath = [NSBundle mainBundle].resourcePath;
-    NSString *htmlPath = [resourcePath stringByAppendingPathComponent:@"/TestFramerForComms.framer/index.html"];
+    NSString *htmlPath = [resourcePath stringByAppendingPathComponent:@"TestFramerForComms.framer/index.html"];
     NSURL *url = [NSURL fileURLWithPath:htmlPath];
     
     [self.webView.mainFrame loadRequest:[NSURLRequest requestWithURL:url]];
