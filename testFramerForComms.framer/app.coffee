@@ -1,5 +1,12 @@
 document.body.style.cursor = "auto"
 
+#create new button
+tempButton = new Layer
+
+tempButton.onClick (event, layer) ->
+	Utils.delay 3, ->
+		CocoaBridge.showMacNotification_('hello notification')
+
 @photoAngle = 0
 
 cloud_png.midX = Screen.midX

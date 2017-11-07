@@ -12,8 +12,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
-    
-    
+	
     [NSApplication sharedApplication].mainWindow.level = NSFloatingWindowLevel;
     //    here's where I should type my stuff
     
@@ -23,6 +22,9 @@
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     // Insert code here to tear down your application
 }
+
+
+
 
 @end
 

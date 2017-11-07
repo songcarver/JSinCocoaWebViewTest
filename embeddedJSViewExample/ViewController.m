@@ -9,7 +9,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     self.webView = [[WebView alloc] initWithFrame:self.view.bounds];
     self.webView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     [self.webViewContainer addSubview:self.webView];
@@ -163,7 +163,8 @@
 + (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
     NSArray *  allowedSelectorNamesForJavaScript = @[
                  @"photoFlipped",
-                @"photoRotated:"
+                @"photoRotated:",
+				 @"showMacNotification:"
                  ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
@@ -179,7 +180,22 @@
     NSLog(@"cocoa bridge photoRotated");
     
     self.slider.doubleValue = angle.doubleValue;
-    
+}
+	
+- (void) showMacNotification:(NSString *) text {
+		NSLog(@"should show Mac notification");
+	// play notification sound
+	NSSound * myAwesomeSound = [NSSound soundNamed:@"tabby_bell.aiff"];
+	[myAwesomeSound play];
+	
+	NSUserNotification *notification = [[NSUserNotification alloc] init];
+	notification.title = @"Work Timer Complete";
+	notification.informativeText = [NSString stringWithFormat:@"Take a break!"];
+	//   notification.soundName = NSUserNotificationDefaultSoundName;
+	notification.soundName = @"tabby_bell.aiff";
+	// not playing default sound
+	
+	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }
 
 @end
