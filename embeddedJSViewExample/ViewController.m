@@ -35,10 +35,23 @@
 //
 ////    TODO Poll mouse
     [self methodA];
+	[self methodToSendUserName];
 //
     
     
 }
+
+
+- (void) methodToSendUserName;
+{
+	NSString *fullUserName = NSFullUserName();
+	NSString * userName = [NSString stringWithFormat:@"updateUserName('%@');",fullUserName];
+	[self.webView stringByEvaluatingJavaScriptFromString:userName];
+}
+
+
+
+
 
 - (void) methodA;
 {
@@ -62,9 +75,10 @@
     
 //    send mouse coordinates
 	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",mouseLoc.x, mouseLoc.y];
-	
 	[self.webView stringByEvaluatingJavaScriptFromString:mouseX];
 	
+
+
 	
 	
 }
@@ -136,7 +150,8 @@
     NSLog(@"cocoa bridge");
     
     [[self.webView windowScriptObject] setValue:self forKey:@"CocoaBridge"];
-    
+	
+	[self methodToSendUserName];
     
     
 

@@ -37,7 +37,7 @@ angleSlider.knob.onMove (event, layer) ->
 
 
 @updateMouseX = (mouseX,mouseY) ->
-    print mouseX + ', ' + mouseY
+	#print mouseX + ', ' + mouseY
 
 @updateCloudPhotoRotation = (angle) ->
 	cloud_png.rotation = angle
@@ -52,3 +52,10 @@ angleSlider.knob.onMove (event, layer) ->
 	photoLabel.text = text
 	print 'updatePhotoText called with ' + text
 	
+@updateUserName = (userName) ->
+	print 'my name is ' + userName
+	myText = new TextLayer
+		text: userName
+		color: "black"
+
+	myText.center()
