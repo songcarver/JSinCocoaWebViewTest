@@ -36,6 +36,8 @@ angleSlider.knob.onMove (event, layer) ->
 # 	flipCloudPhoto()
 
 
+@updateMouseX = (mouseX,mouseY) ->
+    print mouseX + ', ' + mouseY
 
 @updateCloudPhotoRotation = (angle) ->
 	cloud_png.rotation = angle

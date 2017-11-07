@@ -32,7 +32,48 @@
     self.webView.policyDelegate = self;
     
     
+//
+////    TODO Poll mouse
+    [self methodA];
+//
+    
+    
 }
+
+- (void) methodA;
+{
+
+//    Here's the timer method that calls the method that does the work
+    [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                     target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
+}
+
+
+
+
+
+
+- (void) methodB:(NSTimer *)timer
+{
+
+    //Do calculations.
+    NSPoint mouseLoc = [NSEvent mouseLocation]; //get current mouse position
+    NSLog(@"Mouse location: %f %f", mouseLoc.x, mouseLoc.y);
+    
+//    send mouse coordinates
+	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",mouseLoc.x, mouseLoc.y];
+	
+	[self.webView stringByEvaluatingJavaScriptFromString:mouseX];
+	
+	
+	
+}
+
+
+
+
+
+
 
 - (IBAction)flipPhoto:(id)sender {
     
@@ -67,7 +108,7 @@
     
     [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
     
-    
+	
 
 }
 
