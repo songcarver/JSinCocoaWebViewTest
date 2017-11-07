@@ -3,6 +3,8 @@ document.body.style.cursor = "auto"
 #create new button
 tempButton = new Layer
 
+
+# here's what triggers the animation
 tempButton.onClick (event, layer) ->
 	Utils.delay 3, ->
 		CocoaBridge.showMacNotification_('hello notification')

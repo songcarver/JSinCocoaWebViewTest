@@ -185,8 +185,8 @@
 - (void) showMacNotification:(NSString *) text {
 		NSLog(@"should show Mac notification");
 	// play notification sound
-	NSSound * myAwesomeSound = [NSSound soundNamed:@"tabby_bell.aiff"];
-	[myAwesomeSound play];
+//	NSSound * myAwesomeSound = [NSSound soundNamed:@"tabby_bell.aiff"];
+//	[myAwesomeSound play];
 	
 	NSUserNotification *notification = [[NSUserNotification alloc] init];
 	notification.title = @"Work Timer Complete";
