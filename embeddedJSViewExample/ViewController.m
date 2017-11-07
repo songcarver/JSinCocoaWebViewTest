@@ -12,7 +12,7 @@
     
     self.webView = [[WebView alloc] initWithFrame:self.view.bounds];
     self.webView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    [self.view addSubview:self.webView];
+    [self.webViewContainer addSubview:self.webView];
     
     
     
@@ -24,9 +24,107 @@
     self.webView.layer.contentsScale = self.webView.window.backingScaleFactor;
     
     
+    
+    self.webView.UIDelegate = self;
+    self.webView.downloadDelegate = self;
+    self.webView.frameLoadDelegate= self;
+    self.webView.resourceLoadDelegate = self;
+    self.webView.policyDelegate = self;
+    
+    
+}
+
+- (IBAction)flipPhoto:(id)sender {
+    
+    
+    NSString * flipJS = @"flipCloudPhoto();";
+    
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
+    
+    
 }
 
 
+- (IBAction)updatePhotoText:(NSTextField *)sender {
+
+
+    NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
+    
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
+    
+    
+
+}
+
+
+- (IBAction)rotationAction:(NSSlider *)sender {
+
+
+    NSString * rotateJS = [NSString stringWithFormat:@"updateCloudPhotoRotation(%f);",sender.doubleValue];
+    
+    
+    [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
+    
+    
+
+}
+
+
+
+- (BOOL)webView:(WebView *)webView doCommandBySelector:(SEL)selector {
+
+    
+        NSLog(@"Editing Delegate NSStringFromSelector(selector):%@",NSStringFromSelector(selector));
+   
+    
+
+    
+    
+    return YES;
+
+    
+}
+
+
+
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
+    
+    
+    NSLog(@"cocoa bridge");
+    
+    [[self.webView windowScriptObject] setValue:self forKey:@"CocoaBridge"];
+    
+    
+    
+
+    
+}
+
+
+
++ (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
+    NSArray *  allowedSelectorNamesForJavaScript = @[
+                 @"photoFlipped",
+                @"photoRotated:"
+                 ];
+    
+    return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
+}
+
+- (void) photoFlipped {
+      NSLog(@"cocoa bridge photoFlipped");
+    
+}
+
+
+- (void) photoRotated:(NSString *) angle {
+    NSLog(@"cocoa bridge photoRotated");
+    
+    self.slider.doubleValue = angle.doubleValue;
+    
+}
 
 @end
 
