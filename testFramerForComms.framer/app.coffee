@@ -29,6 +29,8 @@ photoLabel  = new TextLayer
 # listen for knob motion
 angleSlider.knob.onMove (event, layer) ->
 	@photoAngle = angleSlider.value
+	print 'edited by keith'
+	updateCloudPhotoRotation(angleSlider.value)
 
 # Button.onClick (event, layer) ->
 # 	flipCloudPhoto()
@@ -37,7 +39,8 @@ angleSlider.knob.onMove (event, layer) ->
 
 @updateCloudPhotoRotation = (angle) ->
 	cloud_png.rotation = angle
-	print 'updateCloudPhotoRotation called with '+ angle 
+	print 'updateCloudPhotoRotation called with '+ angle
+	CocoaBridge.photoRotated_(angle)
 
 @flipCloudPhoto = () ->
 	print 'flipCloudPhoto called.'
