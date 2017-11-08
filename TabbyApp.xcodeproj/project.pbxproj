@@ -84,7 +84,7 @@
 		2B99EABC1FA83B6E00E33113 = {
 			isa = PBXGroup;
 			children = (
-				2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */,
+				2B99EAC71FA83B6E00E33113 /* Tabby */,
 				2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */,
 				2B99EAE91FA83B6E00E33113 /* embeddedJSViewExampleUITests */,
 				2B99EAC61FA83B6E00E33113 /* Products */,
@@ -102,7 +102,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */ = {
+		2B99EAC71FA83B6E00E33113 /* Tabby */ = {
 			isa = PBXGroup;
 			children = (
 				2B99EAC81FA83B6E00E33113 /* AppDelegate.h */,
@@ -116,7 +116,7 @@
 				2B99EAD41FA83B6E00E33113 /* main.m */,
 				2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */,
 			);
-			path = embeddedJSViewExample;
+			path = Tabby;
 			sourceTree = "<group>";
 		};
 		2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */ = {
