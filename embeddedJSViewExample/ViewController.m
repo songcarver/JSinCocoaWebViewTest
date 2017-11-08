@@ -189,11 +189,10 @@
 //	[myAwesomeSound play];
 	
 	NSUserNotification *notification = [[NSUserNotification alloc] init];
-	notification.title = @"Work Timer Complete";
-	notification.informativeText = [NSString stringWithFormat:@"Take a break!"];
+	notification.title = text;
+	notification.informativeText = [NSString stringWithFormat: text];
 	//   notification.soundName = NSUserNotificationDefaultSoundName;
 	notification.soundName = @"tabby_bell.aiff";
-	// not playing default sound
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }

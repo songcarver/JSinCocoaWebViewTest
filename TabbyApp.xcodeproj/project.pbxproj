@@ -37,7 +37,7 @@
 
 /* Begin PBXFileReference section */
 		2B565B111FB18E2E00814DE1 /* tabby_bell.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = tabby_bell.aiff; sourceTree = "<group>"; };
-		2B99EAC51FA83B6E00E33113 /* embeddedJSViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = embeddedJSViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B99EAC51FA83B6E00E33113 /* TabbyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TabbyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EAC81FA83B6E00E33113 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2B99EAC91FA83B6E00E33113 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2B99EACB1FA83B6E00E33113 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -47,10 +47,10 @@
 		2B99EAD31FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2B99EAD41FA83B6E00E33113 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = embeddedJSViewExample.entitlements; sourceTree = "<group>"; };
-		2B99EADB1FA83B6E00E33113 /* embeddedJSViewExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = embeddedJSViewExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B99EADB1FA83B6E00E33113 /* TabbyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabbyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = embeddedJSViewExampleTests.m; sourceTree = "<group>"; };
 		2B99EAE11FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2B99EAE61FA83B6E00E33113 /* embeddedJSViewExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = embeddedJSViewExampleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B99EAE61FA83B6E00E33113 /* TabbyAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabbyAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = embeddedJSViewExampleUITests.m; sourceTree = "<group>"; };
 		2B99EAEC1FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2BB028F81FB15965005FE8FB /* testFramerForComms.framer */ = {isa = PBXFileReference; lastKnownFileType = folder; path = testFramerForComms.framer; sourceTree = SOURCE_ROOT; };
@@ -95,9 +95,9 @@
 		2B99EAC61FA83B6E00E33113 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2B99EAC51FA83B6E00E33113 /* embeddedJSViewExample.app */,
-				2B99EADB1FA83B6E00E33113 /* embeddedJSViewExampleTests.xctest */,
-				2B99EAE61FA83B6E00E33113 /* embeddedJSViewExampleUITests.xctest */,
+				2B99EAC51FA83B6E00E33113 /* TabbyApp.app */,
+				2B99EADB1FA83B6E00E33113 /* TabbyAppTests.xctest */,
+				2B99EAE61FA83B6E00E33113 /* TabbyAppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,9 +140,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2B99EAC41FA83B6E00E33113 /* embeddedJSViewExample */ = {
+		2B99EAC41FA83B6E00E33113 /* TabbyApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B99EAEF1FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExample" */;
+			buildConfigurationList = 2B99EAEF1FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyApp" */;
 			buildPhases = (
 				2B99EAC11FA83B6E00E33113 /* Sources */,
 				2B99EAC21FA83B6E00E33113 /* Frameworks */,
@@ -152,14 +152,14 @@
 			);
 			dependencies = (
 			);
-			name = embeddedJSViewExample;
+			name = TabbyApp;
 			productName = embeddedJSViewExample;
-			productReference = 2B99EAC51FA83B6E00E33113 /* embeddedJSViewExample.app */;
+			productReference = 2B99EAC51FA83B6E00E33113 /* TabbyApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2B99EADA1FA83B6E00E33113 /* embeddedJSViewExampleTests */ = {
+		2B99EADA1FA83B6E00E33113 /* TabbyAppTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B99EAF21FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExampleTests" */;
+			buildConfigurationList = 2B99EAF21FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyAppTests" */;
 			buildPhases = (
 				2B99EAD71FA83B6E00E33113 /* Sources */,
 				2B99EAD81FA83B6E00E33113 /* Frameworks */,
@@ -170,14 +170,14 @@
 			dependencies = (
 				2B99EADD1FA83B6E00E33113 /* PBXTargetDependency */,
 			);
-			name = embeddedJSViewExampleTests;
+			name = TabbyAppTests;
 			productName = embeddedJSViewExampleTests;
-			productReference = 2B99EADB1FA83B6E00E33113 /* embeddedJSViewExampleTests.xctest */;
+			productReference = 2B99EADB1FA83B6E00E33113 /* TabbyAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		2B99EAE51FA83B6E00E33113 /* embeddedJSViewExampleUITests */ = {
+		2B99EAE51FA83B6E00E33113 /* TabbyAppUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2B99EAF51FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExampleUITests" */;
+			buildConfigurationList = 2B99EAF51FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyAppUITests" */;
 			buildPhases = (
 				2B99EAE21FA83B6E00E33113 /* Sources */,
 				2B99EAE31FA83B6E00E33113 /* Frameworks */,
@@ -188,9 +188,9 @@
 			dependencies = (
 				2B99EAE81FA83B6E00E33113 /* PBXTargetDependency */,
 			);
-			name = embeddedJSViewExampleUITests;
+			name = TabbyAppUITests;
 			productName = embeddedJSViewExampleUITests;
-			productReference = 2B99EAE61FA83B6E00E33113 /* embeddedJSViewExampleUITests.xctest */;
+			productReference = 2B99EAE61FA83B6E00E33113 /* TabbyAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -205,6 +205,11 @@
 					2B99EAC41FA83B6E00E33113 = {
 						CreatedOnToolsVersion = 9.0.1;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 0;
+							};
+						};
 					};
 					2B99EADA1FA83B6E00E33113 = {
 						CreatedOnToolsVersion = 9.0.1;
@@ -218,7 +223,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "embeddedJSViewExample" */;
+			buildConfigurationList = 2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "TabbyApp" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -231,9 +236,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2B99EAC41FA83B6E00E33113 /* embeddedJSViewExample */,
-				2B99EADA1FA83B6E00E33113 /* embeddedJSViewExampleTests */,
-				2B99EAE51FA83B6E00E33113 /* embeddedJSViewExampleUITests */,
+				2B99EAC41FA83B6E00E33113 /* TabbyApp */,
+				2B99EADA1FA83B6E00E33113 /* TabbyAppTests */,
+				2B99EAE51FA83B6E00E33113 /* TabbyAppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -298,12 +303,12 @@
 /* Begin PBXTargetDependency section */
 		2B99EADD1FA83B6E00E33113 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B99EAC41FA83B6E00E33113 /* embeddedJSViewExample */;
+			target = 2B99EAC41FA83B6E00E33113 /* TabbyApp */;
 			targetProxy = 2B99EADC1FA83B6E00E33113 /* PBXContainerItemProxy */;
 		};
 		2B99EAE81FA83B6E00E33113 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2B99EAC41FA83B6E00E33113 /* embeddedJSViewExample */;
+			target = 2B99EAC41FA83B6E00E33113 /* TabbyApp */;
 			targetProxy = 2B99EAE71FA83B6E00E33113 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -427,13 +432,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = embeddedJSViewExample/embeddedJSViewExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = BGLZ7XL6X4;
 				INFOPLIST_FILE = embeddedJSViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExample";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.TabbyApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -442,13 +446,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = embeddedJSViewExample/embeddedJSViewExample.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = BGLZ7XL6X4;
 				INFOPLIST_FILE = embeddedJSViewExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExample";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.TabbyApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -464,7 +467,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/embeddedJSViewExample.app/Contents/MacOS/embeddedJSViewExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabbyApp.app/Contents/MacOS/TabbyApp";
 			};
 			name = Debug;
 		};
@@ -479,7 +482,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/embeddedJSViewExample.app/Contents/MacOS/embeddedJSViewExample";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabbyApp.app/Contents/MacOS/TabbyApp";
 			};
 			name = Release;
 		};
@@ -514,7 +517,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "embeddedJSViewExample" */ = {
+		2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "TabbyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B99EAED1FA83B6E00E33113 /* Debug */,
@@ -523,7 +526,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B99EAEF1FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExample" */ = {
+		2B99EAEF1FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B99EAF01FA83B6E00E33113 /* Debug */,
@@ -532,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B99EAF21FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExampleTests" */ = {
+		2B99EAF21FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B99EAF31FA83B6E00E33113 /* Debug */,
@@ -541,7 +544,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2B99EAF51FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "embeddedJSViewExampleUITests" */ = {
+		2B99EAF51FA83B6E00E33113 /* Build configuration list for PBXNativeTarget "TabbyAppUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B99EAF61FA83B6E00E33113 /* Debug */,
