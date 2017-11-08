@@ -47,7 +47,7 @@ banner.states.hidden =
 		time: 0.2
 	
 	
-winnerName.textTransform = "uppercase"
+# winnerName.textTransform = "uppercase"
 winnerName.x = 40
 
 showNotificationBanner = (text) ->
@@ -101,7 +101,8 @@ demoDB.onChange "/lastUpdate", (value) ->
 	if ( Date.now() - value) < 5000 #Don't do anything on launch, because the onChange gets called on launch
 		lastUpdateString = '/' + value
 		demoDB.get lastUpdateString, (theEvent) ->
-			eventNotification =  theEvent.username + ' had a ' + theEvent.eventKey
+			firstNameWinner = myArray[0]+ ' had a win!'
+			eventNotification =  firstNameWinner + ' had a ' + theEvent.eventKey + '!'
 			CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
 			showNotificationBanner(eventNotification)
 			
