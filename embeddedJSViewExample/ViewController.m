@@ -71,7 +71,7 @@
 
     //Do calculations.
     NSPoint mouseLoc = [NSEvent mouseLocation]; //get current mouse position
-    NSLog(@"Mouse location: %f %f", mouseLoc.x, mouseLoc.y);
+    // NSLog(@"Mouse location: %f %f", mouseLoc.x, mouseLoc.y);
     
 //    send mouse coordinates
 	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",mouseLoc.x, mouseLoc.y];

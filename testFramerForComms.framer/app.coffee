@@ -102,7 +102,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 		lastUpdateString = '/' + value
 		demoDB.get lastUpdateString, (theEvent) ->
 			eventNotification =  theEvent.username + ' had a ' + theEvent.eventKey
-# 			CocoaBridge.showMacNotification(eventNotification) #send it to the mac
+			CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
 			showNotificationBanner(eventNotification)
 			
 
