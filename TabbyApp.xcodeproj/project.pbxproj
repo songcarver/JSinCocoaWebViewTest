@@ -16,6 +16,7 @@
 		2B99EAE01FA83B6E00E33113 /* embeddedJSViewExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */; };
 		2B99EAEB1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */; };
 		2BB028F91FB15966005FE8FB /* testFramerForComms.framer in Resources */ = {isa = PBXBuildFile; fileRef = 2BB028F81FB15965005FE8FB /* testFramerForComms.framer */; };
+		2BCDBF5B1FB2E15200B323B1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5A1FB2E15100B323B1 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +45,6 @@
 		2B99EACC1FA83B6E00E33113 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2B99EACE1FA83B6E00E33113 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2B99EAD11FA83B6E00E33113 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		2B99EAD31FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2B99EAD41FA83B6E00E33113 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = embeddedJSViewExample.entitlements; sourceTree = "<group>"; };
 		2B99EADB1FA83B6E00E33113 /* TabbyAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TabbyAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -54,6 +54,7 @@
 		2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = embeddedJSViewExampleUITests.m; sourceTree = "<group>"; };
 		2B99EAEC1FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2BB028F81FB15965005FE8FB /* testFramerForComms.framer */ = {isa = PBXFileReference; lastKnownFileType = folder; path = testFramerForComms.framer; sourceTree = SOURCE_ROOT; };
+		2BCDBF5A1FB2E15100B323B1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,8 +113,8 @@
 				2B99EACE1FA83B6E00E33113 /* Assets.xcassets */,
 				2BB028F81FB15965005FE8FB /* testFramerForComms.framer */,
 				2B99EAD01FA83B6E00E33113 /* Main.storyboard */,
-				2B99EAD31FA83B6E00E33113 /* Info.plist */,
 				2B99EAD41FA83B6E00E33113 /* main.m */,
+				2BCDBF5A1FB2E15100B323B1 /* Info.plist */,
 				2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */,
 			);
 			path = Tabby;
@@ -251,6 +252,7 @@
 				2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */,
 				2B99EAD21FA83B6E00E33113 /* Main.storyboard in Resources */,
 				2BB028F91FB15966005FE8FB /* testFramerForComms.framer in Resources */,
+				2BCDBF5B1FB2E15200B323B1 /* Info.plist in Resources */,
 				2B565B121FB18E2F00814DE1 /* tabby_bell.aiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
