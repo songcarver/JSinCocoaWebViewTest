@@ -85,7 +85,7 @@
 		2B99EABC1FA83B6E00E33113 = {
 			isa = PBXGroup;
 			children = (
-				2B99EAC71FA83B6E00E33113 /* Tabby */,
+				2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */,
 				2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */,
 				2B99EAE91FA83B6E00E33113 /* embeddedJSViewExampleUITests */,
 				2B99EAC61FA83B6E00E33113 /* Products */,
@@ -103,9 +103,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2B99EAC71FA83B6E00E33113 /* Tabby */ = {
+		2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */ = {
 			isa = PBXGroup;
 			children = (
+				2BCDBF5A1FB2E15100B323B1 /* Info.plist */,
 				2B99EAC81FA83B6E00E33113 /* AppDelegate.h */,
 				2B99EAC91FA83B6E00E33113 /* AppDelegate.m */,
 				2B99EACB1FA83B6E00E33113 /* ViewController.h */,
@@ -114,10 +115,9 @@
 				2BB028F81FB15965005FE8FB /* testFramerForComms.framer */,
 				2B99EAD01FA83B6E00E33113 /* Main.storyboard */,
 				2B99EAD41FA83B6E00E33113 /* main.m */,
-				2BCDBF5A1FB2E15100B323B1 /* Info.plist */,
 				2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */,
 			);
-			path = Tabby;
+			path = embeddedJSViewExample;
 			sourceTree = "<group>";
 		};
 		2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */ = {
