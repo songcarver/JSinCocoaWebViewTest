@@ -1,5 +1,12 @@
+sandbox = true
+
+
+
+
+#toDo - Make a mode here which fakes CocoaBridge
+
 cocoaBridgeIsUp = false
-username = "Rupert"
+username = "Test"
 
 
 document.body.style.cursor = "auto"
@@ -8,24 +15,75 @@ document.body.style.cursor = "auto"
 {Firebase} = require 'firebase'
 
 
-# The required information is located at https://firebase.google.com → Console → YourProject → ...
-
-demoDB = new Firebase
-	projectID: "tabbytest-8e201" # ... Database → first part of URL
-	secret: "oParj369e6kYid1tungWZPDTMnYgrwOaC0hmBCnG" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
 
 
+
+if sandbox
+	#SANDBOX
+	demoDB = new Firebase
+		projectID: "tabbysandbox" # ... Database → first part of URL
+		secret: "TBkoOoRnmPev8TfFtcTJViG3Wb0gFP1IGVXoJ8kT" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
+
+else
+# 	PRODUCTION ONE:
+# 	The required information is located at https://firebase.google.com → Console → YourProject → ...
+	demoDB = new Firebase
+		projectID: "tabbytest-8e201" # ... Database → first part of URL
+		secret: "oParj369e6kYid1tungWZPDTMnYgrwOaC0hmBCnG" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
+
+
+
+#update the user with the last known time
+Utils.interval 10, ->
+	
+	
 
 myBackGround = new BackgroundLayer
 	backgroundColor: '#333333'
 
+########## set up scrolling view
+
+# Variables
+coloumns = 4
+gutter = 0
+coloumnWidth = 64
+
+scroll = new ScrollComponent
+	width: Screen.width
+	height: 64
+	scrollVertical: false
+	y: Align.bottom
+
+scroll.mouseWheelEnabled = true
+
+
+
+# Loop to create row layers
+for index in [0...coloumns]
+
+	cell = new Layer
+		width:  coloumnWidth
+		height: coloumnWidth
+		x: index * (coloumnWidth + gutter)
+		parent: scroll.content
+		backgroundColor: "#00AAFF"
+		hueRotate: index * 10
+
+
+
+
+#################
+
+#set the states to down. Prettier way is possble to do this using States, todo
+
 winButtonDown.opacity = 0
+hammerButtonDown.opacity = 0
+
+
 
 #here's where the Win button should be
 winButton.onClick (event, layer) ->
-	writeNewEvent(username)
-
-	
+	writeNewEvent(username, 'win')
 	
 winButton.onMouseDown ->
 	winButtonDown.opacity = 1
@@ -33,13 +91,28 @@ winButton.onMouseDown ->
 winButton.onMouseOut ->
 	animationFadeOut = new Animation winButtonDown,
 		opacity: 0
-
 	animationFadeOut.start()
+	
+#hammerButton
+hammerButton.onClick (event, layer) ->
+	writeNewEvent(username, 'hammer')
+	
+hammerButton.onMouseDown ->
+	hammerButtonDown.opacity = 1
+
+hammerButton.onMouseOut ->
+	animationFadeOut = new Animation hammerButtonDown,
+		opacity: 0
+	animationFadeOut.start()
+
+	
+	
 	
 	
 banner.maxY = 0
 banner.states.showing =
 	y: 0
+
 
 banner.states.hidden =
 	y: -40
@@ -50,10 +123,14 @@ banner.states.hidden =
 # winnerName.textTransform = "uppercase"
 winnerName.x = 40
 
-showNotificationBanner = (text) ->
-	myArray = text.split " "
-	winnerName.text = myArray[0]+ ' had a win!'
+showNotificationBanner = (eventString, eventKey) ->
+	winnerName.text = eventString
+	hammerInvert.visible = false
+	winInvert.visible = false
+	if eventKey is 'win' then winInvert.visible = true
+	if eventKey is 'hammer' then hammerInvert.visible = true
 	animationB.start()
+	
 
 	
 # Animate the layer to the right 
@@ -71,7 +148,6 @@ animationB.on Events.AnimationEnd, ->
 
 
 
-	
 
 timeAtLaunch = Date.now()
 
@@ -82,13 +158,18 @@ timeNow =  Date.now()
 
 
 
-writeNewEvent = (username) ->
+writeNewEvent = (username, userEventKey) ->
 	# write a new entry
+	myArray = username.split " "
+	firstNameWinner = myArray[0]
 	timeNow =  Date.now()
+	if userEventKey = 'win' then eventString =  firstNameWinner + ' had a win!' 
+	if userEventKey = 'hammer' then eventString =  firstNameWinner + ' is hammering!'
 	Event = 
 		username: username
-		eventKey: 'win'
+		eventKey: userEventKey
 		unixTime: timeNow
+		eventString: eventString
 	
 	dbString = "/" + timeNow
 	demoDB.put(dbString,Event)
@@ -102,12 +183,10 @@ demoDB.onChange "/lastUpdate", (value) ->
 		lastUpdateString = '/' + value
 		demoDB.get lastUpdateString, (theEvent) ->
 			myArray = theEvent.username.split " "
-			firstNameWinner = myArray[0]
-			eventNotification =  firstNameWinner + ' had a ' + theEvent.eventKey + '!'
-			CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
-			showNotificationBanner(eventNotification)
+			eventNotification =  theEvent.eventString
+			if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+			showNotificationBanner(eventNotification, theEvent.eventKey)
 			
-
 
 
 
@@ -169,5 +248,6 @@ demoDB.onChange "/lastUpdate", (value) ->
 	cocoaBridgeIsUp = true
 	
 	
-# showNotificationBanner('test launch')
+
+
 
