@@ -6,7 +6,7 @@ sandbox = true
 #toDo - Make a mode here which fakes CocoaBridge
 
 cocoaBridgeIsUp = false
-username = "Test"
+username = "Test2"
 
 
 document.body.style.cursor = "auto"
@@ -33,10 +33,7 @@ else
 
 
 
-#update the user with the last known time
-Utils.interval 10, ->
-	
-	
+
 
 myBackGround = new BackgroundLayer
 	backgroundColor: '#333333'
@@ -49,10 +46,12 @@ gutter = 0
 coloumnWidth = 64
 
 scroll = new ScrollComponent
+	parent: myView
 	width: Screen.width
 	height: 64
 	scrollVertical: false
 	y: Align.bottom
+
 
 scroll.mouseWheelEnabled = true
 
@@ -158,6 +157,19 @@ timeNow =  Date.now()
 
 
 
+writeUserStatusEvent = (username) ->
+	# this writes a key value into /users for the current username and the lastUpdate
+	timeNow =  Date.now()
+	
+	Event = 
+		username
+	lastUpdatedString = "/" + timeNow
+	userPath = "/users/"+ username
+	lastUpdatedKey = userPath + '/lastUpdated'
+	demoDB.put(lastUpdatedKey, timeNow)
+	
+	
+
 writeNewEvent = (username, userEventKey) ->
 	# write a new entry
 	myArray = username.split " "
@@ -175,17 +187,24 @@ writeNewEvent = (username, userEventKey) ->
 	demoDB.put(dbString,Event)
 	demoDB.put('/lastUpdate', timeNow)
 
+
+writeLastUpdatedEvent = (timeNow) ->
+	if !timeNow then timeNow = Date.now()
+	dbString = "/" + timeNow
+	demoDB.put(dbString,Event)
+	demoDB.put('/lastUpdate', timeNow)
 ###############
 
 
 demoDB.onChange "/lastUpdate", (value) -> 
-	if ( Date.now() - value) < 5000 #Don't do anything on launch, because the onChange gets called on launch
+	if ( Date.now() - value) < 5000 #Don't do anything on launch, because the onChange gets called on launch. 
 		lastUpdateString = '/' + value
 		demoDB.get lastUpdateString, (theEvent) ->
-			myArray = theEvent.username.split " "
-			eventNotification =  theEvent.eventString
-			if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
-			showNotificationBanner(eventNotification, theEvent.eventKey)
+			if theEvent
+				myArray = theEvent.username.split " "
+				eventNotification =  theEvent.eventString
+				if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+				showNotificationBanner(eventNotification, theEvent.eventKey)
 			
 
 
@@ -248,6 +267,23 @@ demoDB.onChange "/lastUpdate", (value) ->
 	cocoaBridgeIsUp = true
 	
 	
+updateUserList = () ->
+	# here we update all the 
+	userListKey = "/users/"
+	demoDB.get userListKey, (theUsers) ->
+# 		userListArray = JSON.parse(theUsers) # converts JSON to array	
+		numUsers =  Object.keys(theUsers).length
 
 
 
+
+
+#### Loops
+
+#update the user with the last known time
+# Utils.interval 30, ->
+# 	writeUserStatusEvent(username)
+# 	writeLastUpdatedEvent()
+
+
+updateUserList()

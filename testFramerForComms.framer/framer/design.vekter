@@ -652,9 +652,9 @@
         "fillType" : "color",
         "height" : 256,
         "id" : "q*-C&?.g",
-        "name" : "notificationBanner",
+        "name" : "myView",
         "parentid" : "s@nFKIzg",
-        "targetName" : "notificationBanner",
+        "targetName" : "myView",
         "width" : 256,
         "x" : 0,
         "y" : 0

@@ -87,7 +87,7 @@ function init() {
 	}
 
 	if (!isFileLoadingAllowed()) {
-//        return showFileLoadingAlert()
+		return showFileLoadingAlert()
 	}
 
 	loadProject(function(){
