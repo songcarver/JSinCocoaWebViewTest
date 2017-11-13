@@ -1,12 +1,16 @@
 sandbox = false
 
+
+Framer.Extras.Hints.disable()
 hasHeardFromServer = false
 
 
 #toDo - Make a mode here which fakes CocoaBridge
 
 cocoaBridgeIsUp = false
-username = "Mr Fresh"
+if sandbox then username = "Keith Lang"
+else username = "Mr Default"
+
 
 
 document.body.style.cursor = "auto"
@@ -119,8 +123,8 @@ banner.states.hidden =
 # winnerName.textTransform = "uppercase"
 winnerName.x = 40
 
-showNotificationBanner = (eventString, eventKey) ->
-	winnerName.text = eventString
+showNotificationBanner = (eventNotification, eventKey) ->
+	winnerName.text = eventNotification
 	hammerInvert.visible = false
 	winInvert.visible = false
 	if eventKey is 'win' then winInvert.visible = true
@@ -172,8 +176,8 @@ writeNewEvent = (username, userEventKey) ->
 	myArray = username.split " "
 	firstNameWinner = myArray[0]
 	timeNow =  Date.now()
-	if userEventKey = 'win' then eventString =  firstNameWinner + ' had a win!' 
-	if userEventKey = 'hammer' then eventString =  firstNameWinner + ' is hammering!'
+	if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
+	if userEventKey is 'hammer' then eventString =  firstNameWinner + ' is hammering!'
 	Event = 
 		username: username
 		eventKey: userEventKey
@@ -395,7 +399,7 @@ if sandbox
 		writeUserStatusEvent(username)
 		writeLastUpdatedEvent()
 else 
-	Utils.interval 30, ->
+	Utils.interval 10, ->
 		writeUserStatusEvent(username)
 		writeLastUpdatedEvent()
 
