@@ -641,7 +641,7 @@
         "exportOptions" : [
 
         ],
-        "fillColor" : "rgb(46, 46, 46)",
+        "fillColor" : "#606A77",
         "fillGradient" : {
           "__class" : "LinearGradient",
           "alpha" : 1,
