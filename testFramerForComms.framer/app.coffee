@@ -80,6 +80,34 @@ myBackGround.sendToBack()
 updateTabbyView()
 
 
+# here we set up the scroll view, without any content. That comes in later when database is connected 
+scroll = new ScrollComponent
+	parent: myView
+	size: Screen.size
+	scrollHorizontal: false
+	height: cellSize
+	width: Screen.width
+	y: Align.bottom
+	backgroundColor: "#222222"
+scroll.scrollHorizontal = true
+scroll.scrollVertical = false
+
+scroll.mouseWheelEnabled = true
+
+#empty state
+scrollEmptyStateLabel = new TextLayer
+	name: 'ScrollEmptyStateLayer'
+	parent: scroll
+	fontSize: 11
+	fontWeight: 800
+	color: 'white'
+	text: 'No other cool cats'
+	padding: 4
+	x: Align.center
+	y: Align.center
+	
+scrollEmptyStateLabel.sendToBack()
+	
 
 #here's where the Win button should be
 winButton.onClick (event, layer) ->
@@ -292,37 +320,18 @@ updateCanvasDimensions = () ->
 
 updateCanvasDimensions()
 
-setupScrollView = () ->
 	
-# here we set up the scroll view, without any content. That comes in later when database is connected 
-	@scroll = new ScrollComponent
-		parent: myView
-		size: Screen.size
-		scrollHorizontal: false
-		height: cellSize
-		width: Screen.width
-		y: Align.bottom
-		backgroundColor: "#222222"
-	@scroll.scrollHorizontal = true
-	@scroll.scrollVertical = false
-	
-	@scroll.mouseWheelEnabled = true
-	
-	#empty state
-	@scrollEmptyStateLabel = new TextLayer
-		parent: scroll
-		fontSize: 11
-		fontWeight: 800
-		color: 'white'
-		text: 'No other cool cats'
-		padding: 4
-		x: Align.center
-		y: Align.center
-		
-	@scrollEmptyStateLabel.sendToBack()
 
 
-setupScrollView()
+
+
+window.addEventListener "keydown", (keyboardEvent) ->
+	switch keyboardEvent.keyCode
+		when 40
+			myView.backgroundColor = '#441111'
+			username = "Ima Testing!"
+
+
 
  
 updateUserList = () ->
@@ -330,6 +339,11 @@ updateUserList = () ->
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
+		if scroll.content.children.length > 0
+			for keys, things of scroll.content.children
+				things.destroy()
+			
+		
 		numUsers =  Object.keys(theUsers).length
 		
 		userArray = []
@@ -395,13 +409,16 @@ updateUserList = () ->
 # update the user with the last known time
 
 if sandbox
-	Utils.interval 3, ->
+	Utils.interval 5, ->
 		writeUserStatusEvent(username)
 		writeLastUpdatedEvent()
+		updateUserList()
 else 
 	Utils.interval 10, ->
 		writeUserStatusEvent(username)
 		writeLastUpdatedEvent()
+		updateUserList()
+
 
 
 serverReady = () ->
