@@ -1,4 +1,4 @@
-sandbox = false
+sandbox = true
 
 
 Framer.Extras.Hints.disable()
