@@ -12,7 +12,7 @@ hasHeardFromServer = false
 #toDo - Make a mode here which fakes CocoaBridge
 
 cocoaBridgeIsUp = false
-if sandbox then username = "Keith Lang"
+if sandbox then username = "Keith JS"
 else username = "Mr Default"
 
 
@@ -394,8 +394,25 @@ updateUserList = () ->
 		
 		for theUsername, theUserdata of theUsers
 			if isFresh(theUserdata.lastUpdated)
-				if theUsername isnt username
-					userArray.push(theUsername)
+				userArray.push(theUsername)
+		
+
+#				commented logic out below to show current username as well. 
+# 				if theUsername isnt username 
+# 					userArray.push(theUsername)
+		
+		#swap so the app user is always first listing always.
+		
+		didASwap = false
+		for allTheUsers, index in userArray
+			if allTheUsers is username
+				[userArray[index], userArray[0]] = [userArray[0], userArray[index]]
+				didASwap = true
+		if not didASwap 
+		#this means we never found our own name, 
+		# which is probably because the database wasn't updated when we first called its user list
+			userArray.unshift(username)
+			
 		# Variables
 		
 		
@@ -408,9 +425,6 @@ updateUserList = () ->
 			scrollEmptyStateLabel.animate("alone")
 		else 
 			scrollEmptyStateLabel.animate("connected")
-				time: 1
-				curve: Bezier.ease
-
 		
 		
 		# Loop to create row layers
@@ -445,7 +459,8 @@ updateUserList = () ->
 				fontSize: 11
 				color: 'white'
 				padding: 4
-
+			if userArray[index] is username
+				cellLabel.color = '#FFFF00'
 
 
 #### Loops
