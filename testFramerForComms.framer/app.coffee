@@ -1,4 +1,52 @@
-sandbox = false
+sandbox = true
+appVersion = 'Tabby 0.12'
+
+motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
+
+	
+
+`function isJson(item) {
+    item = typeof item !== "string"
+        ? JSON.stringify(item)
+        : item;
+
+    try {
+        item = JSON.parse(item);
+    } catch (e) {
+        return false;
+    }
+
+    if (typeof item === "object" && item !== null) {
+        return true;
+    }
+
+    return false;
+}`
+
+
+coverPageText = new TextLayer
+# 	backgroundColor: '#ffff00'
+	width: Screen.width
+	height: 64
+	text: appVersion
+	fontWeight: 400
+	fontSize: 12
+	letterSpacing: 1.2
+	padding: 12
+	textAlign: 'center'
+	x: Align.center()
+	y: Align.top()
+	
+	color: '#ffffff'
+
+coverPageText.states.done =
+	opacity: 0
+	animationOptions:
+		time: 6
+		curve: 'ease-in'
+
+coverPageText.animate('done')
+
 
 #global tracking of the firebase connection. Nicely, it re-connects automatically and seems to know instantly when connection goes out. 
  
@@ -166,10 +214,6 @@ hammerButton.onMouseOut ->
 	animationFadeOut = new Animation hammerButtonDown,
 		opacity: 0
 	animationFadeOut.start()
-
-	
- 
-	
 	
 banner.maxY = 0
 banner.states.showing =
@@ -383,6 +427,10 @@ updateUserList = () ->
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
+		if not isJson(theUsers)
+			print 'I caught a bad JSON!'
+			return
+			
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
 		if scroll.content.children.length > 0
 			clearScrollView()
@@ -465,8 +513,36 @@ updateUserList = () ->
 
 #### Loops
 
+motivationOverlay = new Layer
+	width: Screen.width
+	height: Screen.height
+	backgroundColor: '#ffff00'
+	opacity: 0
+	y: (-1 * Screen.height)
+
+motivationOverlayText = new TextLayer
+	text: 'You. Are. Rocking. It.'
+	parent: motivationOverlay
+	padding: 40
+	fontSize: 40
+	fontWeight: 800
+	y: Align.center()
+	
+	
+motivationOverlay.states.appear = 
+	midX: Screen.midX
+	midY: Screen.midY
+	opacity: 1
+	rotation: 0
+	animationOptions:
+		curve: Spring(tension: 100, friction: 25)
+
+# motivationOverlay.animate('appear')
 
 
+		
+
+		
 
 # update the user with the last known time
 
