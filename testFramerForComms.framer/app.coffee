@@ -1,4 +1,8 @@
-sandbox = true
+sandbox = false
+
+#global tracking of the firebase connection. Nicely, it re-connects automatically and seems to know instantly when connection goes out. 
+ 
+firebaseStatus = ""
 
 
 Framer.Extras.Hints.disable()
@@ -36,19 +40,24 @@ else
 		secret: "oParj369e6kYid1tungWZPDTMnYgrwOaC0hmBCnG" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
 
 
-
-myBackGround = new BackgroundLayer
-	backgroundColor: '#606A77'
-
-
-
-
+demoDB.onChange "connection", (status) ->
+	firebaseStatus = status
+	# status is either `connected´ or `disconnected´
+	if firebaseStatus is 'disconnected'
+		clearScrollView()
+		scrollEmptyStateLabel.animate("disconnected")
+		
+	else 
+		updateUserList()
+		scrollEmptyStateLabel.animate("connected")
 
 
 #################
 # Initialize
 
 #set the states to down. Prettier way is possble to do this using States, todo
+Screen.backgroundColor = '#606A77'
+
 
 winButtonDown.opacity = 0
 hammerButtonDown.opacity = 0
@@ -75,7 +84,6 @@ tabbyPlaceHolder = new TextLayer
 	
 tabbyView.sendToBack()
 
-myBackGround.sendToBack()
 
 updateTabbyView()
 
@@ -88,7 +96,7 @@ scroll = new ScrollComponent
 	height: cellSize
 	width: Screen.width
 	y: Align.bottom
-	backgroundColor: "#222222"
+	backgroundColor: "#000000"
 scroll.scrollHorizontal = true
 scroll.scrollVertical = false
 
@@ -96,20 +104,46 @@ scroll.mouseWheelEnabled = true
 
 #empty state
 scrollEmptyStateLabel = new TextLayer
-	name: 'ScrollEmptyStateLayer'
 	parent: scroll
 	fontSize: 11
+	textAlign: "center"
 	fontWeight: 800
-	color: 'white'
-	text: 'No other cool cats'
+	color: "#ffffff"
+	text: 'Checking alleyways…'
 	padding: 4
-	x: Align.center
-	y: Align.center
+	x: Align.center()
+	y: Align.center()
+	animationOptions: 
+		time: 1
+
+scrollEmptyStateLabel.states.alone =
+	text: 'No other cool cats'
+	opacity: 1
+	textAlign: "center"
+
+	animationOptions:
+		time: 1
+	
+scrollEmptyStateLabel.states.disconnected =
+	text: 'Offline mode'
+	opacity: 1
+	textAlign: "center"
+
+	animationOptions:
+		time: 1
+
+scrollEmptyStateLabel.states.connected =
+	text: ''
+	opacity: 0
+	textAlign: "center"
+
+	animationOptions:
+		time: 1
+	
 	
 scrollEmptyStateLabel.sendToBack()
-	
 
-#here's where the Win button should be
+#hWin button
 winButton.onClick (event, layer) ->
 	writeNewEvent(username, 'win')
 	
@@ -158,6 +192,7 @@ showNotificationBanner = (eventNotification, eventKey) ->
 	if eventKey is 'win' then winInvert.visible = true
 	if eventKey is 'hammer' then hammerInvert.visible = true
 	animationB.start()
+	#todo make a state for the entire banner, or different banners. this is a hack...
 	
 
 	
@@ -187,58 +222,65 @@ timeNow =  Date.now()
 
 
 writeUserStatusEvent = (username) ->
-	# this writes a key value into /users for the current username and the lastUpdate
-	timeNow =  Date.now()
-	
-	Event = 
-		username
-	lastUpdatedString = "/" + timeNow
-	userPath = "/users/"+ username
-	lastUpdatedKey = userPath + '/lastUpdated'
-	demoDB.put(lastUpdatedKey, timeNow)
+	if firebaseStatus is 'connected'
+		# this writes a key value into /users for the current username and the lastUpdate
+		timeNow =  Date.now()
+		
+		Event = 
+			username
+		lastUpdatedString = "/" + timeNow
+		userPath = "/users/"+ username
+		lastUpdatedKey = userPath + '/lastUpdated'
+		demoDB.put(lastUpdatedKey, timeNow)
 	
 	
 
 writeNewEvent = (username, userEventKey) ->
 	# write a new entry
-	myArray = username.split " "
-	firstNameWinner = myArray[0]
-	timeNow =  Date.now()
-	if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
-	if userEventKey is 'hammer' then eventString =  firstNameWinner + ' is hammering!'
-	Event = 
-		username: username
-		eventKey: userEventKey
-		unixTime: timeNow
-		eventString: eventString
-	
-	dbString = "/" + timeNow
-	demoDB.put(dbString,Event)
-	demoDB.put('/lastUpdate', timeNow)
+	if firebaseStatus is 'connected'
+		myArray = username.split " "
+		firstNameWinner = myArray[0]
+		timeNow =  Date.now()
+		if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
+		if userEventKey is 'hammer' then eventString =  firstNameWinner + ' is hammering!'
+		Event = 
+			username: username
+			eventKey: userEventKey
+			unixTime: timeNow
+			eventString: eventString
+		
+		dbString = "/" + timeNow
+		demoDB.put(dbString,Event)
+		demoDB.put('/lastUpdate', timeNow)
 
 
-writeLastUpdatedEvent = (timeNow) ->
-	if !timeNow then timeNow = Date.now()
-	dbString = "/" + timeNow
-	demoDB.put(dbString,Event)
-	demoDB.put('/lastUpdate', timeNow)
+writeLastUpdatedEvent = (thisTime) ->
+	if firebaseStatus is 'connected'
+		if not thisTime? then timeNow = Date.now()
+		else timeNow = thisTime
+		dbString = "/" + timeNow
+		demoDB.put('/lastUpdate', timeNow)
 ###############
 
 
 demoDB.onChange "/lastUpdate", (value) -> 
+	if firebaseStatus isnt 'connected' then return
 	if !hasHeardFromServer 
 		hasHeardFromServer = true
 		serverReady()
 		
 		
-	if ( Date.now() - value) < 5000 #Don't do anything on launch, because the onChange gets called on launch. 
-		lastUpdateString = '/' + value
-		demoDB.get lastUpdateString, (theEvent) ->
-			if theEvent
-				myArray = theEvent.username.split " "
-				eventNotification =  theEvent.eventString
-				if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
-				showNotificationBanner(eventNotification, theEvent.eventKey)
+	if ( Date.now() - value) < 5000 
+		#Don't do anything on launch, because the onChange gets called on launch. 
+		
+		if firebaseStatus is 'connected'
+			lastUpdateString = '/' + value
+			demoDB.get lastUpdateString, (theEvent) ->
+				if theEvent
+					myArray = theEvent.username.split " "
+					eventNotification =  theEvent.eventString
+					if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+					showNotificationBanner(eventNotification, theEvent.eventKey)
 			
 
 
@@ -332,16 +374,18 @@ window.addEventListener "keydown", (keyboardEvent) ->
 			username = "Ima Testing!"
 
 
-
+clearScrollView = () ->
+	for keys, things of scroll.content.children
+		things.destroy()
  
 updateUserList = () ->
 	# here we update all the 
+	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
 		if scroll.content.children.length > 0
-			for keys, things of scroll.content.children
-				things.destroy()
+			clearScrollView()
 			
 		
 		numUsers =  Object.keys(theUsers).length
@@ -355,14 +399,17 @@ updateUserList = () ->
 		# Variables
 		
 		
+		
 		columns = userArray.length
 		gutter = 0
 		
 		
 		if userArray.length is 0 
-			scrollEmptyStateLabel.visible = true
+			scrollEmptyStateLabel.animate("alone")
 		else 
-			scrollEmptyStateLabel.visible = false
+			scrollEmptyStateLabel.animate("connected")
+				time: 1
+				curve: Bezier.ease
 
 		
 		
@@ -410,14 +457,16 @@ updateUserList = () ->
 
 if sandbox
 	Utils.interval 5, ->
-		writeUserStatusEvent(username)
-		writeLastUpdatedEvent()
-		updateUserList()
+		if firebaseStatus is 'connected'
+			writeUserStatusEvent(username)
+			writeLastUpdatedEvent()
+			updateUserList()
 else 
-	Utils.interval 10, ->
-		writeUserStatusEvent(username)
-		writeLastUpdatedEvent()
-		updateUserList()
+	Utils.interval 15, ->
+		if firebaseStatus is 'connected'
+			writeUserStatusEvent(username)
+			writeLastUpdatedEvent()
+			updateUserList()
 
 
 
