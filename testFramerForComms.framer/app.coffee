@@ -42,7 +42,7 @@ coverPageText = new TextLayer
 coverPageText.states.done =
 	opacity: 0
 	animationOptions:
-		time: 6
+		time: 3
 		curve: 'ease-in'
 
 coverPageText.animate('done')
