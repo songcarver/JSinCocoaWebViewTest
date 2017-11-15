@@ -1,5 +1,5 @@
 sandbox = true
-appVersion = 'Tabby 0.12'
+appVersion = 'Tabby 0.13'
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
 
@@ -35,7 +35,7 @@ coverPageText = new TextLayer
 	padding: 12
 	textAlign: 'center'
 	x: Align.center()
-	y: Align.top()
+	y: Align.center()
 	
 	color: '#ffffff'
 
@@ -52,8 +52,12 @@ coverPageText.animate('done')
  
 firebaseStatus = ""
 
-
+# Framer-specific overrides 
 Framer.Extras.Hints.disable()
+document.body.style.cursor = "auto"
+
+
+
 hasHeardFromServer = false
 
 
@@ -65,13 +69,12 @@ else username = "Mr Default"
 
 
 
-document.body.style.cursor = "auto"
 # Please deactivate Auto Refresh and reload manually using CMD+R!
 # Firebase
 {Firebase} = require 'firebase'
 
 # UI variables 
-cellSize = 64
+cellSize = 72
 
 
 if sandbox
@@ -103,12 +106,86 @@ demoDB.onChange "connection", (status) ->
 #################
 # Initialize
 
+
+# set up all the buttons
+myButtonArray = []
+
+allButtons = new Layer
+	width: Screen.width
+	height: 48
+	backgroundColor: 'transparent'
+
+
+createButtonLayer = (name, x, y) ->
+	@myLayer = new TextLayer
+		parent: allButtons
+		name: name
+		text: name
+		fontSize: 18
+		padding: 8
+		backgroundColor: '#6D7987'
+		borderRadius: 5
+		
+
+	@myLayer.states.down = 
+		backgroundColor: '#97A6BA'
+		
+	@myLayer.states.over = 
+		backgroundColor: '#6D7987'
+	
+	@myLayer.states.default = 
+		x: x
+		backgroundColor: '#6D7987'
+		
+		
+	
+	@myLayer.onMouseDown (event, layer) ->
+		layer.stateSwitch('down')
+	
+	@myLayer.onMouseOver (event, layer) ->
+		layer.stateSwitch('over')
+		
+	@myLayer.onMouseOut (event, layer) ->
+		layer.stateSwitch('default')
+		
+	@myLayer.onMouseUp (event, layer) ->
+		layer.stateSwitch('default')
+		
+	@myLayer.onClick (event, layer) ->
+		print name
+		writeNewEvent(username, name)
+	
+	myButtonArray.push(@myLayer)
+	
+
+myButtons = ['🏆','🔨','☕️','🍔','💡','👋','👏','🙏']
+
+for buttons in myButtons
+	createButtonLayer(buttons)
+
+for index, eachButton of myButtonArray
+	columns = 4
+	contentWidth = eachButton.width * columns
+	padding = 8
+	combinedWidth = (padding * (columns - 1)) + (contentWidth  )
+	originLeft = Math.floor((Screen.width - combinedWidth) / 2)
+	x = originLeft +  (index * (eachButton.width + padding))
+	eachButton.x = x
+	eachButton.y = 8
+	if index > 3
+		eachButton.y = 16 + eachButton.height
+		eachButton.x -= (combinedWidth + padding) 
+	
+
+
+
+
+
+
 #set the states to down. Prettier way is possble to do this using States, todo
 Screen.backgroundColor = '#606A77'
 
 
-winButtonDown.opacity = 0
-hammerButtonDown.opacity = 0
 
 
 updateTabbyView = () ->
@@ -191,29 +268,7 @@ scrollEmptyStateLabel.states.connected =
 	
 scrollEmptyStateLabel.sendToBack()
 
-#hWin button
-winButton.onClick (event, layer) ->
-	writeNewEvent(username, 'win')
-	
-winButton.onMouseDown ->
-	winButtonDown.opacity = 1
 
-winButton.onMouseOut ->
-	animationFadeOut = new Animation winButtonDown,
-		opacity: 0
-	animationFadeOut.start()
-	
-#hammerButton
-hammerButton.onClick (event, layer) ->
-	writeNewEvent(username, 'hammer')
-	
-hammerButton.onMouseDown ->
-	hammerButtonDown.opacity = 1
-
-hammerButton.onMouseOut ->
-	animationFadeOut = new Animation hammerButtonDown,
-		opacity: 0
-	animationFadeOut.start()
 	
 banner.maxY = 0
 banner.states.showing =
@@ -231,10 +286,6 @@ winnerName.x = 40
 
 showNotificationBanner = (eventNotification, eventKey) ->
 	winnerName.text = eventNotification
-	hammerInvert.visible = false
-	winInvert.visible = false
-	if eventKey is 'win' then winInvert.visible = true
-	if eventKey is 'hammer' then hammerInvert.visible = true
 	animationB.start()
 	#todo make a state for the entire banner, or different banners. this is a hack...
 	
@@ -286,7 +337,7 @@ writeNewEvent = (username, userEventKey) ->
 		firstNameWinner = myArray[0]
 		timeNow =  Date.now()
 		if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
-		if userEventKey is 'hammer' then eventString =  firstNameWinner + ' is hammering!'
+		else eventString =  firstNameWinner + ' is ' + userEventKey
 		Event = 
 			username: username
 			eventKey: userEventKey
