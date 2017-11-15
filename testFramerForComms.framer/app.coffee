@@ -131,7 +131,7 @@ createButtonLayer = (name, x, y) ->
 		backgroundColor: '#97A6BA'
 		
 	@myLayer.states.over = 
-		backgroundColor: '#6D7987'
+		backgroundColor: '#768291'
 	
 	@myLayer.states.default = 
 		x: x
@@ -152,9 +152,9 @@ createButtonLayer = (name, x, y) ->
 		layer.stateSwitch('default')
 		
 	@myLayer.onClick (event, layer) ->
-		print name
 		writeNewEvent(username, name)
-	
+		#todo stick the super cool animation here
+		
 	myButtonArray.push(@myLayer)
 	
 
