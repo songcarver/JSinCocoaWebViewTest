@@ -163,21 +163,22 @@ myButtons = ['🏆','🔨','☕️','🍔','💡','👋','👏','🙏']
 for buttons in myButtons
 	createButtonLayer(buttons)
 
-for index, eachButton of myButtonArray
-	columns = 4
-	contentWidth = eachButton.width * columns
-	padding = 8
-	combinedWidth = (padding * (columns - 1)) + (contentWidth  )
-	originLeft = Math.floor((Screen.width - combinedWidth) / 2)
-	x = originLeft +  (index * (eachButton.width + padding))
-	eachButton.x = x
-	eachButton.y = 8
-	if index > 3
-		eachButton.y = 16 + eachButton.height
-		eachButton.x -= (combinedWidth + padding) 
+updateButtonLayout = (myButtonArray, myButtons) ->
+	for index, eachButton of myButtonArray
+		columns = 4
+		contentWidth = eachButton.width * columns
+		padding = 8
+		combinedWidth = (padding * (columns - 1)) + (contentWidth  )
+		originLeft = Math.floor((Screen.width - combinedWidth) / 2)
+		x = originLeft +  (index * (eachButton.width + padding))
+		eachButton.x = x
+		eachButton.y = 8
+		if index > 3
+			eachButton.y = 16 + eachButton.height
+			eachButton.x -= (combinedWidth + padding) 
 	
 
-
+updateButtonLayout(myButtonArray, myButtons)
 
 
 
@@ -453,8 +454,11 @@ updateCanvasDimensions = () ->
 	updateTabbyView()
 	if scrollEmptyStateLabel?
 		scrollEmptyStateLabel.midX = myView.midX
+		
+	updateButtonLayout(myButtonArray, myButtons)
+	#update where the buttons are placed
 	
-
+	
 updateCanvasDimensions()
 
 	
@@ -560,7 +564,8 @@ updateUserList = () ->
 				padding: 4
 			if userArray[index] is username
 				cellLabel.color = '#FFFF00'
-
+			cellBadge  = new TextLayer
+				text: '🏆'
 
 #### Loops
 
