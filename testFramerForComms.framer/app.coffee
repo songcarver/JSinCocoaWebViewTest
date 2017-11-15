@@ -1,4 +1,4 @@
-sandbox = true
+sandbox = false
 appVersion = 'Tabby 0.13'
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
@@ -111,8 +111,9 @@ demoDB.onChange "connection", (status) ->
 myButtonArray = []
 
 allButtons = new Layer
+	parent: myView
 	width: Screen.width
-	height: 48
+	height: 40
 	backgroundColor: 'transparent'
 
 
@@ -121,8 +122,8 @@ createButtonLayer = (name, x, y) ->
 		parent: allButtons
 		name: name
 		text: name
-		fontSize: 18
-		padding: 8
+		fontSize: 16
+		padding: 6
 		backgroundColor: '#6D7987'
 		borderRadius: 5
 		
@@ -167,14 +168,14 @@ updateButtonLayout = (myButtonArray, myButtons) ->
 	for index, eachButton of myButtonArray
 		columns = 4
 		contentWidth = eachButton.width * columns
-		padding = 8
+		padding = 4
 		combinedWidth = (padding * (columns - 1)) + (contentWidth  )
 		originLeft = Math.floor((Screen.width - combinedWidth) / 2)
 		x = originLeft +  (index * (eachButton.width + padding))
 		eachButton.x = x
 		eachButton.y = 8
 		if index > 3
-			eachButton.y = 16 + eachButton.height
+			eachButton.y = padding + 8 + eachButton.height
 			eachButton.x -= (combinedWidth + padding) 
 	
 
@@ -269,7 +270,19 @@ scrollEmptyStateLabel.states.connected =
 	
 scrollEmptyStateLabel.sendToBack()
 
-
+banner = new Layer
+	backgroundColor: '#ffff00'
+	height: 40
+	width: Screen.width
+	
+winnerName = new TextLayer
+	width: banner.width
+	padding: 8
+	parent: banner
+	x: 8
+	fontSize: 20
+	color: '#111111'
+	y: Align.center
 	
 banner.maxY = 0
 banner.states.showing =
@@ -538,7 +551,7 @@ updateUserList = () ->
 				height: cellSize
 				x: index * (cellSize + gutter)
 				parent: scroll.content
-				backgroundColor: "#00AAFF"
+				backgroundColor: "#4C545E"
 				hueRotate: index * 10
 			
 			
@@ -558,14 +571,20 @@ updateUserList = () ->
 				x: 0
 				y: 0
 				text: userInitials
-				fontWeight: 800
+				fontWeight: 600
 				fontSize: 11
 				color: 'white'
 				padding: 4
 			if userArray[index] is username
-				cellLabel.color = '#FFFF00'
+				cellLabel.color = '#ffffff'
+				
 			cellBadge  = new TextLayer
+				parent: cell
 				text: '🏆'
+				fontSize: 12
+				y: Align.bottom(-8)
+				x:8 
+				
 
 #### Loops
 
