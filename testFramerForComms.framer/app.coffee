@@ -1,9 +1,10 @@
-sandbox = false
-appVersion = 'Tabby 0.13'
+sandbox = true
+appVersion = 0.12
+appVersionString = ''
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
 
-	
+userLabelArray = []
 
 `function isJson(item) {
     item = typeof item !== "string"
@@ -28,7 +29,7 @@ coverPageText = new TextLayer
 # 	backgroundColor: '#ffff00'
 	width: Screen.width
 	height: 64
-	text: appVersion
+	text: appVersionString
 	fontWeight: 400
 	fontSize: 12
 	letterSpacing: 1.2
@@ -65,7 +66,7 @@ hasHeardFromServer = false
 
 cocoaBridgeIsUp = false
 if sandbox then username = "Keith JS"
-else username = "Mr Default"
+else username = "Keith Testing"
 
 
 
@@ -79,6 +80,7 @@ cellSize = 72
 
 if sandbox
 	#SANDBOX
+	
 	demoDB = new Firebase
 		projectID: "tabbysandbox" # ... Database → first part of URL
 		secret: "TBkoOoRnmPev8TfFtcTJViG3Wb0gFP1IGVXoJ8kT" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
@@ -92,15 +94,14 @@ else
 
 
 demoDB.onChange "connection", (status) ->
-	firebaseStatus = status
+	if status? then firebaseStatus = status
 	# status is either `connected´ or `disconnected´
 	if firebaseStatus is 'disconnected'
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
-		
 	else 
-		updateUserList()
 		scrollEmptyStateLabel.animate("connected")
+
 
 
 #################
@@ -160,6 +161,7 @@ createButtonLayer = (name, x, y) ->
 	
 
 myButtons = ['🏆','🔨','☕️','🍔','💡','👋','👏','🙏']
+#todo add a Zz 😴
 
 for buttons in myButtons
 	createButtonLayer(buttons)
@@ -230,18 +232,20 @@ scroll.scrollVertical = false
 scroll.mouseWheelEnabled = true
 
 #empty state
+funCheckingText = Utils.randomChoice(['checking alleyways', 'meowing for others', 'sniffing internets', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world'])
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	fontSize: 11
 	textAlign: "center"
 	fontWeight: 800
 	color: "#ffffff"
-	text: 'Checking alleyways…'
+	text: funCheckingText
 	padding: 4
 	x: Align.center()
 	y: Align.center()
 	animationOptions: 
 		time: 1
+
 
 scrollEmptyStateLabel.states.alone =
 	text: 'No other cool cats'
@@ -342,7 +346,6 @@ writeUserStatusEvent = (username) ->
 		lastUpdatedKey = userPath + '/lastUpdated'
 		demoDB.put(lastUpdatedKey, timeNow)
 	
-	
 
 writeNewEvent = (username, userEventKey) ->
 	# write a new entry
@@ -360,6 +363,7 @@ writeNewEvent = (username, userEventKey) ->
 		
 		dbString = "/" + timeNow
 		demoDB.put(dbString,Event)
+		
 		demoDB.put('/lastUpdate', timeNow)
 
 
@@ -390,7 +394,22 @@ demoDB.onChange "/lastUpdate", (value) ->
 					eventNotification =  theEvent.eventString
 					if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
 					showNotificationBanner(eventNotification, theEvent.eventKey)
-			
+					
+					
+					
+					#update the users's badge
+					if theEvent.eventKey isnt ''
+						for theLayer in scroll.content.children
+							if theLayer.name is theEvent.username
+								theLayer.children[1].text = theEvent.eventKey
+								theLayer.children[1].opacity = 1
+# 								animationA = new Animation theLayer.children[1],
+# 									opacity: 0
+# 									options:
+# 										time: 60
+# 								
+# 								animationA.start()
+						
 
 
 
@@ -431,20 +450,17 @@ demoDB.onChange "/lastUpdate", (value) ->
 
 
 @updateMouseX = (mouseX,mouseY) ->
-	#print mouseX + ', ' + mouseY
 
 @updateCloudPhotoRotation = (angle) ->
 # 	cloud_png.rotation = angle
-# 	print 'updateCloudPhotoRotation called with '+ angle
 # 	CocoaBridge.photoRotated_(angle)
 
 @flipCloudPhoto = () ->
-# 	print 'flipCloudPhoto called.'
 # 	cloud_png.rotationY +=180
 	
 @updatePhotoText = (text) ->
 # 	photoLabel.text = text
-# 	print 'updatePhotoText called with ' + text
+
 	
 @updateUserName = (myName) ->
 	username = myName
@@ -496,7 +512,6 @@ updateUserList = () ->
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
 		if not isJson(theUsers)
-			print 'I caught a bad JSON!'
 			return
 			
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
@@ -545,7 +560,7 @@ updateUserList = () ->
 		
 		# Loop to create row layers
 		for index in [0...columns]
-		
+			
 			cell = new Layer
 				width:  cellSize
 				height: cellSize
@@ -564,10 +579,12 @@ updateUserList = () ->
 				userInitials += myArray[1].charAt(0)
 			
 			
+			
 			userInitials = userArray[index]
-				
+			cell.name = userInitials
 			cellLabel = new TextLayer
 				parent: cell
+				name: userInitials + ' label'
 				x: 0
 				y: 0
 				text: userInitials
@@ -575,16 +592,53 @@ updateUserList = () ->
 				fontSize: 11
 				color: 'white'
 				padding: 4
+			
+
+			
 			if userArray[index] is username
 				cellLabel.color = '#ffffff'
 				
 			cellBadge  = new TextLayer
 				parent: cell
-				text: '🏆'
+				text: ''
 				fontSize: 12
 				y: Align.bottom(-8)
 				x:8 
+				opacity: 1
 				
+			
+				
+
+showUpdateAvailableBanner = () ->
+	buildOverlay = new Layer
+		height: Screen.height
+		width: Screen.width
+
+	
+	textOverlay = new Layer
+		parent: buildOverlay
+		backgroundColor: '#000000'
+		opacity: 0.8
+		width: buildOverlay.width
+		height: buildOverlay.height
+		
+	text = new TextLayer
+		parent: buildOverlay
+		fontSize: 13
+		fontWeight: 600
+		color: 'white'
+		text: "✨Meow! I smell a fresher version… click here now!"
+		padding: 20
+		textAlign: 'center'
+		x: Align.center
+		y: Align.center
+
+
+	buildOverlay.onClick (event, layer) ->
+		`window.open("https://www.evernote.com/l/AAF3kITp759C2p4zTphJt6qGpjCrS5r3msQ");`
+		buildOverlay.visible = false
+	
+	
 
 #### Loops
 
@@ -615,7 +669,16 @@ motivationOverlay.states.appear =
 # motivationOverlay.animate('appear')
 
 
-		
+checkAppVersion = () ->
+	#here's where we check the database for updates
+	if firebaseStatus is 'connected'
+		demoDB.get "/latestAppVersion", (theEvent) ->
+			if theEvent?
+				if theEvent > appVersion
+					showUpdateAvailableBanner()
+				
+				
+	# 		if then
 
 		
 
@@ -626,19 +689,17 @@ if sandbox
 		if firebaseStatus is 'connected'
 			writeUserStatusEvent(username)
 			writeLastUpdatedEvent()
-			updateUserList()
 else 
 	Utils.interval 15, ->
 		if firebaseStatus is 'connected'
 			writeUserStatusEvent(username)
 			writeLastUpdatedEvent()
-			updateUserList()
 
 
 
 serverReady = () ->
-# 	 'server ready'
-	updateUserList()
+# 	updateUserList()
+	checkAppVersion()
 	
 isFresh = (someTime) ->
 	# if the time handed over is more than 30s old
@@ -647,4 +708,8 @@ isFresh = (someTime) ->
 	else 
 		return true
 
-
+Utils.interval 86400, ->
+	serverReady()
+	
+demoDB.onChange "/users", (status) ->
+	updateUserList()
