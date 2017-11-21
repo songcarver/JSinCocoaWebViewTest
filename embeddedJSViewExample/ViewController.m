@@ -57,8 +57,7 @@
 {
 
 //    Here's the timer method that calls the method that does the work
-    [NSTimer scheduledTimerWithTimeInterval:1.0f
-                                     target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
 }
 
 
@@ -89,42 +88,42 @@
 
 
 
-- (IBAction)flipPhoto:(id)sender {
-    
-    
-    NSString * flipJS = @"flipCloudPhoto();";
-    
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
-    
-    
-}
+//- (IBAction)flipPhoto:(id)sender {
+//
+//
+//    NSString * flipJS = @"flipCloudPhoto();";
+//
+//
+////    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
+//
+//
+//}
 
 
-- (IBAction)updatePhotoText:(NSTextField *)sender {
+//- (IBAction)updatePhotoText:(NSTextField *)sender {
+//
+//
+//    NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
+//
+//
+////    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
+//
+//
+//
+//}
 
 
-    NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
-    
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
-    
-    
-
-}
-
-
-- (IBAction)rotationAction:(NSSlider *)sender {
-
-
-    NSString * rotateJS = [NSString stringWithFormat:@"updateCloudPhotoRotation(%f);",sender.doubleValue];
-    
-    
-    [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
-    
-	
-
-}
+//- (IBAction)rotationAction:(NSSlider *)sender {
+//
+//
+//    NSString * rotateJS = [NSString stringWithFormat:@"updateCloudPhotoRotation(%f);",sender.doubleValue];
+//
+//
+////    [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
+//
+//
+//
+//}
 
 
 
@@ -132,10 +131,7 @@
 
     
         NSLog(@"Editing Delegate NSStringFromSelector(selector):%@",NSStringFromSelector(selector));
-   
-    
-
-    
+	
     
     return YES;
 
@@ -162,26 +158,24 @@
 
 + (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
     NSArray *  allowedSelectorNamesForJavaScript = @[
-                 @"photoFlipped",
-                @"photoRotated:",
 				 @"showMacNotification:"
                  ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
 }
 
-- (void) photoFlipped {
-      NSLog(@"cocoa bridge photoFlipped");
-    
-}
+//- (void) photoFlipped {
+//      NSLog(@"cocoa bridge photoFlipped");
+//
+//}
 
 
-- (void) photoRotated:(NSString *) angle {
-    NSLog(@"cocoa bridge photoRotated");
-    
-    self.slider.doubleValue = angle.doubleValue;
-}
-	
+//- (void) photoRotated:(NSString *) angle {
+//    NSLog(@"cocoa bridge photoRotated");
+//
+////    self.slider.doubleValue = angle.doubleValue;
+//}
+
 - (void) showMacNotification:(NSString *) text {
 		NSLog(@"should show Mac notification");
 	// play notification sound

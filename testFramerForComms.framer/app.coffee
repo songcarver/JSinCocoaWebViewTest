@@ -1,10 +1,12 @@
-sandbox = true
+sandbox = false
 appVersion = 0.12
 appVersionString = ''
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
 
 userLabelArray = []
+
+oldUserString =""
 
 `function isJson(item) {
     item = typeof item !== "string"
@@ -49,6 +51,31 @@ coverPageText.states.done =
 coverPageText.animate('done')
 
 
+
+clone = (obj) ->
+	if not obj? or typeof obj isnt 'object'
+		return obj
+
+	if obj instanceof Date
+		return new Date(obj.getTime()) 
+
+	if obj instanceof RegExp
+		flags = ''
+		flags += 'g' if obj.global?
+		flags += 'i' if obj.ignoreCase?
+		flags += 'm' if obj.multiline?
+		flags += 'y' if obj.sticky?
+		return new RegExp(obj.source, flags) 
+
+	newInstance = new obj.constructor()
+
+	for key of obj
+		newInstance[key] = clone obj[key]
+
+	return newInstance
+  
+  
+  
 #global tracking of the firebase connection. Nicely, it re-connects automatically and seems to know instantly when connection goes out. 
  
 firebaseStatus = ""
@@ -155,7 +182,7 @@ createButtonLayer = (name, x, y) ->
 		
 	@myLayer.onClick (event, layer) ->
 		writeNewEvent(username, name)
-		#todo stick the super cool animation here
+		showMotivationOverlay(name)
 		
 	myButtonArray.push(@myLayer)
 	
@@ -232,7 +259,7 @@ scroll.scrollVertical = false
 scroll.mouseWheelEnabled = true
 
 #empty state
-funCheckingText = Utils.randomChoice(['checking alleyways', 'meowing for others', 'sniffing internets', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world'])
+funCheckingText = Utils.randomChoice(['checking alleyways…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world…'])
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	fontSize: 11
@@ -305,7 +332,7 @@ winnerName.x = 40
 showNotificationBanner = (eventNotification, eventKey) ->
 	winnerName.text = eventNotification
 	animationB.start()
-	#todo make a state for the entire banner, or different banners. this is a hack...
+		#todo make a state for the entire banner, or different banners. this is a hack...
 	
 
 	
@@ -392,8 +419,8 @@ demoDB.onChange "/lastUpdate", (value) ->
 				if theEvent
 					myArray = theEvent.username.split " "
 					eventNotification =  theEvent.eventString
-					if !sandbox then CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
-					showNotificationBanner(eventNotification, theEvent.eventKey)
+					if theEvent.username isnt username #don't show the notification if it's me
+						showNotificationBanner(eventNotification, theEvent.eventKey)
 					
 					
 					
@@ -403,18 +430,22 @@ demoDB.onChange "/lastUpdate", (value) ->
 							if theLayer.name is theEvent.username
 								theLayer.children[1].text = theEvent.eventKey
 								theLayer.children[1].opacity = 1
-# 								animationA = new Animation theLayer.children[1],
-# 									opacity: 0
-# 									options:
-# 										time: 60
-# 								
-# 								animationA.start()
-						
+								fadeOutStateAnimation = new Animation theLayer.children[1],
+									opacity: 0
+									options:
+										time: 1
+								
+								Utils.delay 120, -> 
+									fadeOutStateAnimation.start()
+									#keep it on the screen for 2 minutes before fadeing out
+									 
+					if theEvent.username isnt username #don't show the notification if it's me
+						if !sandbox
+							CocoaBridge.showMacNotification_(eventNotification) #send it to the mac 
 
 
 
-
-@photoAngle = 0
+# @photoAngle = 0
 # 
 # cloud_png.midX = Screen.midX
 # cloud_png.midY = Screen.midY
@@ -426,46 +457,48 @@ demoDB.onChange "/lastUpdate", (value) ->
 # 	min: 0
 # 	max: 360
 # 	x:Align.center
-	
-	
-	
+# 	
+# 	
+# 	
 # angleSlider.knob.backgroundColor = '#555555'
 # angleSlider.knob.draggable.momentum = false
-
-
-
+# 
+# 
+# 
 # photoLabel  = new TextLayer
 # 	fontSize: 22
 # 	parent: cloud_png
 # 	text: 'Cloud'
 # 	padding: 12
-
-# listen for knob motion
+# 
+# # listen for knob motion
 # angleSlider.knob.onMove (event, layer) ->
 # 	@photoAngle = angleSlider.value
 # 	updateCloudPhotoRotation(angleSlider.value)
-
+# 
 # Button.onClick (event, layer) ->
 # 	flipCloudPhoto()
 
 
 @updateMouseX = (mouseX,mouseY) ->
-
-@updateCloudPhotoRotation = (angle) ->
+# 	print mouseX
+	
+	
+# @updateCloudPhotoRotation = (angle) ->
 # 	cloud_png.rotation = angle
 # 	CocoaBridge.photoRotated_(angle)
 
-@flipCloudPhoto = () ->
+# @flipCloudPhoto = () ->
 # 	cloud_png.rotationY +=180
 	
-@updatePhotoText = (text) ->
+# @updatePhotoText = (text) ->
 # 	photoLabel.text = text
 
 	
 @updateUserName = (myName) ->
 	username = myName
 	cocoaBridgeIsUp = true
-	
+	print 'cocoabridge is up'
 	
 	
 
@@ -506,14 +539,40 @@ clearScrollView = () ->
 	for keys, things of scroll.content.children
 		things.destroy()
  
+makeStringFromObject = (theObject) ->
+	theString = ""
+	for theUsername, theUserdata of theObject
+		theString += theUsername
+	return theString
+
+
+
+
 updateUserList = () ->
 	# here we update all the 
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
+		
+		
+		if oldUserString is makeStringFromObject(theUsers)
+			#unchanged userlist
+			return
+		
+		oldUserString = makeStringFromObject(theUsers)
+		
 		if not isJson(theUsers)
 			return
-			
+		
+		#todo make a list  as a simple string of all current users, compare, don't needlessly redrew
+# 		userListAsStringCheck = ""
+# 		for allNames in theUsers
+# 			print allNames[0]
+# 			userListAsStringCheck += allNames.keys[0]
+# 		
+# 		print userListAsStringCheck
+		
+		
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
 		if scroll.content.children.length > 0
 			clearScrollView()
@@ -642,31 +701,120 @@ showUpdateAvailableBanner = () ->
 
 #### Loops
 
+
+
 motivationOverlay = new Layer
 	width: Screen.width
 	height: Screen.height
-	backgroundColor: '#ffff00'
+	backgroundColor: '#EBDA01'
 	opacity: 0
-	y: (-1 * Screen.height)
 
-motivationOverlayText = new TextLayer
-	text: 'You. Are. Rocking. It.'
-	parent: motivationOverlay
-	padding: 40
-	fontSize: 40
-	fontWeight: 800
-	y: Align.center()
+
 	
 	
 motivationOverlay.states.appear = 
 	midX: Screen.midX
 	midY: Screen.midY
-	opacity: 1
+	opacity: 0
 	rotation: 0
 	animationOptions:
 		curve: Spring(tension: 100, friction: 25)
 
-# motivationOverlay.animate('appear')
+#motivationOverlay.animate('appear')
+
+segments1 = new Layer
+	parent: motivationOverlay
+	image: "images/sunburst-yellow.svg"
+	x: Align.center
+	y: Align.center
+	width: Screen.width * 1.5
+	height: Screen.width * 1.5
+	
+
+rotate1 = new Animation segments1,
+	rotation: 8600
+	options:
+		time: 620
+		curve: 'linear'
+
+rotate1.start()
+
+segments2 = new Layer
+	parent: motivationOverlay
+	image: "images/sunburst-yellow.svg"
+	x: Align.center
+	y: Align.center
+	width: Screen.width * 1.5
+	height: Screen.width * 1.5
+	rotation: 90
+	
+	
+rotate2 = new Animation segments1,
+	rotation: 9600
+	options:
+		time: 600
+		curve: 'linear'
+rotate2.start()
+
+
+segments3 = new Layer
+	parent: motivationOverlay
+	image: "images/sunburst-yellow.svg"
+	x: Align.center
+	y: Align.center
+	width: Screen.width * 1.5
+	height: Screen.width * 1.5
+	rotation: -90
+	
+	
+rotate3 = new Animation segments1,
+	rotation: -8800
+	options:
+		time: 520
+		curve: 'linear'
+rotate2.start()
+
+
+motivationOverlayText = new TextLayer
+	text: '🏆'
+	parent: motivationOverlay
+	padding: 40
+	textAlign: 'center'
+	fontSize: 100
+	fontWeight: 800
+	y: - 200
+	x: Align.center()
+	
+keyDropAnimation = new Animation motivationOverlayText,
+	y: Align.center()
+	
+	options:
+		curve: Spring
+
+
+showMotivationOverlay = (key) ->
+
+	keyDropAnimation.restart()	
+
+	rotate1.restart()
+	rotate2.restart()
+	rotate3.restart()
+	keyDropAnimation.restart()
+	
+	if !key? then key = '🏆'
+	motivationOverlayText.text = key
+	showMotivationAnimation = new Animation motivationOverlay,
+		opacity: 1
+	
+	showMotivationAnimation.on Events.AnimationEnd, ->
+		Utils.delay 3, ->
+			hideMotivationAnimation = new Animation motivationOverlay,
+				opacity: 0
+			hideMotivationAnimation.start()
+	
+	showMotivationAnimation.start()
+
+
 
 
 checkAppVersion = () ->
@@ -680,7 +828,7 @@ checkAppVersion = () ->
 				
 	# 		if then
 
-		
+
 
 # update the user with the last known time
 
