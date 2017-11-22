@@ -10,7 +10,7 @@
 
 @property(strong,nonatomic) WebView* webView;
 @property (strong) IBOutlet NSView *webViewContainer;
-//@property (strong) IBOutlet NSSlider *slider;
+@property (strong) IBOutlet NSSlider *slider;
 
 @end
 

@@ -8,7 +8,7 @@ motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLN
 
 userLabelArray = []
 
-oldUserString =""
+oldUserString = ""
 
 `function isJson(item) {
     item = typeof item !== "string"
@@ -28,7 +28,26 @@ oldUserString =""
     return false;
     }`
 
+@updateMouseX = (mouseX,mouseY) ->
+	
+	
+@updateCloudPhotoRotation = (angle) ->
+#	cloud_png.rotation = angle
+#	CocoaBridge.photoRotated_(angle)
 
+@flipCloudPhoto = () ->
+#	cloud_png.rotationY +=180
+	
+@updatePhotoText = (text) ->
+#	photoLabel.text = text
+
+@updateUserName = (myName) ->
+	username = myName
+	cocoaBridgeIsUp = true
+# 	print 'cocoabridge is up'
+	
+	
+	
 
 coverPageText = new TextLayer
 # 	backgroundColor: '#ffff00'
@@ -55,30 +74,8 @@ coverPageText.animate('done')
 
 
 
-#clone = (obj) ->
-#	if not obj? or typeof obj isnt 'object'
-#		return obj
-#
-#	if obj instanceof Date
-#		return new Date(obj.getTime())
-#
-#	if obj instanceof RegExp
-#		flags = ''
-#		flags += 'g' if obj.global?
-#		flags += 'i' if obj.ignoreCase?
-#		flags += 'm' if obj.multiline?
-#		flags += 'y' if obj.sticky?
-#		return new RegExp(obj.source, flags)
-#
-#	newInstance = new obj.constructor()
-#
-#	for key of obj
-#		newInstance[key] = clone obj[key]
-#
-#	return newInstance
-  
-  
-  
+
+
 #global tracking of the firebase connection. Nicely, it re-connects automatically and seems to know instantly when connection goes out. 
  
 firebaseStatus = ""
@@ -96,7 +93,7 @@ hasHeardFromServer = false
 
 cocoaBridgeIsUp = false
 if sandbox then username = "Keith JS"
-else username = "Keith Testing"
+if username  is ""  then username = "Keith Testing"
 
 
 
@@ -148,6 +145,32 @@ allButtons = new Layer
 	backgroundColor: 'transparent'
 
 
+
+showMotivationOverlay = (key) ->
+
+	keyDropAnimation.restart()	
+
+	rotate1.restart()
+	rotate2.restart()
+	rotate3.restart()
+	keyDropAnimation.restart()
+	
+	if !key? then key = '🏆'
+	motivationOverlayText.text = key
+	showMotivationAnimation = new Animation motivationOverlay,
+		opacity: 1
+	
+	showMotivationAnimation.on Events.AnimationEnd, ->
+		Utils.delay 3, ->
+			hideMotivationAnimation = new Animation motivationOverlay,
+				opacity: 0
+			hideMotivationAnimation.start()
+	
+	showMotivationAnimation.start()
+	
+	
+	
+	
 createButtonLayer = (name, x, y) ->
 	@myLayer = new TextLayer
 		parent: allButtons
@@ -244,7 +267,7 @@ tabbyPlaceHolder = new TextLayer
 tabbyView.sendToBack()
 
 
-updateTabbyView()
+updateTabbyView?()
 
 
 # here we set up the scroll view, without any content. That comes in later when database is connected 
@@ -405,6 +428,21 @@ writeLastUpdatedEvent = (thisTime) ->
 		demoDB.put('/lastUpdate', timeNow)
 ###############
 
+updateUsersBadge = (theEvent) ->
+	#update the users's badge
+	if theEvent.eventKey isnt ''
+		for theLayer in scroll.content.children
+			if theLayer.name is theEvent.username
+				theLayer.children[1].text = theEvent.eventKey
+				theLayer.children[1].opacity = 1
+				fadeOutStateAnimation = new Animation theLayer.children[1],
+					opacity: 0
+					options:
+						time: 1
+				
+				Utils.delay 120, -> 
+					fadeOutStateAnimation.start()
+					#keep it on the screen for 2 minutes before fadeing out
 
 demoDB.onChange "/lastUpdate", (value) -> 
 	if firebaseStatus isnt 'connected' then return
@@ -422,34 +460,22 @@ demoDB.onChange "/lastUpdate", (value) ->
 				if theEvent?
 					myArray = theEvent.username.split " "
 					eventNotification =  theEvent.eventString
+					
+					
+					#now we show the local notifications as well as the Mac one
 					if theEvent.username isnt username #don't show the notification if it's me
 						showNotificationBanner(eventNotification, theEvent.eventKey)
-					
-					
-					
-					#update the users's badge
-					if theEvent.eventKey isnt ''
-						for theLayer in scroll.content.children
-							if theLayer.name is theEvent.username
-								theLayer.children[1].text = theEvent.eventKey
-								theLayer.children[1].opacity = 1
-								fadeOutStateAnimation = new Animation theLayer.children[1],
-									opacity: 0
-									options:
-										time: 1
-								
-								Utils.delay 120, -> 
-									fadeOutStateAnimation.start()
-									#keep it on the screen for 2 minutes before fadeing out
-									 
+
 					if theEvent.username isnt username #don't show the notification if it's me
 						if !sandbox
 							CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
 
+					updateUsersBadge(theEvent)
+
+									 
 
 
-
-# @photoAngle = 0
+@photoAngle = 0
 # 
 # cloud_png.midX = Screen.midX
 # cloud_png.midY = Screen.midY
@@ -484,40 +510,21 @@ demoDB.onChange "/lastUpdate", (value) ->
 # 	flipCloudPhoto()
 
 
-@updateMouseX = (mouseX,mouseY) ->
-	print mouseX
-	
-	
-@updateCloudPhotoRotation = (angle) ->
-#	cloud_png.rotation = angle
-#	CocoaBridge.photoRotated_(angle)
 
-@flipCloudPhoto = () ->
-#	cloud_png.rotationY +=180
-	
-@updatePhotoText = (text) ->
-#	photoLabel.text = text
 
-	
-@updateUserName = (myName) ->
-	username = myName
-	cocoaBridgeIsUp = true
-	print 'cocoabridge is up'
-	
-	
 
 # window resizes #########
 
 
 window.onresize = () ->
-	updateCanvasDimensions()
+	updateCanvasDimensions?()
 
 updateCanvasDimensions = () ->
 	myView.width = Canvas.width
 	myView.height = Canvas.height
 	scroll.width = myView.width
 	scroll.y = Align.bottom
-	updateTabbyView()
+	updateTabbyView?()
 	if scrollEmptyStateLabel?
 		scrollEmptyStateLabel.midX = myView.midX
 		
@@ -525,7 +532,7 @@ updateCanvasDimensions = () ->
 	#update where the buttons are placed
 	
 	
-updateCanvasDimensions()
+updateCanvasDimensions?()
 
 	
 
@@ -546,21 +553,25 @@ clearScrollView = () ->
 makeStringFromObject = (theObject) ->
 	theString = ""
 	for theUsername, theUserdata of theObject
-		theString += theUsername
+# 		print theUserdata
+		if isFresh(theUserdata.lastUpdated)
+			theString += theUsername
 	return theString
 
 
 
 
 updateUserList = () ->
+	
 	# here we update all the 
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
-		
+# 		print theUsers
+
 		
 		if oldUserString is makeStringFromObject(theUsers)
-			#unchanged userlist
+
 			return
 		
 		oldUserString = makeStringFromObject(theUsers)
@@ -579,7 +590,7 @@ updateUserList = () ->
 		
 # 		userListArray = JSON.parse(theUsers) # converts JSON to array	
 		if scroll.content.children.length > 0
-			clearScrollView()
+			clearScrollView?()
 			
 		
 		numUsers =  Object.keys(theUsers).length
@@ -776,7 +787,7 @@ rotate3 = new Animation segments1,
 	options:
 		time: 520
 		curve: 'linear'
-rotate2.start()
+rotate3.start()
 
 
 motivationOverlayText = new TextLayer
@@ -796,27 +807,7 @@ keyDropAnimation = new Animation motivationOverlayText,
 		curve: Spring
 
 
-showMotivationOverlay = (key) ->
 
-	keyDropAnimation.restart()	
-
-	rotate1.restart()
-	rotate2.restart()
-	rotate3.restart()
-	keyDropAnimation.restart()
-	
-	if !key? then key = '🏆'
-	motivationOverlayText.text = key
-	showMotivationAnimation = new Animation motivationOverlay,
-		opacity: 1
-	
-	showMotivationAnimation.on Events.AnimationEnd, ->
-		Utils.delay 3, ->
-			hideMotivationAnimation = new Animation motivationOverlay,
-				opacity: 0
-			hideMotivationAnimation.start()
-	
-	showMotivationAnimation.start()
 
 
 
@@ -827,7 +818,7 @@ checkAppVersion = () ->
 		demoDB.get "/latestAppVersion", (theEvent) ->
 			if theEvent?
 				if theEvent > appVersion
-					showUpdateAvailableBanner()
+					showUpdateAvailableBanner?()
 				
 				
 	# 		if then
@@ -840,18 +831,19 @@ if sandbox
 	Utils.interval 5, ->
 		if firebaseStatus is 'connected'
 			writeUserStatusEvent(username)
-			writeLastUpdatedEvent()
+			writeLastUpdatedEvent?()
 else 
 	Utils.interval 15, ->
 		if firebaseStatus is 'connected'
 			writeUserStatusEvent(username)
-			writeLastUpdatedEvent()
+			writeLastUpdatedEvent?()
 
 
 
 serverReady = () ->
 #	updateUserList()
-	checkAppVersion()
+# 	print 'Server is ready'
+	checkAppVersion?()
 	
 isFresh = (someTime) ->
 	# if the time handed over is more than 30s old
@@ -861,7 +853,7 @@ isFresh = (someTime) ->
 		return true
 
 Utils.interval 86400, ->
-	serverReady()
+	serverReady?()
 	
 demoDB.onChange "/users", (status) ->
-	updateUserList()
+	updateUserList?()

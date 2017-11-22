@@ -27,6 +27,8 @@
     
     self.webView.UIDelegate = self;
     self.webView.downloadDelegate = self;
+	
+	
     self.webView.frameLoadDelegate= self;
     self.webView.resourceLoadDelegate = self;
     self.webView.policyDelegate = self;
@@ -34,8 +36,8 @@
     
 //
 ////    TODO Poll mouse
-//    [self methodA];
-	[self methodToSendUserName];
+    [self methodA];
+//	[self methodToSendUserName];
 //
     
     
@@ -44,6 +46,7 @@
 // todo the problem seems to be here. The function never gets called properly
 - (void) methodToSendUserName;
 {
+	NSLog(@"methodToSendUserName was called");
 	NSString *fullUserName = NSFullUserName();
 	NSString * userName = [NSString stringWithFormat:@"updateUserName('%@');",fullUserName];
 	[self.webView stringByEvaluatingJavaScriptFromString:userName];
@@ -57,7 +60,8 @@
 {
 
 //    Here's the timer method that calls the method that does the work
-    [NSTimer scheduledTimerWithTimeInterval:1.0f target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
+    [NSTimer scheduledTimerWithTimeInterval:5.0f
+									 target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
 }
 
 
@@ -78,7 +82,8 @@
 	
 
 
-	
+	[self methodToSendUserName];
+
 	
 }
 
@@ -91,7 +96,7 @@
 - (IBAction)flipPhoto:(id)sender {
 
 
-    NSString * flipJS = @"flipCloudPhoto();";
+//    NSString * flipJS = @"flipCloudPhoto();";
 
 
 //    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
@@ -106,7 +111,7 @@
     NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
 
 
-//    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
+    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
 
 
 
@@ -143,11 +148,11 @@
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame {
     
     
-    NSLog(@"cocoa bridge");
+    NSLog(@"cocoa bridge is loaded");
     
     [[self.webView windowScriptObject] setValue:self forKey:@"CocoaBridge"];
 	
-	[self methodToSendUserName];
+//	[self methodToSendUserName];
 	
     
 
@@ -158,9 +163,10 @@
 
 + (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
     NSArray *  allowedSelectorNamesForJavaScript = @[
-				@"photoRotated:",
-				 @"showMacNotification:"
-                 ];
+													                  @"photoFlipped",
+													 @"photoRotated:",
+													 @"showMacNotification:"
+													 ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
 }
@@ -174,7 +180,7 @@
 - (void) photoRotated:(NSString *) angle {
     NSLog(@"cocoa bridge photoRotated");
 
-//    self.slider.doubleValue = angle.doubleValue;
+    self.slider.doubleValue = angle.doubleValue;
 }
 
 - (void) showMacNotification:(NSString *) text {
