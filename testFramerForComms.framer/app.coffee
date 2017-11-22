@@ -1,6 +1,8 @@
 sandbox = false
 appVersion = 0.12
 appVersionString = ''
+username = ''
+
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
 
@@ -24,7 +26,8 @@ oldUserString =""
     }
 
     return false;
-}`
+    }`
+
 
 
 coverPageText = new TextLayer
@@ -481,18 +484,18 @@ demoDB.onChange "/lastUpdate", (value) ->
 
 
 @updateMouseX = (mouseX,mouseY) ->
-# 	print mouseX
+	print mouseX
 	
 	
-# @updateCloudPhotoRotation = (angle) ->
-# 	cloud_png.rotation = angle
-# 	CocoaBridge.photoRotated_(angle)
+@updateCloudPhotoRotation = (angle) ->
+	cloud_png.rotation = angle
+	CocoaBridge.photoRotated_(angle)
 
-# @flipCloudPhoto = () ->
-# 	cloud_png.rotationY +=180
+@flipCloudPhoto = () ->
+	cloud_png.rotationY +=180
 	
-# @updatePhotoText = (text) ->
-# 	photoLabel.text = text
+@updatePhotoText = (text) ->
+	photoLabel.text = text
 
 	
 @updateUserName = (myName) ->
@@ -846,7 +849,7 @@ else
 
 
 serverReady = () ->
-# 	updateUserList()
+#	updateUserList()
 	checkAppVersion()
 	
 isFresh = (someTime) ->

@@ -34,14 +34,14 @@
     
 //
 ////    TODO Poll mouse
-    [self methodA];
+//    [self methodA];
 	[self methodToSendUserName];
 //
     
     
 }
 
-
+// todo the problem seems to be here. The function never gets called properly
 - (void) methodToSendUserName;
 {
 	NSString *fullUserName = NSFullUserName();
@@ -88,42 +88,42 @@
 
 
 
-//- (IBAction)flipPhoto:(id)sender {
-//
-//
-//    NSString * flipJS = @"flipCloudPhoto();";
-//
-//
-////    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
-//
-//
-//}
+- (IBAction)flipPhoto:(id)sender {
 
 
-//- (IBAction)updatePhotoText:(NSTextField *)sender {
-//
-//
-//    NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
-//
-//
-////    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
-//
-//
-//
-//}
+    NSString * flipJS = @"flipCloudPhoto();";
 
 
-//- (IBAction)rotationAction:(NSSlider *)sender {
-//
-//
-//    NSString * rotateJS = [NSString stringWithFormat:@"updateCloudPhotoRotation(%f);",sender.doubleValue];
-//
-//
-////    [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
-//
-//
-//
-//}
+//    [self.webView stringByEvaluatingJavaScriptFromString:flipJS];
+
+
+}
+
+
+- (IBAction)updatePhotoText:(NSTextField *)sender {
+
+
+    NSString * updateTextJS = [NSString stringWithFormat:@"updatePhotoText('%@');",sender.stringValue];
+
+
+//    [self.webView stringByEvaluatingJavaScriptFromString:updateTextJS];
+
+
+
+}
+
+
+- (IBAction)rotationAction:(NSSlider *)sender {
+
+
+    NSString * rotateJS = [NSString stringWithFormat:@"updateCloudPhotoRotation(%f);",sender.doubleValue];
+
+
+    [self.webView stringByEvaluatingJavaScriptFromString:rotateJS];
+
+
+
+}
 
 
 
@@ -148,7 +148,7 @@
     [[self.webView windowScriptObject] setValue:self forKey:@"CocoaBridge"];
 	
 	[self methodToSendUserName];
-    
+	
     
 
     
@@ -158,23 +158,24 @@
 
 + (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
     NSArray *  allowedSelectorNamesForJavaScript = @[
+				@"photoRotated:",
 				 @"showMacNotification:"
                  ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
 }
 
-//- (void) photoFlipped {
-//      NSLog(@"cocoa bridge photoFlipped");
-//
-//}
+- (void) photoFlipped {
+      NSLog(@"cocoa bridge photoFlipped");
+
+}
 
 
-//- (void) photoRotated:(NSString *) angle {
-//    NSLog(@"cocoa bridge photoRotated");
-//
-////    self.slider.doubleValue = angle.doubleValue;
-//}
+- (void) photoRotated:(NSString *) angle {
+    NSLog(@"cocoa bridge photoRotated");
+
+//    self.slider.doubleValue = angle.doubleValue;
+}
 
 - (void) showMacNotification:(NSString *) text {
 		NSLog(@"should show Mac notification");
