@@ -55,27 +55,27 @@ coverPageText.animate('done')
 
 
 
-clone = (obj) ->
-	if not obj? or typeof obj isnt 'object'
-		return obj
-
-	if obj instanceof Date
-		return new Date(obj.getTime()) 
-
-	if obj instanceof RegExp
-		flags = ''
-		flags += 'g' if obj.global?
-		flags += 'i' if obj.ignoreCase?
-		flags += 'm' if obj.multiline?
-		flags += 'y' if obj.sticky?
-		return new RegExp(obj.source, flags) 
-
-	newInstance = new obj.constructor()
-
-	for key of obj
-		newInstance[key] = clone obj[key]
-
-	return newInstance
+#clone = (obj) ->
+#	if not obj? or typeof obj isnt 'object'
+#		return obj
+#
+#	if obj instanceof Date
+#		return new Date(obj.getTime())
+#
+#	if obj instanceof RegExp
+#		flags = ''
+#		flags += 'g' if obj.global?
+#		flags += 'i' if obj.ignoreCase?
+#		flags += 'm' if obj.multiline?
+#		flags += 'y' if obj.sticky?
+#		return new RegExp(obj.source, flags)
+#
+#	newInstance = new obj.constructor()
+#
+#	for key of obj
+#		newInstance[key] = clone obj[key]
+#
+#	return newInstance
   
   
   
@@ -419,7 +419,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 		if firebaseStatus is 'connected'
 			lastUpdateString = '/' + value
 			demoDB.get lastUpdateString, (theEvent) ->
-				if theEvent
+				if theEvent?
 					myArray = theEvent.username.split " "
 					eventNotification =  theEvent.eventString
 					if theEvent.username isnt username #don't show the notification if it's me
@@ -444,7 +444,8 @@ demoDB.onChange "/lastUpdate", (value) ->
 									 
 					if theEvent.username isnt username #don't show the notification if it's me
 						if !sandbox
-							CocoaBridge.showMacNotification_(eventNotification) #send it to the mac 
+							CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+
 
 
 
@@ -488,14 +489,14 @@ demoDB.onChange "/lastUpdate", (value) ->
 	
 	
 @updateCloudPhotoRotation = (angle) ->
-	cloud_png.rotation = angle
-	CocoaBridge.photoRotated_(angle)
+#	cloud_png.rotation = angle
+#	CocoaBridge.photoRotated_(angle)
 
 @flipCloudPhoto = () ->
-	cloud_png.rotationY +=180
+#	cloud_png.rotationY +=180
 	
 @updatePhotoText = (text) ->
-	photoLabel.text = text
+#	photoLabel.text = text
 
 	
 @updateUserName = (myName) ->
