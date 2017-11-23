@@ -245,7 +245,7 @@ createButtonLayer = (name, x, y) ->
 	myButtonArray.push(@myLayer)
 	
 
-myButtons = ['🏆','🔨','☕️','🍔','👌','👋','👏','🙏']
+myButtons = ['👋','💡','🔨','👍','🙏','🏆','☕️','🍔']
 #todo add a Zz 😴
 
 for buttons in myButtons
