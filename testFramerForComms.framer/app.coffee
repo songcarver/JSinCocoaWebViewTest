@@ -147,9 +147,36 @@ allButtons = new Layer
 
 
 showMotivationOverlay = (key) ->
-
+	
+	maxScreenDimension = 1.5 * Math.max(Screen.width, Screen.height)
+	segments1.width = maxScreenDimension
+	segments1.height = maxScreenDimension
+	
+	segments1.midX = Screen.midX
+	segments1.midY = Screen.midY
+	
+	
+	segments2.width = maxScreenDimension
+	segments2.height = maxScreenDimension
+	
+	segments2.midX = Screen.midX
+	segments2.midY = Screen.midY
+	
+	segments3.width = maxScreenDimension
+	segments3.height = maxScreenDimension
+	
+	segments3.midX = Screen.midX
+	segments3.midY = Screen.midY
+		
 	keyDropAnimation.restart()	
-
+	motivationOverlay.width = Screen.width
+	motivationOverlay.height = Screen.height
+	motivationOverlay.x = 0
+	motivationOverlay.y = 0
+	
+	motivationOverlay.midX = Screen.midX
+	
+	
 	rotate1.restart()
 	rotate2.restart()
 	rotate3.restart()
@@ -157,13 +184,18 @@ showMotivationOverlay = (key) ->
 	
 	if !key? then key = '🏆'
 	motivationOverlayText.text = key
+	
+	motivationOverlayText.midX= Screen.midX
 	showMotivationAnimation = new Animation motivationOverlay,
 		opacity: 1
-	
+		midX: Screen.midX
+		
+		
 	showMotivationAnimation.on Events.AnimationEnd, ->
 		Utils.delay 3, ->
 			hideMotivationAnimation = new Animation motivationOverlay,
 				opacity: 0
+				midX: Screen.midX
 			hideMotivationAnimation.start()
 	
 	showMotivationAnimation.start()
@@ -747,9 +779,9 @@ segments1 = new Layer
 	
 
 rotate1 = new Animation segments1,
-	rotation: 8600
+	rotation: 86
 	options:
-		time: 620
+		time: 6
 		curve: 'linear'
 
 rotate1.start()
@@ -765,9 +797,9 @@ segments2 = new Layer
 	
 	
 rotate2 = new Animation segments1,
-	rotation: 9600
+	rotation: 96
 	options:
-		time: 600
+		time: 6
 		curve: 'linear'
 rotate2.start()
 
@@ -783,9 +815,9 @@ segments3 = new Layer
 	
 	
 rotate3 = new Animation segments1,
-	rotation: -8800
+	rotation: -88
 	options:
-		time: 520
+		time: 5
 		curve: 'linear'
 rotate3.start()
 
