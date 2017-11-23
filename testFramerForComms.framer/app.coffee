@@ -126,6 +126,7 @@ demoDB.onChange "connection", (status) ->
 	if firebaseStatus is 'disconnected'
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
+		oldUserString = "" #reload user list after outage
 	else 
 		scrollEmptyStateLabel.animate("connected")
 
@@ -603,7 +604,6 @@ updateUserList = () ->
 
 		
 		if oldUserString is makeStringFromObject(theUsers)
-
 			return
 		
 		oldUserString = makeStringFromObject(theUsers)
