@@ -32,8 +32,7 @@
     self.webView.frameLoadDelegate= self;
     self.webView.resourceLoadDelegate = self;
     self.webView.policyDelegate = self;
-    
-    
+	
 //
 ////    TODO Poll mouse
     [self methodA];
@@ -196,6 +195,30 @@
 	notification.soundName = @"tabby_bell.aiff";
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+}
+
+- (WebView *)webView:(WebView *)sender createWebViewWithRequest:(NSURLRequest *)request {
+	
+	return [self externalWebView:sender];
+	
+
+
+}
+
+
+- (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
+{
+	[[NSWorkspace sharedWorkspace] openURL:[actionInformation objectForKey:WebActionOriginalURLKey]];
+}
+
+-(WebView*)externalWebView:(WebView*)newWebView
+{
+	WebView *webView = newWebView;
+	
+	[webView setUIDelegate:self];
+	[webView setPolicyDelegate:self];
+	[webView setResourceLoadDelegate:self];
+	return webView;
 }
 
 @end

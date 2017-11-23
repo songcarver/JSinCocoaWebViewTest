@@ -1,5 +1,5 @@
 sandbox = false
-appVersion = 0.13
+appVersion = 0.14
 appVersionString = ''
 username = ''
 
@@ -245,7 +245,7 @@ createButtonLayer = (name, x, y) ->
 	myButtonArray.push(@myLayer)
 	
 
-myButtons = ['🏆','🔨','☕️','🍔','💡','👋','👏','🙏']
+myButtons = ['🏆','🔨','☕️','🍔','👌','👋','👏','🙏']
 #todo add a Zz 😴
 
 for buttons in myButtons
