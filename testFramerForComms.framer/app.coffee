@@ -1,4 +1,4 @@
-sandbox = false
+sandbox = true
 appVersion = 0.15
 appVersionString = ''
 username = ''
@@ -200,9 +200,60 @@ showMotivationOverlay = (key) ->
 			hideMotivationAnimation.start()
 	
 	showMotivationAnimation.start()
+
+
 	
+buttonTips = new TextLayer
+	text: 'Having a win'
+	fontSize: 11
+	fontWeight: 800
+	color: '#eeee00'
+# 	backgroundColor: '111100'
+	padding: 4
+# 	width: Screen.width
+	textAlign: 'center'
+	opacity: 0
+	y: Align.top(84)
+	x: Align.center(-32)
+
+
+
+buttonTips.states.in = 
+	opacity: 1
+	animationOptions: 
+		time: 1
+
 	
+
 	
+buttonTips.states.out = 
+	opacity: 0
+	animationOptions: 
+		time: 0
+
+
+lastTriggered = 0
+
+
+# little function that requires certain number of triggers in a set time else it times out
+triggered = () ->
+	if (Date.now() - lastTriggered) > 2000
+		buttonTips.animate('out')
+	else 
+		Utils.delay 2.1, ->
+			triggered()
+		
+
+allButtons.onMouseOver (event, layer) ->
+	Utils.delay 1, ->
+		buttonTips.animate('in')
+	lastTriggered = Date.now()
+	triggered()
+
+
+# allButtons.onMouseOut (event, layer) ->
+	
+			
 	
 createButtonLayer = (name, x, y) ->
 	@myLayer = new TextLayer
@@ -232,9 +283,14 @@ createButtonLayer = (name, x, y) ->
 	
 	@myLayer.onMouseOver (event, layer) ->
 		layer.stateSwitch('over')
+		buttonTips.text = myButtonHelperText[name]
+		
+		
+		
 		
 	@myLayer.onMouseOut (event, layer) ->
 		layer.stateSwitch('default')
+
 		
 	@myLayer.onMouseUp (event, layer) ->
 		layer.stateSwitch('default')
@@ -247,10 +303,25 @@ createButtonLayer = (name, x, y) ->
 	
 
 myButtons = ['👋','💡','🔨','👍','🙏','🏆','☕️','🍔']
+
+myButtonHelperText = 
+	'👋': 'Hello, Goodbye'
+	'💡': 'Universe, meet idea'
+	'🔨': 'Hammering on something'
+	'👍': 'Purrrfect'
+	'🙏': 'Grateful'
+	'🏆': 'Winning!'
+	'☕️': 'C.o.f.f.e.e.time'
+	'🍔': 'Lunch!'
+	
+	
+	
+	
 #todo add a Zz 😴
 
 for buttons in myButtons
 	createButtonLayer(buttons)
+
 
 updateButtonLayout = (myButtonArray, myButtons) ->
 	for index, eachButton of myButtonArray
@@ -439,8 +510,8 @@ writeNewEvent = (username, userEventKey) ->
 		myArray = username.split " "
 		firstNameWinner = myArray[0]
 		timeNow =  Date.now()
-		if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
-		else eventString =  firstNameWinner + ' is ' + userEventKey
+# 		if userEventKey is 'win' then eventString =  firstNameWinner + ' had a win!' 
+		eventString =  firstNameWinner + ' is ' + userEventKey
 		Event = 
 			username: username
 			eventKey: userEventKey
@@ -889,3 +960,32 @@ Utils.interval 86400, ->
 	
 demoDB.onChange "/users", (status) ->
 	updateUserList?()
+	
+	
+	
+	
+	
+	
+# local storage test 	
+# getStorage = (key) ->
+# 	if (!localStorage.getItem(key)) 
+# 		print 'not there'
+# 	else return localStorage.getItem(key)
+# 
+# 
+# setStorage = (key, value) ->
+# 	localStorage.setItem(key, value)
+# 
+# 
+# 
+# testArray = ['thingo', 'other thingo']
+# 
+# testObject = 
+# 	myThing : 1
+# 	myBetterThing: 42
+# 	
+# theKey = 'tabbyThing'
+# 
+# # setStorage(theKey, JSON.stringify(testObject))
+# theObject = JSON.parse(getStorage('tabbyThing'))
+# print theObject.myBetterThing

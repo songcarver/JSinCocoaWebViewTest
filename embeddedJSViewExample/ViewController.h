@@ -12,6 +12,8 @@
 @property (strong) IBOutlet NSView *webViewContainer;
 @property (strong) IBOutlet NSSlider *slider;
 
+
+
 @end
 
 

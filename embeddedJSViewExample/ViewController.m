@@ -33,6 +33,10 @@
     self.webView.resourceLoadDelegate = self;
     self.webView.policyDelegate = self;
 	
+	
+
+	
+	
 //
 ////    TODO Poll mouse
     [self methodA];
@@ -54,7 +58,6 @@
 
 
 
-
 - (void) methodA;
 {
 
@@ -62,6 +65,13 @@
     [NSTimer scheduledTimerWithTimeInterval:5.0f
 									 target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
 }
+
+
+
+
+
+
+
 
 
 
