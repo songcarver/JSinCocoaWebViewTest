@@ -1,4 +1,4 @@
-sandbox = true
+sandbox = false
 appVersion = 0.15
 appVersionString = ''
 username = ''
@@ -263,20 +263,20 @@ createButtonLayer = (name, x, y) ->
 		name: name
 		text: name
 		fontSize: 16
-		padding: 6
-		backgroundColor: '#6D7987'
-		borderRadius: 5
+		padding: 8
+		backgroundColor: '#444B54'
+		borderRadius: 2
 		
 
 	@myLayer.states.down = 
-		backgroundColor: '#97A6BA'
+		backgroundColor: '#B6C9E0'
 		
 	@myLayer.states.over = 
-		backgroundColor: '#8897A8'
+		backgroundColor: '#91A0B3'
 	
 	@myLayer.states.default = 
 		x: x
-		backgroundColor: '#768291'
+		backgroundColor: '#444B54'
 		
 		
 	
@@ -304,7 +304,7 @@ createButtonLayer = (name, x, y) ->
 	myButtonArray.push(@myLayer)
 	
 
-myButtons = ['👋','🔨','👍','🤔','🏆','☕️','🍔','🚪']
+myButtons = ['👋','🔨','👍','🤔','🏆','☕️','🥗','🚪']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
@@ -313,8 +313,8 @@ myButtonHelperText =
 	'👍': 'Purrrfect'
 	'🏆': 'Winning!'
 	'☕️': 'C.o.f.f.e.e.time'
-	'🍔': 'Lunch!'
-	'🚪': 'Smell you later!'
+	'🥗': 'Lunch!'
+	'🚪': 'Smell you later.'
 	
 	
 	
@@ -329,7 +329,7 @@ updateButtonLayout = (myButtonArray, myButtons) ->
 	for index, eachButton of myButtonArray
 		columns = 4
 		contentWidth = eachButton.width * columns
-		padding = 4
+		padding = 2
 		combinedWidth = (padding * (columns - 1)) + (contentWidth  )
 		originLeft = Math.floor((Screen.width - combinedWidth) / 2)
 		x = originLeft +  (index * (eachButton.width + padding))
@@ -907,10 +907,10 @@ segments2 = new Layer
 	rotation: 90
 	
 	
-rotate2 = new Animation segments1,
-	rotation: 96
+rotate2 = new Animation segments2,
+	rotation: 120
 	options:
-		time: 6
+		time: 4
 		curve: 'linear'
 rotate2.start()
 
@@ -925,8 +925,8 @@ segments3 = new Layer
 	rotation: -90
 	
 	
-rotate3 = new Animation segments1,
-	rotation: -88
+rotate3 = new Animation segments3,
+	rotation: -70
 	options:
 		time: 5
 		curve: 'linear'
