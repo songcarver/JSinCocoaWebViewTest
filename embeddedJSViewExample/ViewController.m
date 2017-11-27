@@ -34,7 +34,6 @@
     self.webView.policyDelegate = self;
 	
 	
-
 	
 	
 //
@@ -230,6 +229,11 @@
 	[webView setResourceLoadDelegate:self];
 	return webView;
 }
+
+
+
+
+
 
 @end
 

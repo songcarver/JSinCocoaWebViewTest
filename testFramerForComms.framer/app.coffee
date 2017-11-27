@@ -3,6 +3,10 @@ appVersion = 0.15
 appVersionString = ''
 username = ''
 
+thisUser =
+	isInOffice : false
+	
+	
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
 
@@ -302,17 +306,17 @@ createButtonLayer = (name, x, y) ->
 	myButtonArray.push(@myLayer)
 	
 
-myButtons = ['👋','💡','🔨','👍','🙏','🏆','☕️','🍔']
+myButtons = ['👋','🔨','👍','🤔','🏆','☕️','🍔','🚪']
 
 myButtonHelperText = 
-	'👋': 'Hello, Goodbye'
-	'💡': 'Universe, meet idea'
+	'👋': 'Hi!'
+	'🤔': 'Need some feedback/help'
 	'🔨': 'Hammering on something'
 	'👍': 'Purrrfect'
-	'🙏': 'Grateful'
 	'🏆': 'Winning!'
 	'☕️': 'C.o.f.f.e.e.time'
 	'🍔': 'Lunch!'
+	'🚪': 'Smell you later!'
 	
 	
 	
@@ -394,7 +398,8 @@ scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	fontSize: 11
 	textAlign: "center"
-	fontWeight: 800
+	textTransform: 'uppercase'
+	fontWeight: 600
 	color: "#ffffff"
 	text: funCheckingText
 	padding: 4
@@ -532,9 +537,42 @@ writeLastUpdatedEvent = (thisTime) ->
 		demoDB.put('/lastUpdate', timeNow)
 ###############
 
+
+####### isInTheOffice stuff
+
+checkUserIPAddress = () ->
+
+	`function httpGetAsync(theUrl, callback)
+	{
+	    var xmlHttp = new XMLHttpRequest();
+	    xmlHttp.onreadystatechange = function() { 
+	        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+	            callback(xmlHttp.responseText);
+	    }
+	    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+	    xmlHttp.send(null);
+	}`
+	
+	myFunction = (response) ->
+		if JSON.parse(response)['ip'] is "61.68.35.10"
+			thisUser.isInOffice = true
+		else thisUser.isInOffice = false
+		
+	httpGetAsync('//ipinfo.io/json', myFunction)
+
+
+
+
+
+
+
+
+
+
+############ Badge stuff
 updateUsersBadge = (theEvent) ->
 	#update the users's badge
-	if theEvent.eventKey isnt ''
+	if theEvent.eventKey isnt '' #if the event isnt blank
 		for theLayer in scroll.content.children
 			if theLayer.name is theEvent.username
 				theLayer.children[1].text = theEvent.eventKey
@@ -577,6 +615,10 @@ demoDB.onChange "/lastUpdate", (value) ->
 					updateUsersBadge(theEvent)
 
 									 
+
+
+
+
 
 
 @photoAngle = 0
