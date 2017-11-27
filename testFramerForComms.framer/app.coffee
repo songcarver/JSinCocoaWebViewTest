@@ -254,8 +254,6 @@ allButtons.onMouseOver (event, layer) ->
 	lastTriggered = Date.now()
 	triggered()
 
-
-# allButtons.onMouseOut (event, layer) ->
 	
 			
 	
@@ -274,11 +272,11 @@ createButtonLayer = (name, x, y) ->
 		backgroundColor: '#97A6BA'
 		
 	@myLayer.states.over = 
-		backgroundColor: '#768291'
+		backgroundColor: '#8897A8'
 	
 	@myLayer.states.default = 
 		x: x
-		backgroundColor: '#6D7987'
+		backgroundColor: '#768291'
 		
 		
 	
@@ -582,9 +580,9 @@ updateUsersBadge = (theEvent) ->
 					options:
 						time: 1
 				
-				Utils.delay 120, -> 
+				Utils.delay 210, -> 
 					fadeOutStateAnimation.start()
-					#keep it on the screen for 2 minutes before fadeing out
+					#keep it on the screen for 3.5 minutes before fadeing out
 
 demoDB.onChange "/lastUpdate", (value) -> 
 	if firebaseStatus isnt 'connected' then return
