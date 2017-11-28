@@ -1,5 +1,5 @@
-sandbox = true
-appVersion = 0.15
+sandbox = false
+appVersion = 0.16
 appVersionString = ''
 username = ''
 
@@ -96,7 +96,7 @@ hasHeardFromServer = false
 #toDo - Make a mode here which fakes CocoaBridge
 
 cocoaBridgeIsUp = false
-if sandbox then username = "Keith JS"
+if sandbox then username = "Xiao Sing"
 if username  is ""  then username = "Keith Testing"
 
 
@@ -399,10 +399,9 @@ funCheckingText = Utils.randomChoice(['checking alleyways…', 'meowing for othe
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	backgroundColor: 'transparent'
-	fontSize: 10
+	fontSize: 11
 	textAlign: "center"
-	textTransform: 'uppercase'
-	fontWeight: 600
+	fontWeight: 400
 	letterSpacing: 1
 	color: "#ffffff"
 	text: funCheckingText
