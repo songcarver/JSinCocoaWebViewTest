@@ -316,7 +316,7 @@ myButtonHelperText =
 	'🏆': 'Winning!'
 	'☕️': 'C.o.f.f.e.e.'
 	'🥗': 'Lunch!'
-	'🚪': 'Smell you later.'
+	'🚪': 'Heading out the door.'
 	
 	
 	
