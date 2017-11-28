@@ -1,4 +1,4 @@
-sandbox = false
+sandbox = true
 appVersion = 0.15
 appVersionString = ''
 username = ''
@@ -146,8 +146,9 @@ myButtonArray = []
 allButtons = new Layer
 	parent: myView
 	width: Screen.width
-	height: 40
+	height: 100
 	backgroundColor: 'transparent'
+	clip: true
 
 
 
@@ -266,13 +267,14 @@ createButtonLayer = (name, x, y) ->
 		padding: 8
 		backgroundColor: '#444B54'
 		borderRadius: 2
+		borderColor: 'white' 
 		
 
 	@myLayer.states.down = 
 		backgroundColor: '#B6C9E0'
 		
 	@myLayer.states.over = 
-		backgroundColor: '#91A0B3'
+		backgroundColor: '#333A43'
 	
 	@myLayer.states.default = 
 		x: x
@@ -308,11 +310,11 @@ myButtons = ['👋','🔨','👍','🤔','🏆','☕️','🥗','🚪']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
-	'🤔': 'Need some feedback/help'
+	'🤔': 'Little feedback/help?'
 	'🔨': 'Hammering on something'
 	'👍': 'Purrrfect'
 	'🏆': 'Winning!'
-	'☕️': 'C.o.f.f.e.e.time'
+	'☕️': 'C.o.f.f.e.e.'
 	'🥗': 'Lunch!'
 	'🚪': 'Smell you later.'
 	
@@ -360,7 +362,7 @@ updateTabbyView = () ->
 	
 tabbyView = new Layer
 	parent: myView
-	backgroundColor: '#333333'
+	backgroundColor: '#444B54'
 	opacity: 0
 
 tabbyPlaceHolder = new TextLayer
@@ -384,20 +386,24 @@ scroll = new ScrollComponent
 	height: cellSize
 	width: Screen.width
 	y: Align.bottom
-	backgroundColor: "#000000"
+	backgroundColor: "#444B54"
 scroll.scrollHorizontal = true
 scroll.scrollVertical = false
 
 scroll.mouseWheelEnabled = true
 
+scroll.content.backgroundColor = 'transparent'
 #empty state
 funCheckingText = Utils.randomChoice(['checking alleyways…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world…'])
+
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
-	fontSize: 11
+	backgroundColor: 'transparent'
+	fontSize: 10
 	textAlign: "center"
 	textTransform: 'uppercase'
 	fontWeight: 600
+	letterSpacing: 1
 	color: "#ffffff"
 	text: funCheckingText
 	padding: 4
@@ -411,7 +417,6 @@ scrollEmptyStateLabel.states.alone =
 	text: 'No other cool cats'
 	opacity: 1
 	textAlign: "center"
-
 	animationOptions:
 		time: 1
 	
@@ -419,7 +424,6 @@ scrollEmptyStateLabel.states.disconnected =
 	text: 'Offline mode'
 	opacity: 1
 	textAlign: "center"
-
 	animationOptions:
 		time: 1
 
@@ -427,7 +431,6 @@ scrollEmptyStateLabel.states.connected =
 	text: ''
 	opacity: 0
 	textAlign: "center"
-
 	animationOptions:
 		time: 1
 	
@@ -787,6 +790,56 @@ updateUserList = () ->
 				hueRotate: index * 10
 			
 			
+			# todo code to change daylight / sunglight cell brightness
+			testView = new Layer
+				width: 64
+				height: 64
+				backgroundColor: '#333333'
+				clip: true
+				visible: false
+				
+			now = new Date()
+			timeString = now.toTimeString()
+			
+			localTimeLabel = new TextLayer
+				parent: testView
+				width: parent.width
+				height: parent.height
+				text: timeString
+				fontSize: 9
+				fontWeight: 800
+				color: 'white'
+				textAlign: 'center'
+				y: Align.center
+				x: Align.center()
+				
+				
+			
+			midnightBlue = new Color ('#1B0165')
+			middayBlue = new Color ('#0F96E9')
+			
+			convertToSunlightFactor= (theDate) ->
+				# take 24 hour clock and make rough 0..1 for brightness
+				if not theDate?
+					myHours = 1
+					myMinutes = 0
+				
+				else
+					myHours = theDate.getHours() 
+					myMinutes = theDate.getMinutes()
+			
+				
+				dayFactor = myHours 
+				dayFactor = (myHours + (myMinutes / 60 ))/ 24
+				print 'dayFactor ' + dayFactor
+				if dayFactor < 0.5 then sunlightFactor = dayFactor * 2
+				else sunlightFactor = 1 - (2 * (dayFactor - 0.5))
+				return sunlightFactor
+				
+
+
+
+			
 			# this makes name into initials
 			tempUserName = userArray[index]
 			myArray = tempUserName.split " "
@@ -860,7 +913,7 @@ showUpdateAvailableBanner = () ->
 #### Loops
 
 
-
+# Motivation Overlay Setup
 motivationOverlay = new Layer
 	width: Screen.width
 	height: Screen.height
@@ -942,14 +995,13 @@ motivationOverlayText = new TextLayer
 	fontWeight: 800
 	y: - 200
 	x: Align.center()
+	backgroundColor: 'transparent'
 	
 keyDropAnimation = new Animation motivationOverlayText,
 	y: Align.center()
 	
 	options:
 		curve: Spring
-
-
 
 
 
