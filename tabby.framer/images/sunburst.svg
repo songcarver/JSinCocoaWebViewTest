@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256px" height="256px" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>sunburst</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <radialGradient cx="0%" cy="100%" fx="0%" fy="100%" r="115.066108%" id="radialGradient-1">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="0%" cy="0%" fx="0%" fy="0%" r="199.365234%" gradientTransform="translate(0.000000,0.000000),scale(0.500000,1.000000),rotate(90.000000),translate(-0.000000,-0.000000)" id="radialGradient-2">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="0%" cy="0%" fx="0%" fy="0%" r="100%" gradientTransform="translate(0.000000,0.000000),scale(1.000000,0.500000),rotate(90.000000),translate(-0.000000,-0.000000)" id="radialGradient-3">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="100%" cy="0%" fx="100%" fy="0%" r="115.217636%" id="radialGradient-4">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="100%" cy="100%" fx="100%" fy="100%" r="198.76709%" gradientTransform="translate(1.000000,1.000000),scale(0.500000,1.000000),rotate(90.000000),translate(-1.000000,-1.000000)" id="radialGradient-5">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+        <radialGradient cx="100%" cy="100%" fx="100%" fy="100%" r="100%" gradientTransform="translate(1.000000,1.000000),scale(1.000000,0.500000),rotate(-90.000000),translate(-1.000000,-1.000000)" id="radialGradient-6">
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" offset="100%"></stop>
+        </radialGradient>
+    </defs>
+    <g id="sunbursts" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="sunburst">
+            <g id="Segments-circle">
+                <path d="M192.086604,17 C211.572936,28.2451962 227.754804,44.4270636 239,63.9133965 L128,128 C128,128 128,128 128,128 L192.086604,17 Z" id="Segment-2" fill="url(#radialGradient-1)"></path>
+                <path d="M256,128 C256,150.47 250.08,172.54 238.85,192 L128,128 C128,128 128,128 128,128 L256,128 Z" id="Segment-4" fill="url(#radialGradient-2)"></path>
+                <path d="M192,238.85 C172.54,250.08 150.47,256 128,256 L128,128 C128,128 128,128 128,128 L192,238.85 Z" id="Segment-6" fill="url(#radialGradient-3)"></path>
+                <path d="M63.9133965,239 C44.4270636,227.754804 28.2451962,211.572936 17,192.086604 L128,128 C128,128 128,128 128,128 L63.9133965,239 Z" id="Segment-8" fill="url(#radialGradient-4)"></path>
+                <path d="M0,128 C0,105.53 5.92,83.46 17.15,64 L128,128 C128,128 128,128 128,128 L0,128 Z" id="Segment-10" fill="url(#radialGradient-5)"></path>
+                <path d="M64,17.15 C83.46,5.92 105.53,0 128,0 L128,128 C128,128 128,128 128,128 L64,17.15 Z" id="Segment-12" fill="url(#radialGradient-6)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

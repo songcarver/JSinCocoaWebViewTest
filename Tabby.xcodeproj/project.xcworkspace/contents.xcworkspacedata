@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/keithlang/Google Drive/Tabby Project/Xcode Projects/JSInWebView-fuckyeah/JSinCocoaWebViewTest/Tabby.xcodeproj">
+      location = "self:../Tabby">
    </FileRef>
 </Workspace>
