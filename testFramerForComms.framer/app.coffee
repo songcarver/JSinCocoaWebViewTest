@@ -1,4 +1,4 @@
-sandbox = false
+sandbox = true
 appVersion = 0.16
 appVersionString = ''
 username = ''
@@ -96,7 +96,7 @@ hasHeardFromServer = false
 #toDo - Make a mode here which fakes CocoaBridge
 
 cocoaBridgeIsUp = false
-if sandbox then username = "Xiao Sing"
+if sandbox then username = "Elon Musky"
 if username  is ""  then username = "Keith Testing"
 
 
