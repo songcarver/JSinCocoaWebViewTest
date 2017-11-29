@@ -16,7 +16,6 @@
 		2B99EAE01FA83B6E00E33113 /* embeddedJSViewExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */; };
 		2B99EAEB1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */; };
 		2BB028F91FB15966005FE8FB /* tabby.framer in Resources */ = {isa = PBXBuildFile; fileRef = 2BB028F81FB15965005FE8FB /* tabby.framer */; };
-		2BCDBF5B1FB2E15200B323B1 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5A1FB2E15100B323B1 /* Info.plist */; };
 		2BCDBF5D1FB4391700B323B1 /* anvil.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5C1FB4391600B323B1 /* anvil.aiff */; };
 /* End PBXBuildFile section */
 
@@ -257,7 +256,6 @@
 				2B99EAD21FA83B6E00E33113 /* Main.storyboard in Resources */,
 				2BCDBF5D1FB4391700B323B1 /* anvil.aiff in Resources */,
 				2BB028F91FB15966005FE8FB /* tabby.framer in Resources */,
-				2BCDBF5B1FB2E15200B323B1 /* Info.plist in Resources */,
 				2B565B121FB18E2F00814DE1 /* tabby_bell.aiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
