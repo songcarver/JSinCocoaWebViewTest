@@ -95,6 +95,7 @@
 				2BCDBF5C1FB4391600B323B1 /* anvil.aiff */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		2B99EAC61FA83B6E00E33113 /* Products */ = {
 			isa = PBXGroup;
@@ -227,7 +228,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "TabbyApp" */;
+			buildConfigurationList = 2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "Tabby" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -535,7 +536,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "TabbyApp" */ = {
+		2B99EAC01FA83B6E00E33113 /* Build configuration list for PBXProject "Tabby" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2B99EAED1FA83B6E00E33113 /* Debug */,
