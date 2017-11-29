@@ -1,11 +1,10 @@
-sandbox = true
+sandbox = false
 appVersion = 0.16
 appVersionString = ''
 username = ''
 
 thisUser =
 	isInOffice : false
-	
 	
 
 motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
