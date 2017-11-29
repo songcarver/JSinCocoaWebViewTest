@@ -87,9 +87,9 @@
 		2B99EABC1FA83B6E00E33113 = {
 			isa = PBXGroup;
 			children = (
-				2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */,
-				2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */,
-				2B99EAE91FA83B6E00E33113 /* embeddedJSViewExampleUITests */,
+				2B99EAC71FA83B6E00E33113 /* Tabby */,
+				2B99EADE1FA83B6E00E33113 /* TabbyTests */,
+				2B99EAE91FA83B6E00E33113 /* TabbyUITests */,
 				2B99EAC61FA83B6E00E33113 /* Products */,
 				2B565B111FB18E2E00814DE1 /* tabby_bell.aiff */,
 				2BCDBF5C1FB4391600B323B1 /* anvil.aiff */,
@@ -107,7 +107,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2B99EAC71FA83B6E00E33113 /* embeddedJSViewExample */ = {
+		2B99EAC71FA83B6E00E33113 /* Tabby */ = {
 			isa = PBXGroup;
 			children = (
 				2BCDBF5A1FB2E15100B323B1 /* Info.plist */,
@@ -121,25 +121,25 @@
 				2B99EAD41FA83B6E00E33113 /* main.m */,
 				2B99EAD61FA83B6E00E33113 /* embeddedJSViewExample.entitlements */,
 			);
-			path = embeddedJSViewExample;
+			path = Tabby;
 			sourceTree = "<group>";
 		};
-		2B99EADE1FA83B6E00E33113 /* embeddedJSViewExampleTests */ = {
+		2B99EADE1FA83B6E00E33113 /* TabbyTests */ = {
 			isa = PBXGroup;
 			children = (
 				2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */,
 				2B99EAE11FA83B6E00E33113 /* Info.plist */,
 			);
-			path = embeddedJSViewExampleTests;
+			path = TabbyTests;
 			sourceTree = "<group>";
 		};
-		2B99EAE91FA83B6E00E33113 /* embeddedJSViewExampleUITests */ = {
+		2B99EAE91FA83B6E00E33113 /* TabbyUITests */ = {
 			isa = PBXGroup;
 			children = (
 				2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */,
 				2B99EAEC1FA83B6E00E33113 /* Info.plist */,
 			);
-			path = embeddedJSViewExampleUITests;
+			path = TabbyUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -486,7 +486,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabbyApp.app/Contents/MacOS/TabbyApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tabby.temp_caseinsensitive_renameApp.app/Contents/MacOS/Tabby.temp_caseinsensitive_renameApp";
 			};
 			name = Debug;
 		};
@@ -501,7 +501,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.keith-lang.embeddedJSViewExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TabbyApp.app/Contents/MacOS/TabbyApp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tabby.temp_caseinsensitive_renameApp.app/Contents/MacOS/Tabby.temp_caseinsensitive_renameApp";
 			};
 			name = Release;
 		};
