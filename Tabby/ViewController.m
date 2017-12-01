@@ -173,7 +173,8 @@
     NSArray *  allowedSelectorNamesForJavaScript = @[
 													                  @"photoFlipped",
 													 @"photoRotated:",
-													 @"showMacNotification:"
+													 @"showMacNotification:",
+													 @"writeUDID:"
 													 ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
@@ -191,6 +192,9 @@
     self.slider.doubleValue = angle.doubleValue;
 }
 
+
+
+
 - (void) showMacNotification:(NSString *) text {
 		NSLog(@"should show Mac notification");
 	// play notification sound
@@ -206,6 +210,8 @@
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }
 
+
+
 - (WebView *)webView:(WebView *)sender createWebViewWithRequest:(NSURLRequest *)request {
 	
 	return [self externalWebView:sender];
@@ -213,6 +219,17 @@
 
 
 }
+
+
+
+- (void) writeUDID: (NSString *) userID {
+	  NSString *valueToSave = userID;
+	  [[NSUserDefaults standardUserDefaults] setObject:valueToSave forKey:@"userID"];
+	  [[NSUserDefaults standardUserDefaults] synchronize];
+		  
+}
+
+
 
 
 - (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener

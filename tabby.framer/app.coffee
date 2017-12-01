@@ -1,7 +1,10 @@
+
 sandbox = false
 appVersion = 0.16
 appVersionString = ''
 username = ''
+cocoaBridgeIsUp = false
+
 
 thisUser =
 	isInOffice : false
@@ -47,7 +50,6 @@ oldUserString = ""
 @updateUserName = (myName) ->
 	username = myName
 	cocoaBridgeIsUp = true
-# 	print 'cocoabridge is up'
 	
 	
 	
@@ -94,7 +96,7 @@ hasHeardFromServer = false
 
 #toDo - Make a mode here which fakes CocoaBridge
 
-cocoaBridgeIsUp = false
+
 if sandbox then username = "Elon Musky"
 if username  is ""  then username = "Keith Testing"
 
@@ -152,7 +154,8 @@ allButtons = new Layer
 
 
 showMotivationOverlay = (key) ->
-	
+	motivationOverlay.backgroundColor = '#D1C300'
+# 	motivationOverlay.opacity = 1
 	maxScreenDimension = 1.5 * Math.max(Screen.width, Screen.height)
 	segments1.width = maxScreenDimension
 	segments1.height = maxScreenDimension
@@ -189,7 +192,7 @@ showMotivationOverlay = (key) ->
 	
 	if !key? then key = '🏆'
 	motivationOverlayText.text = key
-	
+
 	motivationOverlayText.midX= Screen.midX
 	showMotivationAnimation = new Animation motivationOverlay,
 		opacity: 1
@@ -299,25 +302,34 @@ createButtonLayer = (name, x, y) ->
 		layer.stateSwitch('default')
 		
 	@myLayer.onClick (event, layer) ->
+		motivationOverlay.backgroundColor = myButtonColor[name]
 		writeNewEvent(username, name)
 		showMotivationOverlay(name)
 		
 	myButtonArray.push(@myLayer)
 	
 
-myButtons = ['👋','🔨','👍','🤔','🏆','☕️','🥗','🚪']
+myButtons = ['👋','🔨','🤔','🏆','☕️','🥗','🚪','🚌']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
 	'🤔': 'Little feedback/help?'
 	'🔨': 'Hammering on something'
-	'👍': 'Purrrfect'
+	'🚌': 'Travelling'
 	'🏆': 'Winning!'
-	'☕️': 'C.o.f.f.e.e.'
-	'🥗': 'Lunch!'
+	'☕️': 'Short break'
+	'🥗': 'Long break'
 	'🚪': 'Heading out the door.'
 	
-	
+myButtonColor = 
+	'👋': '#B37BA4'
+	'🤔': '#6EEB83'
+	'🔨': '#A5CCD1'
+	'🚌': '#64A6BD'
+	'🏆': '#ffff00'
+	'☕️': '#FF206E'
+	'🥗': '#EE6055'
+	'🚪': '#161925'
 	
 	
 #todo add a Zz 😴
@@ -584,6 +596,8 @@ updateUsersBadge = (theEvent) ->
 				Utils.delay 210, -> 
 					fadeOutStateAnimation.start()
 					#keep it on the screen for 3.5 minutes before fadeing out
+					#todo consider making the times dynaic to the event. For example,
+					# 9 minute coffee
 
 demoDB.onChange "/lastUpdate", (value) -> 
 	if firebaseStatus isnt 'connected' then return
@@ -617,8 +631,10 @@ demoDB.onChange "/lastUpdate", (value) ->
 
 
 
-
-
+testSendingToUserID = (userID) ->
+	CocoaBridge.writeUDID_(userID) #send it to the mac
+		
+		
 
 @photoAngle = 0
 # 
@@ -698,7 +714,6 @@ clearScrollView = () ->
 makeStringFromObject = (theObject) ->
 	theString = ""
 	for theUsername, theUserdata of theObject
-# 		print theUserdata
 		if isFresh(theUserdata.lastUpdated)
 			theString += theUsername
 	return theString
@@ -712,7 +727,6 @@ updateUserList = () ->
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
-# 		print theUsers
 
 		
 		if oldUserString is makeStringFromObject(theUsers)
@@ -915,7 +929,7 @@ showUpdateAvailableBanner = () ->
 motivationOverlay = new Layer
 	width: Screen.width
 	height: Screen.height
-	backgroundColor: '#EBDA01'
+	backgroundColor: '#D1C300'
 	opacity: 0
 
 
@@ -926,19 +940,25 @@ motivationOverlay.states.appear =
 	midY: Screen.midY
 	opacity: 0
 	rotation: 0
-	animationOptions:
-		curve: Spring(tension: 100, friction: 25)
+# 	animationOptions:
+# 		time: 0
+# 		curve: Spring(tension: 100, friction: 25)
 
 #motivationOverlay.animate('appear')
 
+segmentBlending = 'screen'
+segmentOpacity =1
+segmentFile = 'images/sunburst-yellow.png'
+
 segments1 = new Layer
 	parent: motivationOverlay
-	image: "images/sunburst-yellow.svg"
+	image: segmentFile
 	x: Align.center
 	y: Align.center
 	width: Screen.width * 1.5
 	height: Screen.width * 1.5
-	
+	blending: segmentBlending
+	opacity: segmentOpacity
 
 rotate1 = new Animation segments1,
 	rotation: 86
@@ -950,13 +970,14 @@ rotate1.start()
 
 segments2 = new Layer
 	parent: motivationOverlay
-	image: "images/sunburst-yellow.svg"
+	image: segmentFile
 	x: Align.center
 	y: Align.center
 	width: Screen.width * 1.5
 	height: Screen.width * 1.5
 	rotation: 90
-	
+	blending: segmentBlending
+	opacity: segmentOpacity
 	
 rotate2 = new Animation segments2,
 	rotation: 120
@@ -968,12 +989,14 @@ rotate2.start()
 
 segments3 = new Layer
 	parent: motivationOverlay
-	image: "images/sunburst-yellow.svg"
+	image: segmentFile
 	x: Align.center
 	y: Align.center
 	width: Screen.width * 1.5
 	height: Screen.width * 1.5
 	rotation: -90
+	blending: segmentBlending
+	opacity: segmentOpacity
 	
 	
 rotate3 = new Animation segments3,
@@ -1079,3 +1102,8 @@ demoDB.onChange "/users", (status) ->
 # # setStorage(theKey, JSON.stringify(testObject))
 # theObject = JSON.parse(getStorage('tabbyThing'))
 # print theObject.myBetterThing
+
+
+Utils.interval 3, ->
+	if cocoaBridgeIsUp 
+		testSendingToUserID("banana")
