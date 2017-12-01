@@ -50,7 +50,12 @@
 {
 	NSLog(@"methodToSendUserName was called");
 	NSString *fullUserName = NSFullUserName();
-	NSString * userName = [NSString stringWithFormat:@"updateUserName('%@');",fullUserName];
+	
+	NSString *userIDString = [[NSUserDefaults standardUserDefaults]
+							  stringForKey:@"userID"];
+	
+	
+	NSString * userName = [NSString stringWithFormat:@"updateUserName('%@', '%@');",fullUserName,userIDString];
 	[self.webView stringByEvaluatingJavaScriptFromString:userName];
 }
 
@@ -88,8 +93,11 @@
 	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",mouseLoc.x, mouseLoc.y];
 	[self.webView stringByEvaluatingJavaScriptFromString:mouseX];
 	
+	
+	
 
-
+	
+	
 	[self methodToSendUserName];
 
 	

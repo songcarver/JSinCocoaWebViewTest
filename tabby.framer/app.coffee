@@ -47,7 +47,9 @@ oldUserString = ""
 @updatePhotoText = (text) ->
 #	photoLabel.text = text
 
-@updateUserName = (myName) ->
+@updateUserName = (myName, userID) ->
+	if userID?
+		print 'user ID' + userID
 	username = myName
 	cocoaBridgeIsUp = true
 	
@@ -149,7 +151,7 @@ allButtons = new Layer
 	width: Screen.width
 	height: 100
 	backgroundColor: 'transparent'
-	clip: true
+	clip: false
 
 
 
@@ -631,7 +633,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 
 
 
-testSendingToUserID = (userID) ->
+updateMacUserID = (userID) ->
 	CocoaBridge.writeUDID_(userID) #send it to the mac
 		
 		
@@ -736,17 +738,7 @@ updateUserList = () ->
 		
 		if not isJson(theUsers)
 			return
-		
-		#todo make a list  as a simple string of all current users, compare, don't needlessly redrew
-# 		userListAsStringCheck = ""
-# 		for allNames in theUsers
-# 			print allNames[0]
-# 			userListAsStringCheck += allNames.keys[0]
-# 		
-# 		print userListAsStringCheck
-		
-		
-# 		userListArray = JSON.parse(theUsers) # converts JSON to array	
+
 		if scroll.content.children.length > 0
 			clearScrollView?()
 			
@@ -757,7 +749,10 @@ updateUserList = () ->
 		
 		for theUsername, theUserdata of theUsers
 			if isFresh(theUserdata.lastUpdated)
-				userArray.push(theUsername)
+				if theUsername isnt 'Keith Testing'
+					if theUsername isnt 'Elon Musky' 
+						userArray.push(theUsername)
+						
 		
 
 #				commented logic out below to show current username as well. 
@@ -1103,7 +1098,3 @@ demoDB.onChange "/users", (status) ->
 # theObject = JSON.parse(getStorage('tabbyThing'))
 # print theObject.myBetterThing
 
-
-Utils.interval 3, ->
-	if cocoaBridgeIsUp 
-		testSendingToUserID("banana")
