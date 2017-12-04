@@ -1,10 +1,29 @@
 
-sandbox = false
+
+sandbox = true
 appVersion = 0.16
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
 
+flow = new FlowComponent
+flow.showNext(teamDashboard)
+
+
+forceFlowUpdate = () ->
+	teamCreate.size = Canvas.size
+	teamDashboard.size = Canvas.size
+	teamSignOrCreate.size = Canvas.size
+	teamMyTeams.size = Canvas.size
+	teamDetailView.size = Canvas.size
+	teamCreatePending.size = Canvas.size
+	teamCreateSuccess.size = Canvas.size
+	flow.size = Canvas.size
+	
+
+forceFlowUpdate()
+
+results = {} #this is where the results of the form end up
 
 thisUser =
 	isInOffice : false
@@ -35,7 +54,7 @@ oldUserString = ""
     }`
 
 @updateMouseX = (mouseX,mouseY) ->
-	
+# 	print mouseX
 	
 @updateCloudPhotoRotation = (angle) ->
 #	cloud_png.rotation = angle
@@ -147,11 +166,10 @@ demoDB.onChange "connection", (status) ->
 myButtonArray = []
 
 allButtons = new Layer
-	parent: myView
+	parent: teamDashboard
 	width: Screen.width
 	height: 100
 	backgroundColor: 'transparent'
-	clip: false
 
 
 
@@ -367,14 +385,14 @@ Screen.backgroundColor = '#606A77'
 
 
 updateTabbyView = () ->
-	maxDimension = Math.min(myView.width, (myView.height - cellSize))
+	maxDimension = Math.min(teamDashboard.width, (teamDashboard.height - cellSize))
 	tabbyView.y = 0
 	tabbyView.height = maxDimension
 	tabbyView.width = maxDimension
 	tabbyView.midX = Screen.midX
 	
 tabbyView = new Layer
-	parent: myView
+	parent: teamDashboard
 	backgroundColor: '#444B54'
 	opacity: 0
 
@@ -393,7 +411,7 @@ updateTabbyView?()
 
 # here we set up the scroll view, without any content. That comes in later when database is connected 
 scroll = new ScrollComponent
-	parent: myView
+	parent: bottom_rectangle
 	size: Screen.size
 	scrollHorizontal: false
 	height: cellSize
@@ -595,9 +613,9 @@ updateUsersBadge = (theEvent) ->
 					options:
 						time: 1
 				
-				Utils.delay 210, -> 
+				Utils.delay 300, -> 
 					fadeOutStateAnimation.start()
-					#keep it on the screen for 3.5 minutes before fadeing out
+					#keep it on the screen for 5 minutes before fadeing out
 					#todo consider making the times dynaic to the event. For example,
 					# 9 minute coffee
 
@@ -675,6 +693,211 @@ updateMacUserID = (userID) ->
 
 
 
+##############
+
+
+# set up form inputs
+# Made by Taylor Palmer from uxtools.co
+# Need help? Contact me at taylor@uxtools.co
+
+# Using Benjamin's input module: 
+# https://github.com/benjamindenboer/FramerInput
+{InputLayer} = require "input"
+
+# Reset the cursor to normal
+document.body.style.cursor = "auto"
+
+# Turn off purple hints
+Framer.Extras.Hints.disable()
+
+# Original Form Data
+
+# Object where we store the data
+data =
+	name: ""
+	name2: ''
+	type: "Dog"
+	age: 2
+	notes: ""
+	personality: ""
+	fixed: false
+
+# Function used to display data on screen using the "results" textLayer
+displayFormData = () ->
+	results.text = JSON.stringify(data)
+	
+# Fire it on load
+displayFormData()
+
+# Text Input
+
+# This function wraps the layer in a real input
+input1 = InputLayer.wrap(textInput, placeholderText)
+input1.fontWeight = 800
+input1.backgroundColor = 'white'
+# When the user types...
+input1.onValueChange ->
+	# Store the data in the Object
+	data.name = input1.value
+	# And display it on the screen.
+	displayFormData()
+	
+	
+# remember to name inputs with care
+	
+
+
+# Drop Down
+
+# # When the drop down is clicked
+# dropDown.onClick () ->
+# 	# Show or hide its menu
+# 	if dropDownMenu.visible
+# 		dropDownMenu.visible = false
+# 	else
+# 		dropDownMenu.visible = true
+# 
+# 	# For each menu option
+# 	for option, i in dropDownMenu.children
+# 		# When it's clicked
+# 		dropDownMenu.children[i].onClick (event, layer) ->
+# 			# Show the selected option in the drop down
+# 			dropDown.selectChild("text").text = layer.text
+# 			# Hide the menu
+# 			dropDownMenu.visible = false
+# 			# Update the data
+# 			data.type = layer.text
+# 			# Display data on screen
+# 			displayFormData()
+
+# Stepper
+
+# # This function wraps the layer in a real input
+# stepper1 = InputLayer.wrap(stepper, stepperText)
+# stepper1.value = 2
+# 
+# increaseValue = () ->
+# 	currentValue = parseInt(stepper1.value)
+# 	stepper1.value = currentValue + 1
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# decreaseValue = () ->
+# 	currentValue = parseInt(stepper1.value)
+# 	stepper1.value = currentValue - 1
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# stepUp.onClick () ->
+# 	increaseValue()
+# 	
+# stepDown.onClick () ->
+# 	decreaseValue()
+# 
+# stepper1._inputElement.addEventListener 'keydown', (event) ->
+# 	initialValue = parseInt(stepper1.value)
+# 	# If it's the arrow up key
+# 	if event.which == 38
+# 		increaseValue(initialValue)
+# 	# If it's the arrow down key
+# 	if event.which == 40
+# 		decreaseValue(initialValue)
+# 		
+# # When the value changes...
+# # Note: this won't catch the clicks on the arrows
+# # 		because they aren't real events on the input
+# stepper1.onValueChange ->
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# # Multi-line Text Input
+
+# # This function wraps the layer in a real input
+# input2 = InputLayer.wrap(textarea, textareaText, multiLine: true)
+# # When the user types...
+# input2.onValueChange ->
+# 	# Store the data in the Object
+# 	data.notes = input2.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# # Radio Buttons
+
+# # Create array of radio buttons
+# radioButtons = [RadioBase1, RadioBase2, RadioBase3]
+# 
+# # Loop through the array
+# for button, i in radioButtons
+# 	# Find the "outerCircle" child layer
+# 	# and creates states for it
+# 	button.selectChild("outerCircle").states =
+# 		selected:
+# 			backgroundColor: "#1199EE"
+# 			borderColor: "transparent"
+# 		deselected:
+# 			backgroundColor: "white"
+# 			borderColor: "#CED4DA"
+# 	# When a radio button is clicked
+# 	radioButtons[i].onClick (event, layer) ->
+# 		# Deselect all the radio buttons
+# 		for button, c in radioButtons
+# 			radioButtons[c].selectChild("outerCircle").stateSwitch("deselected")
+# 		# Select the one that was clicked
+# 		layer.selectChild("outerCircle").stateSwitch("selected")
+# 		# Update the data object
+# 		data.personality = layer.selectChild("label").text
+# 		# And display it on the screen.
+# 		displayFormData()
+
+# Check Box
+
+# # Create states for the check icon
+# checkIcon.states =
+# 	selected:
+# 		fill: "#1199EE"
+# 	deselected:
+# 		fill: "white"
+
+# # When the check box is clicked
+# checkBox.onClick (event, layer) ->
+# 	# Toggle the states of the icon
+# 	checkIcon.stateCycle("selected", "deselected")
+# 	# Use the name of the state to update the data property
+# 	if checkIcon.states.current.name == "selected"
+# 		data.fixed = true
+# 	else
+# 		data.fixed = false
+# 	# Display the data on screen
+# 	displayFormData()
+
+# testRectangle.clip = false
+
+Canvas.on "change:size", ->
+	forceFlowUpdate()
+
+
+
+
+# Canvas.on "change:size", ->
+# 	Utils.delay 0.1, ->
+# 		Framer.Device.deviceType = "fullscreen"
+# 	print Canvas.width
+
+
+
+
+
+
+
+
+
+#############
 
 # window resizes #########
 
@@ -683,13 +906,13 @@ window.onresize = () ->
 	updateCanvasDimensions?()
 
 updateCanvasDimensions = () ->
-	myView.width = Canvas.width
-	myView.height = Canvas.height
-	scroll.width = myView.width
+	teamDashboard.width = Canvas.width
+	teamDashboard.height = Canvas.height
+	scroll.width = teamDashboard.width
 	scroll.y = Align.bottom
 	updateTabbyView?()
 	if scrollEmptyStateLabel?
-		scrollEmptyStateLabel.midX = myView.midX
+		scrollEmptyStateLabel.midX = teamDashboard.midX
 		
 	updateButtonLayout(myButtonArray, myButtons)
 	#update where the buttons are placed
@@ -705,7 +928,7 @@ updateCanvasDimensions?()
 window.addEventListener "keydown", (keyboardEvent) ->
 	switch keyboardEvent.keyCode
 		when 40
-			myView.backgroundColor = '#441111'
+			teamDashboard.backgroundColor = '#441111'
 			username = "Ima Testing!"
 
 
@@ -1036,6 +1259,10 @@ checkAppVersion = () ->
 
 
 
+
+
+
+
 # update the user with the last known time
 
 if sandbox
@@ -1097,4 +1324,7 @@ demoDB.onChange "/users", (status) ->
 # # setStorage(theKey, JSON.stringify(testObject))
 # theObject = JSON.parse(getStorage('tabbyThing'))
 # print theObject.myBetterThing
+
+
+
 

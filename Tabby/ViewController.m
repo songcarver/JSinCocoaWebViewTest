@@ -73,7 +73,21 @@
 
 
 
-
+- (NSString*) screenResolution {
+	
+	NSRect screenRect;
+	NSArray *screenArray = [NSScreen screens];
+	unsigned screenCount = [screenArray count];
+	unsigned index  = 0;
+	
+	for (index; index < screenCount; index++)
+	{
+		NSScreen *screen = [screenArray objectAtIndex: index];
+		screenRect = [screen visibleFrame];
+	}
+	
+	return [NSString stringWithFormat:@"%.1fx%.1f",screenRect.size.width, screenRect.size.height];
+}
 
 
 
@@ -84,13 +98,33 @@
 
 - (void) methodB:(NSTimer *)timer
 {
-
+	// Get mouse position, send it along as factor of screen
     //Do calculations.
     NSPoint mouseLoc = [NSEvent mouseLocation]; //get current mouse position
     // NSLog(@"Mouse location: %f %f", mouseLoc.x, mouseLoc.y);
-    
+	
+
+	
+	// Get screen coordinates
+	
+	NSRect screenRect;
+	NSArray *screenArray = [NSScreen screens];
+	unsigned screenCount = [screenArray count];
+	unsigned index  = 0;
+	
+	for (index; index < screenCount; index++)
+	{
+		NSScreen *screen = [screenArray objectAtIndex: index];
+		screenRect = [screen visibleFrame];
+	}
+	
+	
+	
 //    send mouse coordinates
-	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",mouseLoc.x, mouseLoc.y];
+	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",
+						 (mouseLoc.x/screenRect.size.width),
+						 (mouseLoc.y/screenRect.size.height)];
+						  
 	[self.webView stringByEvaluatingJavaScriptFromString:mouseX];
 	
 	
