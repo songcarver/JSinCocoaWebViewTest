@@ -1,26 +1,67 @@
 
 
-sandbox = true
+sandbox = false
 appVersion = 0.16
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
 
+workInertia = 0
+
+lastMouse = 
+	x:  0
+	y: 0
+	virgin: true
+	
+	
+	
+	
+teamListControl.visible = false
+button_group.visible = false
+	
+	
 flow = new FlowComponent
 flow.showNext(teamDashboard)
 
+userTeams = 
+	"RCL": true
+	"Pinch Labs": false
+	"Tabby": true
 
 forceFlowUpdate = () ->
 	teamCreate.size = Canvas.size
 	teamDashboard.size = Canvas.size
 	teamSignOrCreate.size = Canvas.size
-	teamMyTeams.size = Canvas.size
+	teamManagement.size = Canvas.size
 	teamDetailView.size = Canvas.size
 	teamCreatePending.size = Canvas.size
 	teamCreateSuccess.size = Canvas.size
 	flow.size = Canvas.size
 	
 
+randos = 
+	'Mark Sythers': false
+	'Michelle Tan': false
+	'Gordon Rubens': false
+	'Theresa Papadopolous': false
+	'Franz Soulle': false
+	'Mick Chan': false
+
+randomizeRandos = () ->
+	for person, value of randos
+		if Math.random(1) < 0.5
+			randos[person] = true
+
+randomizeRandos()
+			
+updateRandos = () ->
+	dice = Math.random(1)
+	for person, isActive of randos
+		if Math.random(1) <0.01  #randomly flip
+			if person is true then person = false
+			else person = true
+						
+		
 forceFlowUpdate()
 
 results = {} #this is where the results of the form end up
@@ -54,7 +95,15 @@ oldUserString = ""
     }`
 
 @updateMouseX = (mouseX,mouseY) ->
-# 	print mouseX
+	if lastMouse.virgin is true # Set the initial value
+		lastMouse.virgin = false
+		lastMouse.x = mouseX
+		lastMouse.y = mouseY
+	else
+		if (lastMouse.x isnt mouseX) or (lastMouse.y isnt mouseY)
+			workInertia += 0.05 #some work energy
+		else
+			workInertia -= 0.02 #gravity pulls down anything not moving
 	
 @updateCloudPhotoRotation = (angle) ->
 #	cloud_png.rotation = angle
@@ -67,8 +116,8 @@ oldUserString = ""
 #	photoLabel.text = text
 
 @updateUserName = (myName, userID) ->
-	if userID?
-		print 'user ID' + userID
+# 	if userID?
+# # 		print 'user ID' + userID
 	username = myName
 	cocoaBridgeIsUp = true
 	
@@ -153,6 +202,7 @@ demoDB.onChange "connection", (status) ->
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
 		oldUserString = "" #reload user list after outage
+		updateUserList()
 	else 
 		scrollEmptyStateLabel.animate("connected")
 
@@ -160,6 +210,12 @@ demoDB.onChange "connection", (status) ->
 
 #################
 # Initialize
+
+
+
+
+
+
 
 
 # set up all the buttons
@@ -377,13 +433,58 @@ updateButtonLayout(myButtonArray, myButtons)
 
 
 
+########## team control UI
+
+updateUserTeamUI = () ->
+	for things in teamListControl.children
+		things.destroy()
+		
+	
+	lastXPosition = 0
+	for theTeam, isActive of userTeams
+		if isActive then textOpacity = 1 else textOpacity = 0.2
+		buttonTeam = new TextLayer
+			name: theTeam
+			parent: teamListControl
+			x: lastXPosition
+			y: Align.center()
+			fontSize: 11
+			color: 'white'
+			fontWeight: 600
+			padding: 2
+			y: Align.center()
+			text: theTeam
+			opacity: textOpacity
+		lastXPosition = (buttonTeam.maxX + 4)
+		
+		buttonTeam.onClick (event, layer) ->
+			for iTeam, value of userTeams
+				
+				if iTeam is layer.name
+					print u
+					if userTeams.iTeam is true
+						userTeams.iTeam is false
+					else userTeams.iTeam is true
+				updateUserTeamUI()
+	
+updateUserTeamUI()
+
+
+
+button_group.onClick (event, layer) ->
+	flow.showNext(teamManagement)
+		
+		
+buttonArrowBack.onClick (event, layer) ->
+	flow.showPrevious()
+################
 
 #set the states to down. Prettier way is possble to do this using States, todo
 Screen.backgroundColor = '#606A77'
 
 
 
-
+# update the main view
 updateTabbyView = () ->
 	maxDimension = Math.min(teamDashboard.width, (teamDashboard.height - cellSize))
 	tabbyView.y = 0
@@ -490,8 +591,8 @@ banner.states.hidden =
 	y: -40
 	animationOptions:
 		time: 0.2
-	
-	
+
+
 # winnerName.textTransform = "uppercase"
 winnerName.x = 40
 
@@ -517,7 +618,6 @@ animationB.on Events.AnimationEnd, ->
 
 
 
-
 timeAtLaunch = Date.now()
 
 
@@ -538,8 +638,9 @@ writeUserStatusEvent = (username) ->
 		userPath = "/users/"+ username
 		lastUpdatedKey = userPath + '/lastUpdated'
 		demoDB.put(lastUpdatedKey, timeNow)
+		workInertiakey =  userPath + '/workInertia'
+		demoDB.put(workInertiakey, workInertia)
 	
-
 writeNewEvent = (username, userEventKey) ->
 	# write a new entry
 	if firebaseStatus is 'connected'
@@ -555,9 +656,11 @@ writeNewEvent = (username, userEventKey) ->
 			eventString: eventString
 		
 		dbString = "/" + timeNow
+		
 		demoDB.put(dbString,Event)
 		
 		demoDB.put('/lastUpdate', timeNow)
+		
 
 
 writeLastUpdatedEvent = (thisTime) ->
@@ -591,9 +694,28 @@ checkUserIPAddress = () ->
 		
 	httpGetAsync('//ipinfo.io/json', myFunction)
 
+############## work inertia workinertia stuff
 
-
-
+updateUserWorkInertia = (theUsers) ->
+	for theUser of theUsers
+		if theUsers[theUser]['workInertia']?
+			theInertia = theUsers[theUser]['workInertia']
+# 			print theUser, theInertia
+			for theLayer in scroll.content.children
+				if theLayer.name is theUser
+					theLayer.children[2].width = theInertia * 10
+					theLayer.children[2].height = theInertia * 10
+					
+# 					fadeOutStateAnimation = new Animation theLayer.children[2],
+# 						width: theInertia  * 10 
+# 						height: theInertia * 10 
+# 						x: Align.center()
+# 						y: Align.center()
+# 						options:
+# 							time: 1
+# 					
+# 					Utils.delay 300, -> 
+# 						fadeOutStateAnimation.start()
 
 
 
@@ -650,6 +772,11 @@ demoDB.onChange "/lastUpdate", (value) ->
 									 
 
 
+Utils.interval 5, ->
+	if firebaseStatus is 'connected'
+		userListKey = "/users/"
+		demoDB.get userListKey, (theUsers) ->
+			updateUserWorkInertia(theUsers)
 
 updateMacUserID = (userID) ->
 	CocoaBridge.writeUDID_(userID) #send it to the mac
@@ -952,7 +1079,6 @@ updateUserList = () ->
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->
-
 		
 		if oldUserString is makeStringFromObject(theUsers)
 			return
@@ -1017,31 +1143,31 @@ updateUserList = () ->
 				x: index * (cellSize + gutter)
 				parent: scroll.content
 				backgroundColor: "#4C545E"
-				hueRotate: index * 10
+				clip: true
 			
 			
 			# todo code to change daylight / sunglight cell brightness
-			testView = new Layer
-				width: 64
-				height: 64
-				backgroundColor: '#333333'
-				clip: true
-				visible: false
-				
-			now = new Date()
-			timeString = now.toTimeString()
-			
-			localTimeLabel = new TextLayer
-				parent: testView
-				width: parent.width
-				height: parent.height
-				text: timeString
-				fontSize: 9
-				fontWeight: 800
-				color: 'white'
-				textAlign: 'center'
-				y: Align.center
-				x: Align.center()
+# 			testView = new Layer
+# 				width: 64
+# 				height: 64
+# 				backgroundColor: '#333333'
+# 				clip: true
+# 				visible: false
+# 				
+# 			now = new Date()
+# 			timeString = now.toTimeString()
+# 			
+# 			localTimeLabel = new TextLayer
+# 				parent: testView
+# 				width: parent.width
+# 				height: parent.height
+# 				text: timeString
+# 				fontSize: 9
+# 				fontWeight: 800
+# 				color: 'white'
+# 				textAlign: 'center'
+# 				y: Align.center
+# 				x: Align.center()
 				
 				
 			
@@ -1085,9 +1211,10 @@ updateUserList = () ->
 			cellLabel = new TextLayer
 				parent: cell
 				name: userInitials + ' label'
-				x: 0
+				x: Align.center()
 				y: 0
-				text: userInitials
+				text:  (userInitials.replace(/\s/g, '\n'))
+				textAlign: 'center'
 				fontWeight: 600
 				fontSize: 11
 				color: 'white'
@@ -1106,7 +1233,19 @@ updateUserList = () ->
 				x:8 
 				opacity: 1
 				
-			
+			cellWorkIntertia = new Layer
+				parent: cell
+				backgroundColor: '#ffff00'
+				width: 0
+				height: 0
+				borderRadius: 1000
+				midX:  0
+				midY:  0
+				opacity: 0.5
+				
+			cellWorkIntertia.blur = 5
+# 			cellWorkIntertia.sendToBack()
+				
 				
 
 showUpdateAvailableBanner = () ->
@@ -1145,6 +1284,7 @@ showUpdateAvailableBanner = () ->
 
 # Motivation Overlay Setup
 motivationOverlay = new Layer
+	parent: teamDashboard
 	width: Screen.width
 	height: Screen.height
 	backgroundColor: '#D1C300'
@@ -1275,7 +1415,11 @@ else
 		if firebaseStatus is 'connected'
 			writeUserStatusEvent(username)
 			writeLastUpdatedEvent?()
-
+			
+			
+			userListKey = "/users/"
+			demoDB.get userListKey, (theUsers) ->
+				updateUserWorkInertia(theUsers)
 
 
 serverReady = () ->
