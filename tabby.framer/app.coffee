@@ -5,8 +5,10 @@ appVersion = 0.16
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
+workInertiaActive = true
 
 workInertia = 0
+lastWorkInertiaTimeCheck = 0
 
 lastMouse = 
 	x:  0
@@ -95,15 +97,22 @@ oldUserString = ""
     }`
 
 @updateMouseX = (mouseX,mouseY) ->
-	if lastMouse.virgin is true # Set the initial value
-		lastMouse.virgin = false
+
+	if workInertiaActive
+		if lastMouse.virgin is true # Set the initial value
+			lastMouse.virgin = false
+			lastMouse.x = mouseX
+			lastMouse.y = mouseY
+		else
+			if (lastMouse.x isnt mouseX) or (lastMouse.y isnt mouseY)
+				if workInertia <= 16 then workInertia += 4 #some work energy
+			else
+				workInertia -= 10 #gravity pulls down anything not moving
 		lastMouse.x = mouseX
 		lastMouse.y = mouseY
-	else
-		if (lastMouse.x isnt mouseX) or (lastMouse.y isnt mouseY)
-			workInertia += 0.05 #some work energy
-		else
-			workInertia -= 0.02 #gravity pulls down anything not moving
+	
+	
+	
 	
 @updateCloudPhotoRotation = (angle) ->
 #	cloud_png.rotation = angle
@@ -117,7 +126,6 @@ oldUserString = ""
 
 @updateUserName = (myName, userID) ->
 # 	if userID?
-# # 		print 'user ID' + userID
 	username = myName
 	cocoaBridgeIsUp = true
 	
@@ -168,7 +176,7 @@ hasHeardFromServer = false
 
 
 if sandbox then username = "Elon Musky"
-if username  is ""  then username = "Keith Testing"
+if username  is ""  then username = "David Buacello"
 
 
 
@@ -177,7 +185,7 @@ if username  is ""  then username = "Keith Testing"
 {Firebase} = require 'firebase'
 
 # UI variables 
-cellSize = 72
+cellSize = 56
 
 
 if sandbox
@@ -205,6 +213,8 @@ demoDB.onChange "connection", (status) ->
 		updateUserList()
 	else 
 		scrollEmptyStateLabel.animate("connected")
+		updateUserList()
+		serverReady = true
 
 
 
@@ -384,27 +394,29 @@ createButtonLayer = (name, x, y) ->
 		
 	myButtonArray.push(@myLayer)
 	
+	
+#### emoji buttons
 
-myButtons = ['👋','🔨','🤔','🏆','☕️','🥗','🚪','🚌']
+myButtons = ['👋','🔨','🤔','🏆','☕️','🍔','🐪','🚪']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
 	'🤔': 'Little feedback/help?'
 	'🔨': 'Hammering on something'
-	'🚌': 'Travelling'
+	'🐪': 'Travelling/ extra-remote'
 	'🏆': 'Winning!'
-	'☕️': 'Short break'
-	'🥗': 'Long break'
+	'☕️': 'Shorter break'
+	'🍔': 'Longer break'
 	'🚪': 'Heading out the door.'
 	
 myButtonColor = 
 	'👋': '#B37BA4'
 	'🤔': '#6EEB83'
 	'🔨': '#A5CCD1'
-	'🚌': '#64A6BD'
+	'🐪': '#64A6BD'
 	'🏆': '#ffff00'
 	'☕️': '#FF206E'
-	'🥗': '#EE6055'
+	'🍔': '#EE6055'
 	'🚪': '#161925'
 	
 	
@@ -461,7 +473,6 @@ updateUserTeamUI = () ->
 			for iTeam, value of userTeams
 				
 				if iTeam is layer.name
-					print u
 					if userTeams.iTeam is true
 						userTeams.iTeam is false
 					else userTeams.iTeam is true
@@ -639,6 +650,7 @@ writeUserStatusEvent = (username) ->
 		lastUpdatedKey = userPath + '/lastUpdated'
 		demoDB.put(lastUpdatedKey, timeNow)
 		workInertiakey =  userPath + '/workInertia'
+		workInertia = Math.max(workInertia, 0)
 		demoDB.put(workInertiakey, workInertia)
 	
 writeNewEvent = (username, userEventKey) ->
@@ -696,26 +708,28 @@ checkUserIPAddress = () ->
 
 ############## work inertia workinertia stuff
 
+
+# blurry fuzzy thing
 updateUserWorkInertia = (theUsers) ->
+	if !workInertiaActive then return #override for when innactive
 	for theUser of theUsers
 		if theUsers[theUser]['workInertia']?
 			theInertia = theUsers[theUser]['workInertia']
-# 			print theUser, theInertia
 			for theLayer in scroll.content.children
 				if theLayer.name is theUser
-					theLayer.children[2].width = theInertia * 10
-					theLayer.children[2].height = theInertia * 10
+# 					theLayer.children[2].width = theInertia 
+# 					theLayer.children[2].height = theInertia 
+# 					theLayer.children[2].center()
 					
-# 					fadeOutStateAnimation = new Animation theLayer.children[2],
-# 						width: theInertia  * 10 
-# 						height: theInertia * 10 
-# 						x: Align.center()
-# 						y: Align.center()
-# 						options:
-# 							time: 1
-# 					
-# 					Utils.delay 300, -> 
-# 						fadeOutStateAnimation.start()
+
+					newCellColor = Color.mix("#444B54", colorFromName(theUser), (theInertia /16), true)
+
+					@animateInertia = new Animation theLayer
+						backgroundColor: newCellColor
+						options:
+							time: 3
+					
+					@animateInertia.start()
 
 
 
@@ -725,12 +739,14 @@ updateUserWorkInertia = (theUsers) ->
 ############ Badge stuff
 updateUsersBadge = (theEvent) ->
 	#update the users's badge
+	# somebug lives here
 	if theEvent.eventKey isnt '' #if the event isnt blank
 		for theLayer in scroll.content.children
 			if theLayer.name is theEvent.username
-				theLayer.children[1].text = theEvent.eventKey
-				theLayer.children[1].opacity = 1
-				fadeOutStateAnimation = new Animation theLayer.children[1],
+				badgeLayer = theLayer.children[1]
+				badgeLayer.text = theEvent.eventKey
+				badgeLayer.opacity = 1
+				try fadeOutStateAnimation = new Animation badgeLayer,
 					opacity: 0
 					options:
 						time: 1
@@ -765,18 +781,19 @@ demoDB.onChange "/lastUpdate", (value) ->
 
 					if theEvent.username isnt username #don't show the notification if it's me
 						if !sandbox
-							CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+							try CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
 
 					updateUsersBadge(theEvent)
 
 									 
 
 
-Utils.interval 5, ->
-	if firebaseStatus is 'connected'
+Utils.interval 10, ->
+	if firebaseStatus is 'connected' and workInertiaActive
 		userListKey = "/users/"
 		demoDB.get userListKey, (theUsers) ->
 			updateUserWorkInertia(theUsers)
+			updateUserList()
 
 updateMacUserID = (userID) ->
 	CocoaBridge.writeUDID_(userID) #send it to the mac
@@ -1014,7 +1031,6 @@ Canvas.on "change:size", ->
 # Canvas.on "change:size", ->
 # 	Utils.delay 0.1, ->
 # 		Framer.Device.deviceType = "fullscreen"
-# 	print Canvas.width
 
 
 
@@ -1047,10 +1063,19 @@ updateCanvasDimensions = () ->
 	
 updateCanvasDimensions?()
 
+colorFromName = (name) ->
+	firstLetter = 15* name.charCodeAt(0)
+	firstLetter += (name.length * 3)
 	
-
-
-
+	myHue = firstLetter%360
+	theColor = new Color
+		h: myHue
+		l: 0.4
+		s: 1
+	return theColor
+	
+	
+	
 
 window.addEventListener "keydown", (keyboardEvent) ->
 	switch keyboardEvent.keyCode
@@ -1143,7 +1168,7 @@ updateUserList = () ->
 				x: index * (cellSize + gutter)
 				parent: scroll.content
 				backgroundColor: "#4C545E"
-				clip: true
+				clip: false
 			
 			
 			# todo code to change daylight / sunglight cell brightness
@@ -1187,7 +1212,6 @@ updateUserList = () ->
 				
 				dayFactor = myHours 
 				dayFactor = (myHours + (myMinutes / 60 ))/ 24
-				print 'dayFactor ' + dayFactor
 				if dayFactor < 0.5 then sunlightFactor = dayFactor * 2
 				else sunlightFactor = 1 - (2 * (dayFactor - 0.5))
 				return sunlightFactor
@@ -1216,7 +1240,8 @@ updateUserList = () ->
 				text:  (userInitials.replace(/\s/g, '\n'))
 				textAlign: 'center'
 				fontWeight: 600
-				fontSize: 11
+				fontSize: 9
+				letterSpacing: 1
 				color: 'white'
 				padding: 4
 			
@@ -1232,19 +1257,9 @@ updateUserList = () ->
 				y: Align.bottom(-8)
 				x:8 
 				opacity: 1
+				backgroundColor: 'transparent'
 				
-			cellWorkIntertia = new Layer
-				parent: cell
-				backgroundColor: '#ffff00'
-				width: 0
-				height: 0
-				borderRadius: 1000
-				midX:  0
-				midY:  0
-				opacity: 0.5
-				
-			cellWorkIntertia.blur = 5
-# 			cellWorkIntertia.sendToBack()
+
 				
 				
 
@@ -1423,8 +1438,7 @@ else
 
 
 serverReady = () ->
-#	updateUserList()
-# 	print 'Server is ready'
+	try updateUserList()
 	checkAppVersion?()
 	
 isFresh = (someTime) ->
@@ -1448,7 +1462,6 @@ demoDB.onChange "/users", (status) ->
 # local storage test 	
 # getStorage = (key) ->
 # 	if (!localStorage.getItem(key)) 
-# 		print 'not there'
 # 	else return localStorage.getItem(key)
 # 
 # 
@@ -1467,8 +1480,18 @@ demoDB.onChange "/users", (status) ->
 # 
 # # setStorage(theKey, JSON.stringify(testObject))
 # theObject = JSON.parse(getStorage('tabbyThing'))
-# print theObject.myBetterThing
 
 
-
-
+if sandbox
+	Utils.interval 1, ->
+		if Math.random(1) > 0.2
+			@updateMouseX(Math.random(1),0)
+		else 
+			@updateMouseX(1,1)
+if sandbox
+	sandBoxNote = new TextLayer
+		text: 'SANDBOX'
+		fontSize: 9
+		fontWeight: 800
+		color: 'black'
+		padding: 2
