@@ -10,6 +10,9 @@
 
 @implementation AppDelegate
 
+
+
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
 	
@@ -29,7 +32,16 @@
 
 
 
+- (void) userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
+{
+//	NSRunAlertPanel([notification title], [notification informativeText], @"Ok", nil, nil);
+}
 
+- (void) userNotificationCenter:(NSUserNotificationCenter *)center didDeliverNotification:(NSUserNotification *)notification
+{
+	notification=nil;
+	[center removeDeliveredNotification: notification];
+}
 
 
 

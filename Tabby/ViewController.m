@@ -45,6 +45,11 @@
     
 }
 
+
+
+
+
+
 // todo the problem seems to be here. The function never gets called properly
 - (void) methodToSendUserName;
 {
