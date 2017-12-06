@@ -1,11 +1,16 @@
 
 
-sandbox = false
+sandbox = true
+
+
+haveConfetti = true
+
 appVersion = 0.16
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
 workInertiaActive = true
+testingWorkInertia = false
 
 workInertia = 0
 lastWorkInertiaTimeCheck = 0
@@ -16,10 +21,15 @@ lastMouse =
 	virgin: true
 	
 	
+`function isRetinaDisplay() {
+        if (window.matchMedia) {
+            var mq = window.matchMedia("only screen and (min--moz-device-pixel-ratio: 1.3), only screen and (-o-min-device-pixel-ratio: 2.6/2), only screen and (-webkit-min-device-pixel-ratio: 1.3), only screen  and (min-device-pixel-ratio: 1.3), only screen and (min-resolution: 1.3dppx)");
+            return (mq && mq.matches || (window.devicePixelRatio > 1)); 
+        }
+    }`
 	
-	
-teamListControl.visible = false
-button_group.visible = false
+teamListControl.visible = true
+button_group.visible = true
 	
 	
 flow = new FlowComponent
@@ -64,7 +74,6 @@ updateRandos = () ->
 			else person = true
 						
 		
-forceFlowUpdate()
 
 results = {} #this is where the results of the form end up
 
@@ -240,6 +249,7 @@ allButtons = new Layer
 
 
 showMotivationOverlay = (key) ->
+	if key is '🏆' then showConfetti()
 	motivationOverlay.backgroundColor = '#D1C300'
 # 	motivationOverlay.opacity = 1
 	maxScreenDimension = 1.5 * Math.max(Screen.width, Screen.height)
@@ -280,6 +290,9 @@ showMotivationOverlay = (key) ->
 	motivationOverlayText.text = key
 
 	motivationOverlayText.midX= Screen.midX
+	
+
+	
 	showMotivationAnimation = new Animation motivationOverlay,
 		opacity: 1
 		midX: Screen.midX
@@ -291,12 +304,32 @@ showMotivationOverlay = (key) ->
 				opacity: 0
 				midX: Screen.midX
 			hideMotivationAnimation.start()
-	
+
+
+
+			
+			
 	showMotivationAnimation.start()
+	
+	
+showConfetti = () ->
+	if confettiLayer? then return
+	workingLayer = makeConfetti()
+	Utils.delay 1, ->
+		hideConfetti  = new Animation workingLayer,
+			opacity: 0
+			options:
+				time: 2
+		hideConfetti.on Events.AnimationEnd, ->
+			workingLayer.visible = false
+			destroyConfetti()
+			workingLayer.destroy()
+		hideConfetti.start()
 
 
 	
 buttonTips = new TextLayer
+	parent: teamDashboard
 	text: 'Having a win'
 	fontSize: 11
 	fontWeight: 800
@@ -470,12 +503,12 @@ updateUserTeamUI = () ->
 		lastXPosition = (buttonTeam.maxX + 4)
 		
 		buttonTeam.onClick (event, layer) ->
+			tempName = ""
+			tempName = layer.name
 			for iTeam, value of userTeams
-				
-				if iTeam is layer.name
-					if userTeams.iTeam is true
-						userTeams.iTeam is false
-					else userTeams.iTeam is true
+				if userTeams[tempName] is true
+					userTeams[tempName] = false
+				else userTeams[tempName] = true
 				updateUserTeamUI()
 	
 updateUserTeamUI()
@@ -712,7 +745,7 @@ checkUserIPAddress = () ->
 # blurry fuzzy thing
 updateUserWorkInertia = (theUsers) ->
 	if !workInertiaActive then return #override for when innactive
-	for theUser of theUsers
+	for theUser,userData of theUsers
 		if theUsers[theUser]['workInertia']?
 			theInertia = theUsers[theUser]['workInertia']
 			for theLayer in scroll.content.children
@@ -723,13 +756,13 @@ updateUserWorkInertia = (theUsers) ->
 					
 
 					newCellColor = Color.mix("#444B54", colorFromName(theUser), (theInertia /16), true)
-
-					@animateInertia = new Animation theLayer
+# 					theLayer.backgroundColor = newCellColor
+					animateInertia = new Animation theLayer,
 						backgroundColor: newCellColor
 						options:
-							time: 3
+							time: 9
 					
-					@animateInertia.start()
+					animateInertia.start()
 
 
 
@@ -775,10 +808,13 @@ demoDB.onChange "/lastUpdate", (value) ->
 					eventNotification =  theEvent.eventString
 					
 					
+					if theEvent.eventKey is '🏆' and theEvent.username isnt username  
+						showConfetti()
+					
 					#now we show the local notifications as well as the Mac one
 					if theEvent.username isnt username #don't show the notification if it's me
 						showNotificationBanner(eventNotification, theEvent.eventKey)
-
+						
 					if theEvent.username isnt username #don't show the notification if it's me
 						if !sandbox
 							try CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
@@ -792,6 +828,7 @@ Utils.interval 10, ->
 	if firebaseStatus is 'connected' and workInertiaActive
 		userListKey = "/users/"
 		demoDB.get userListKey, (theUsers) ->
+			
 			updateUserWorkInertia(theUsers)
 			updateUserList()
 
@@ -1070,7 +1107,7 @@ colorFromName = (name) ->
 	myHue = firstLetter%360
 	theColor = new Color
 		h: myHue
-		l: 0.4
+		l: 0.35
 		s: 1
 	return theColor
 	
@@ -1408,7 +1445,7 @@ checkAppVersion = () ->
 			if theEvent?
 				if theEvent > appVersion
 					showUpdateAvailableBanner?()
-				
+					
 				
 	# 		if then
 
@@ -1482,8 +1519,8 @@ demoDB.onChange "/users", (status) ->
 # theObject = JSON.parse(getStorage('tabbyThing'))
 
 
-if sandbox
-	Utils.interval 1, ->
+Utils.interval 2, ->
+	if !cocoaBridgeIsUp
 		if Math.random(1) > 0.2
 			@updateMouseX(Math.random(1),0)
 		else 
@@ -1495,3 +1532,141 @@ if sandbox
 		fontWeight: 800
 		color: 'black'
 		padding: 2
+
+
+
+
+
+
+makeConfetti = () =>
+	#############
+	# constant to define the max number of confetti on screen
+	NUM_CONFETTI = 42
+	# possible colors
+	COLORS = [[85,71,106], [174,61,99], [219,56,83], [244,92,68], [248,182,70]]
+	# mmm pi
+	PI_2 = 2*Math.PI
+	
+	# make a holder for the confetti
+	confettiLayer = new Layer width: Screen.width, height: Screen.height, backgroundColor: "transparent", parent: teamDashboard
+	
+	
+	# stick a canvas element in it
+	confettiLayer._element.innerHTML = "<canvas id='world'></canvas>"
+	
+	# register the canvas with a variable
+	canvas = document.getElementById "world"
+	context = canvas.getContext "2d"
+	
+	#set its height and width
+	window.w = canvas.width  = confettiLayer.width
+	window.h = canvas.height  = confettiLayer.height
+	
+	# make it resize when the screen resizes
+	resizeWindow = ->
+		window.w = canvas.width = confettiLayer.width
+		window.h = canvas.height = confettiLayer.height
+	
+	window.addEventListener 'resize', resizeWindow, false
+	
+	# Utils.delay 1, -> resizeWindow 0
+	
+	# helper function to draw a circle to a canvas
+	drawCircle = (x,y,r,style) ->
+		context.beginPath()
+		context.arc(x,y,r,0,PI_2,false)
+		context.fillStyle = style
+		context.fill()
+	
+	xpos = 0.5
+		
+	if isRetinaDisplay() 
+		theRetinaFactor = 0.5
+	else theRetinaFactor = 1
+	
+	# this is what makes the confetti follow the mouse
+	document.onmousemove = (e) ->
+		xpos = theRetinaFactor * e.pageX/w
+
+	
+	# this is the thing that makes the confettis
+	class Confetti
+		# this builds a confetti
+		constructor: ->
+			@style = COLORS[~~Utils.randomNumber(0,5)]
+			@rgb = "rgba(#{@style[0]},#{@style[1]},#{@style[2]}"
+			@r = ~~Utils.randomNumber(2,6) 
+			@r2 = 2*@r 
+			@replace()
+		# this positions the confetti
+		replace: ->
+			@opacity = 0
+			@dop = 0.03*Utils.randomNumber(1,4)
+			@x = Utils.randomNumber(-@r2,w-@r2)
+			@y = Utils.randomNumber(-20,h-@r2)
+			@xmax = w-@r
+			@ymax = h-@r
+			@vx = theRetinaFactor*Utils.randomNumber(0,2)+8*xpos-5
+			@vy = theRetinaFactor*0.7*@r+Utils.randomNumber(-1,1)
+		# this draws the confetti
+		draw: ->
+			@x += @vx
+			@y += @vy
+			@opacity += @dop
+			if @opacity > 1
+				@opacity = 1
+				@dop *= -1
+			@replace() if @opacity < 0 or @y > @ymax
+			if !(0 < @x < @xmax)
+				@x = (@x + @xmax) % @xmax
+			drawCircle(~~@x,~~@y,@r,"#{@rgb},#{@opacity})")
+	
+	# this makes an array full of constructed confetti from above
+	confetti = (new Confetti for i in [1..NUM_CONFETTI])
+	
+	# this kicks off an animation loop to make the confetti move
+	# theres a way to replace this with the framer loop that would
+	# probably make it a bit more performant but i cant
+	# remember how
+	window.step = ->
+		requestAnimationFrame(step)
+		context.clearRect(0,0,w,h)
+		c.draw() for c in confetti
+	
+# 	this starts the first loop
+	Utils.delay .1, -> step()
+	
+	return(confettiLayer)
+####### teamstuff
+
+
+### Clean up after yourself. ###
+destroyConfetti = () ->
+
+	## console.log @, 'destroy'
+
+	# Remove event handlers.
+	document.removeEventListener 'touchmove', @mousemove, false
+	document.removeEventListener 'mousemove', @mousemove, false
+	document.removeEventListener 'resize', @resize, false
+
+	# Remove the render output from the DOM.
+	try container.removeChild @renderer.domElement
+	catch error
+
+
+	@renderer = null
+	@physics = null
+	@mouse = null
+
+
+
+
+configTeam = () ->
+	#todo if user has no teams, then create a /teamMemberships and in it add 
+	# /tabby which has property of /active = true and /description which is 'A public channel for all '
+
+
+
+
+forceFlowUpdate()
