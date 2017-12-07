@@ -1,11 +1,14 @@
 
 
 sandbox = false
+shouldStop = true
+
+lastUserWorkInertiaLevel = {}
 
 
 haveConfetti = true
 
-appVersion = 0.16
+appVersion = 0.17
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
@@ -14,6 +17,11 @@ testingWorkInertia = false
 
 workInertia = 0
 lastWorkInertiaTimeCheck = 0
+
+
+teamListControl.visible = false
+button_group.visible = false
+
 
 lastMouse = 
 	x:  0
@@ -28,8 +36,7 @@ lastMouse =
         }
     }`
 	
-teamListControl.visible = true
-button_group.visible = true
+
 	
 	
 flow = new FlowComponent
@@ -114,9 +121,9 @@ oldUserString = ""
 			lastMouse.y = mouseY
 		else
 			if (lastMouse.x isnt mouseX) or (lastMouse.y isnt mouseY)
-				if workInertia <= 16 then workInertia += 4 #some work energy
+				if workInertia <= 16 then workInertia += 3 #some work energy
 			else
-				workInertia -= 10 #gravity pulls down anything not moving
+				workInertia -= 3 #gravity pulls down anything not moving
 		lastMouse.x = mouseX
 		lastMouse.y = mouseY
 	
@@ -313,17 +320,16 @@ showMotivationOverlay = (key) ->
 	
 	
 showConfetti = () ->
-	if confettiLayer? then return
-	workingLayer = makeConfetti()
-	Utils.delay 1, ->
-		hideConfetti  = new Animation workingLayer,
+	if !shouldStop then return
+	confettiLayer.opacity = 1
+	confettiStart()
+	Utils.delay 5, ->
+		hideConfetti  = new Animation confettiLayer,
 			opacity: 0
 			options:
-				time: 2
+				time: 5
 		hideConfetti.on Events.AnimationEnd, ->
-			workingLayer.visible = false
-			destroyConfetti()
-			workingLayer.destroy()
+			confettiStop()
 		hideConfetti.start()
 
 
@@ -430,13 +436,13 @@ createButtonLayer = (name, x, y) ->
 	
 #### emoji buttons
 
-myButtons = ['👋','🔨','🤔','🏆','☕️','🍔','🐪','🚪']
+myButtons = ['👋','🔨','🤔','🏆','☕️','🍔','🚌','🚪']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
 	'🤔': 'Little feedback/help?'
 	'🔨': 'Hammering on something'
-	'🐪': 'Travelling/ extra-remote'
+	'🚌': 'Travelling/ extra-remote'
 	'🏆': 'Winning!'
 	'☕️': 'Shorter break'
 	'🍔': 'Longer break'
@@ -446,7 +452,7 @@ myButtonColor =
 	'👋': '#B37BA4'
 	'🤔': '#6EEB83'
 	'🔨': '#A5CCD1'
-	'🐪': '#64A6BD'
+	'🚌': '#64A6BD'
 	'🏆': '#ffff00'
 	'☕️': '#FF206E'
 	'🍔': '#EE6055'
@@ -741,7 +747,9 @@ checkUserIPAddress = () ->
 
 ############## work inertia workinertia stuff
 
-
+colorFromInertia = (theUserName, inertiaLevel) ->
+	return  Color.mix("#4C545E", colorFromName(theUserName), (theInertia /16), true)
+	
 # blurry fuzzy thing
 updateUserWorkInertia = (theUsers) ->
 	if !workInertiaActive then return #override for when innactive
@@ -754,8 +762,9 @@ updateUserWorkInertia = (theUsers) ->
 # 					theLayer.children[2].height = theInertia 
 # 					theLayer.children[2].center()
 					
+					lastUserWorkInertiaLevel[theUser] = theInertia
 
-					newCellColor = Color.mix("#444B54", colorFromName(theUser), (theInertia /16), true)
+					newCellColor = colorFromInertia(theUser, theInertia) 
 # 					theLayer.backgroundColor = newCellColor
 					animateInertia = new Animation theLayer,
 						backgroundColor: newCellColor
@@ -1102,12 +1111,12 @@ updateCanvasDimensions?()
 
 colorFromName = (name) ->
 	firstLetter = 15* name.charCodeAt(0)
-	firstLetter += (name.length * 3)
+	firstLetter += (name.length * 2) 
 	
 	myHue = firstLetter%360
 	theColor = new Color
 		h: myHue
-		l: 0.35
+		l: 0.30
 		s: 1
 	return theColor
 	
@@ -1198,7 +1207,7 @@ updateUserList = () ->
 		
 		# Loop to create row layers
 		for index in [0...columns]
-			
+
 			cell = new Layer
 				width:  cellSize
 				height: cellSize
@@ -1282,7 +1291,8 @@ updateUserList = () ->
 				color: 'white'
 				padding: 4
 			
-
+			#tofix
+			try cell.backgroundColor = colorFromInertia(userInitials, (lastUserWorkInertiaLevel[userInitials]))
 			
 			if userArray[index] is username
 				cellLabel.color = '#ffffff'
@@ -1538,128 +1548,111 @@ if sandbox
 
 
 
-makeConfetti = () =>
-	#############
-	# constant to define the max number of confetti on screen
-	NUM_CONFETTI = 42
-	# possible colors
-	COLORS = [[85,71,106], [174,61,99], [219,56,83], [244,92,68], [248,182,70]]
-	# mmm pi
-	PI_2 = 2*Math.PI
-	
-	# make a holder for the confetti
-	confettiLayer = new Layer width: Screen.width, height: Screen.height, backgroundColor: "transparent", parent: teamDashboard
-	
-	
-	# stick a canvas element in it
-	confettiLayer._element.innerHTML = "<canvas id='world'></canvas>"
-	
-	# register the canvas with a variable
-	canvas = document.getElementById "world"
-	context = canvas.getContext "2d"
-	
-	#set its height and width
-	window.w = canvas.width  = confettiLayer.width
-	window.h = canvas.height  = confettiLayer.height
-	
-	# make it resize when the screen resizes
-	resizeWindow = ->
-		window.w = canvas.width = confettiLayer.width
-		window.h = canvas.height = confettiLayer.height
-	
-	window.addEventListener 'resize', resizeWindow, false
-	
-	# Utils.delay 1, -> resizeWindow 0
-	
-	# helper function to draw a circle to a canvas
-	drawCircle = (x,y,r,style) ->
-		context.beginPath()
-		context.arc(x,y,r,0,PI_2,false)
-		context.fillStyle = style
-		context.fill()
-	
-	xpos = 0.5
-		
-	if isRetinaDisplay() 
-		theRetinaFactor = 0.5
-	else theRetinaFactor = 1
-	
-	# this is what makes the confetti follow the mouse
-	document.onmousemove = (e) ->
-		xpos = theRetinaFactor * e.pageX/w
 
-	
-	# this is the thing that makes the confettis
-	class Confetti
-		# this builds a confetti
-		constructor: ->
-			@style = COLORS[~~Utils.randomNumber(0,5)]
-			@rgb = "rgba(#{@style[0]},#{@style[1]},#{@style[2]}"
-			@r = ~~Utils.randomNumber(2,6) 
-			@r2 = 2*@r 
-			@replace()
-		# this positions the confetti
-		replace: ->
-			@opacity = 0
-			@dop = 0.03*Utils.randomNumber(1,4)
-			@x = Utils.randomNumber(-@r2,w-@r2)
-			@y = Utils.randomNumber(-20,h-@r2)
-			@xmax = w-@r
-			@ymax = h-@r
-			@vx = theRetinaFactor*Utils.randomNumber(0,2)+8*xpos-5
-			@vy = theRetinaFactor*0.7*@r+Utils.randomNumber(-1,1)
-		# this draws the confetti
-		draw: ->
-			@x += @vx
-			@y += @vy
-			@opacity += @dop
-			if @opacity > 1
-				@opacity = 1
-				@dop *= -1
-			@replace() if @opacity < 0 or @y > @ymax
-			if !(0 < @x < @xmax)
-				@x = (@x + @xmax) % @xmax
-			drawCircle(~~@x,~~@y,@r,"#{@rgb},#{@opacity})")
-	
-	# this makes an array full of constructed confetti from above
-	confetti = (new Confetti for i in [1..NUM_CONFETTI])
-	
-	# this kicks off an animation loop to make the confetti move
-	# theres a way to replace this with the framer loop that would
-	# probably make it a bit more performant but i cant
-	# remember how
-	window.step = ->
+# constant to define the max number of confetti on screen
+NUM_CONFETTI = 128
+# possible colors
+COLORS = [[85,71,106], [174,61,99], [219,56,83], [244,92,68], [248,182,70]]
+# mmm pi
+PI_2 = 2*Math.PI
+
+# make a holder for the confetti
+confettiLayer = new Layer width: Screen.width, height: Screen.height, backgroundColor: "transparent"
+
+# stick a canvas element in it
+confettiLayer._element.innerHTML = "<canvas id='world'></canvas>"
+
+# register the canvas with a variable
+canvas = document.getElementById "world"
+context = canvas.getContext "2d"
+
+#set its height and width
+window.w = canvas.width = confettiLayer.width
+window.h = canvas.height = confettiLayer.height
+
+# make it resize when the screen resizes
+resizeWindow = ->
+	window.w = canvas.width = confettiLayer.width
+	window.h = canvas.height = confettiLayer.height
+
+window.addEventListener 'resize', resizeWindow, false
+
+# Utils.delay 1, -> resizeWindow 0
+
+# helper function to draw a circle to a canvas
+drawCircle = (x,y,r,style) ->
+	context.beginPath()
+	context.arc(x,y,r,0,PI_2,false)
+	context.fillStyle = style
+	context.fill()
+
+xpos = 0.5
+
+# this is what makes the confetti follow the mouse
+document.onmousemove = (e) ->
+	xpos = e.pageX/w
+
+# this is the thing that makes the confettis
+class Confetti
+	# this builds a confetti
+	constructor: ->
+		@style = COLORS[~~Utils.randomNumber(0,5)]
+		@rgb = "rgba(#{@style[0]},#{@style[1]},#{@style[2]}"
+		@r = ~~Utils.randomNumber(2,6)
+		@r2 = 2*@r
+		@replace()
+	# this positions the confetti
+	replace: ->
+		@opacity = 0
+		@dop = 0.03*Utils.randomNumber(1,4)
+		@x = Utils.randomNumber(-@r2,w-@r2)
+		@y = Utils.randomNumber(-20,h-@r2)
+		@xmax = w-@r
+		@ymax = h-@r
+		@vx = Utils.randomNumber(0,2)+8*xpos-5
+		@vy = 0.7*@r+Utils.randomNumber(-1,1)
+	# this draws the confetti
+	draw: ->
+		@x += @vx
+		@y += @vy
+		@opacity += @dop
+		if @opacity > 1
+			@opacity = 1
+			@dop *= -1
+		@replace() if @opacity < 0 or @y > @ymax
+		if !(0 < @x < @xmax)
+			@x = (@x + @xmax) % @xmax
+		drawCircle(~~@x,~~@y,@r,"#{@rgb},#{@opacity})")
+
+# this makes an array full of constructed confetti from above
+confetti = (new Confetti for i in [1..NUM_CONFETTI])
+
+# this kicks off an animation loop to make the confetti move
+# theres a way to replace this with the framer loop that would
+# probably make it a bit more performant but i cant
+# remember how
+window.step = ->
+	if !shouldStop 
 		requestAnimationFrame(step)
 		context.clearRect(0,0,w,h)
 		c.draw() for c in confetti
+
+# this starts the first loop
+Utils.delay .1, -> 
+	step()
 	
-# 	this starts the first loop
-	Utils.delay .1, -> step()
+
 	
-	return(confettiLayer)
-####### teamstuff
+confettiStart = () ->
+	confettiLayer.visible = true
+	shouldStop = false
+	step()
+confettiStop = () ->
+	shouldStop = true
+	confettiLayer.visible = false
+		
 
-
-### Clean up after yourself. ###
-destroyConfetti = () ->
-
-	## console.log @, 'destroy'
-
-	# Remove event handlers.
-	document.removeEventListener 'touchmove', @mousemove, false
-	document.removeEventListener 'mousemove', @mousemove, false
-	document.removeEventListener 'resize', @resize, false
-
-	# Remove the render output from the DOM.
-	try container.removeChild @renderer.domElement
-	catch error
-
-
-	@renderer = null
-	@physics = null
-	@mouse = null
-
-
+	
 
 
 configTeam = () ->
