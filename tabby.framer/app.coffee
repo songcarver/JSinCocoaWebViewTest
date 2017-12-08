@@ -13,9 +13,11 @@ appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
 workInertiaActive = true
-testingWorkInertia = false
+testingWorkInertia = true
 
 workInertia = 0
+if testingWorkInertia
+	workInertia = 4
 lastWorkInertiaTimeCheck = 0
 
 
@@ -192,7 +194,7 @@ hasHeardFromServer = false
 
 
 if sandbox then username = "Elon Musky"
-if username  is ""  then username = "David Buacello"
+if username  is ""  then username = "Susan Yīn"
 
 
 
@@ -748,7 +750,7 @@ checkUserIPAddress = () ->
 ############## work inertia workinertia stuff
 
 colorFromInertia = (theUserName, inertiaLevel) ->
-	return  Color.mix("#4C545E", colorFromName(theUserName), (theInertia /16), true)
+	return  Color.mix("#4C545E", colorFromName(theUserName), (inertiaLevel /16), true)
 	
 # blurry fuzzy thing
 updateUserWorkInertia = (theUsers) ->
@@ -793,9 +795,9 @@ updateUsersBadge = (theEvent) ->
 					options:
 						time: 1
 				
-				Utils.delay 300, -> 
+				Utils.delay 600, -> 
 					fadeOutStateAnimation.start()
-					#keep it on the screen for 5 minutes before fadeing out
+					#keep it on the screen for 10 minutes before fadeing out
 					#todo consider making the times dynaic to the event. For example,
 					# 9 minute coffee
 
@@ -1293,6 +1295,8 @@ updateUserList = () ->
 			
 			#tofix
 			try cell.backgroundColor = colorFromInertia(userInitials, (lastUserWorkInertiaLevel[userInitials]))
+			if cell.backgroundColor.toHexString() is "#000000" 
+				cell.backgroundColor = "#4C545E"
 			
 			if userArray[index] is username
 				cellLabel.color = '#ffffff'
