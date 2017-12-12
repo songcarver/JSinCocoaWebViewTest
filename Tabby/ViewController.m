@@ -72,7 +72,7 @@
 	[NSTimer scheduledTimerWithTimeInterval:1.0f
 									 target:self selector:@selector(methodB:) userInfo:nil repeats:NO];
 //    Here's the timer method that calls the method that does the work
-    [NSTimer scheduledTimerWithTimeInterval:20.0f
+    [NSTimer scheduledTimerWithTimeInterval:60.0f
 									 target:self selector:@selector(methodB:) userInfo:nil repeats:YES];
 }
 
