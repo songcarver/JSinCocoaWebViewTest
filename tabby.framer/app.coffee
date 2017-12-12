@@ -780,16 +780,26 @@ teamFindFreeCodeAndCreateTeam = () ->
 
 
 
+teamLookupTeamNameByCode = (teamCode, callback) ->
+	theKey = "/teamDirectory/" + teamCode + '/'
+	demoDB.get theKey, (teamName) ->
+		if teamName?
+			print 'value is ' + teamName
+			callback(teamName)
+		else callback('Sorry, team not found')
 
-	
 	
 
 #bookmark
 
 
 teamAddedToUserAccountSuccess = () ->
-	print 'teamKey added to user account:' + newTeamKey
+	print 'teamAddedToUserAccountSuccess'
+	teamLookupTeamNameByCode(newTeamKey, showTeamName)
 
+showTeamName = (value) ->
+	print 'UI: team created' + value
+	
 
 # teamNameToCreate = 'test team'
 
