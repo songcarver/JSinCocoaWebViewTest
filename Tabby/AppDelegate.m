@@ -31,7 +31,6 @@
 }
 
 
-
 - (void) userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
 {
 //	NSRunAlertPanel([notification title], [notification informativeText], @"Ok", nil, nil);

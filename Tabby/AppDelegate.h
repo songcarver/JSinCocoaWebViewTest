@@ -8,9 +8,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+
+
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
 
 
 @end
+
+// accept first mouse events
 

@@ -7,6 +7,13 @@
 
 @implementation ViewController
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent {
+	
+	NSLog(@"Got first mouse event");
+	return YES;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
