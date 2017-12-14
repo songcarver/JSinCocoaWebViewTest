@@ -8,15 +8,16 @@
 
 
 
-
 @interface ViewController : NSViewController <WebUIDelegate,WebDownloadDelegate,WebFrameLoadDelegate,WebResourceLoadDelegate,WebPolicyDelegate>
+-(BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
 
 
 
 @property(strong,nonatomic) WebView* webView;
-@property (strong) IBOutlet NSView *webViewContainer;
-@property (strong) IBOutlet NSSlider *slider;
 
+@property (strong) IBOutlet NSView *webViewContainer;
+
+@property (strong) IBOutlet NSSlider *slider;
 
 
 @end

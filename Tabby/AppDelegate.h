@@ -12,6 +12,7 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
 
 
 @end

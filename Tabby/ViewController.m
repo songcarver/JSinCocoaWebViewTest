@@ -5,13 +5,9 @@
 
 #import "ViewController.h"
 
+
 @implementation ViewController
 
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent {
-	
-	NSLog(@"Got first mouse event");
-	return YES;
-}
 
 
 - (void)viewDidLoad {
@@ -41,7 +37,8 @@
     self.webView.policyDelegate = self;
 	
 	
-	
+
+
 	
 //
 ////    TODO Poll mouse
@@ -303,7 +300,10 @@
 }
 
 
-
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+	return YES;
+}
 
 
 

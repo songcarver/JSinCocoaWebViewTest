@@ -1,9 +1,11 @@
+{InputLayer} = require "input"
 
 
 sandbox = true
 shouldStop = true
 
 lastUserWorkInertiaLevel = {}
+
 
 
 haveConfetti = false
@@ -21,8 +23,8 @@ if testingWorkInertia
 lastWorkInertiaTimeCheck = 0
 
 
-teamListControl.visible = false
-button_group.visible = false
+teamListControl.visible = true
+button_group.visible = true
 
 
 newTeamKey = ""
@@ -31,6 +33,8 @@ teamKey = ""
 path = ""
 teamPath = ""
 
+localTeamDirectory = {}
+localUserTeamMembershipsList = {}
 
 lastMouse = 
 	x:  0
@@ -50,11 +54,13 @@ lastMouse =
 	
 flow = new FlowComponent
 flow.showNext(teamDashboardScreen)
+flow.header = navBar
+flow.header.visible = false
 
 userTeams = 
-	"RCL": true
-	"Pinch Labs": false
 	"Tabby": true
+	"Design Labs": false
+	"Mac Dev Team": true
 
 forceFlowUpdate = () ->
 	teamCreateScreen.size = Canvas.size
@@ -419,7 +425,7 @@ createButtonLayer = (name, x, y) ->
 		text: name
 		fontSize: 16
 		padding: 8
-		backgroundColor: '#444B54'
+		backgroundColor: '#C8C8C6'
 		borderRadius: 2
 		borderColor: 'white' 
 		
@@ -432,7 +438,7 @@ createButtonLayer = (name, x, y) ->
 	
 	@myLayer.states.default = 
 		x: x
-		backgroundColor: '#444B54'
+		backgroundColor: '#C8C8C6'
 		
 		
 	
@@ -459,8 +465,26 @@ createButtonLayer = (name, x, y) ->
 		showMotivationOverlay(name)
 		
 	myButtonArray.push(@myLayer)
+	1
+
+
+# #fun extras
+# Events.wrap(window).addEventListener "keydown", (event) ->
+# 	if firebaseStatus isnt 'connected'
+# 		return
+# 	switch event.keyCode
+# 		when 72 then name = '🎧' # hit h
+# 		when 69 then name = '🐓' # hit e
+# 		when 67 then name = '🤔☕️' # hit cell
+# 		when 76 then name = '🤔🍔' # hit L
+# 		else return
+# 	motivationOverlay.backgroundColor = myButtonColor[name]
+# 	writeNewEvent(username, name)
+# 	showMotivationOverlay(name)
 	
-	
+		
+		
+		
 #### emoji buttons
 
 myButtons = ['👋','🔨','🤔','🏆','☕️','🍔','🚌','🚪']
@@ -527,7 +551,7 @@ updateUserTeamUI = () ->
 			x: lastXPosition
 			y: Align.center()
 			fontSize: 11
-			color: 'white'
+			color: '#606A77'
 			fontWeight: 600
 			padding: 2
 			y: Align.center()
@@ -549,21 +573,45 @@ updateUserTeamUI()
 
 
 
-
+##### teamflowstuff
 
 button_group.onClick (event, layer) ->
-	errorText.text = 'what tha'
-	flow.showOverlayTop(errorOverlay)
+	flow.showNext(teamSignOrCreateScreen)
+	flow.header.visible = true
 
 buttonEeek.onClick (event, layer) ->
 	flow.showPrevious()
 		
-buttonArrowBack.onClick (event, layer) ->
+navBarButtonArrowBack.onClick (event, layer) ->
 	flow.showPrevious()
 	
+flow.onTransitionEnd ->
+	if flow.current is teamDashboardScreen
+		flow.header.visible = false
+	
+buttonJoinTeam.onClick (event, layer) ->
+	flow.showNext(teamJoinScreen)
+	
+	
+teamLookupCallback = () ->
+	print 'teamLookupCallback called'
+	print newTeamName
 	
 	
 	
+# 	bookmark
+buttonJoinTeamWithCode.onClick (event, layer) ->
+	#now we need to validate the code
+	
+	print 'buttonJoingTeamWithCode called'	
+	newTeamName = newTeamName(data.teamCode, teamLookupCallback)
+	
+	
+	flow.showNext(teamJoinSuccess)
+	
+	
+	
+
 	
 ################
 
@@ -606,7 +654,7 @@ scroll = new ScrollComponent
 	height: cellSize
 	width: Screen.width
 	y: Align.bottom
-	backgroundColor: "#444B54"
+	backgroundColor: "#transparent"
 scroll.scrollHorizontal = true
 scroll.scrollVertical = false
 
@@ -659,7 +707,7 @@ scrollEmptyStateLabel.sendToBack()
 banner = new Layer
 	backgroundColor: '#ffff00'
 	height: 40
-	width: Screen.width
+	width: Screen.width * 3
 	
 winnerName = new TextLayer
 	width: banner.width
@@ -735,21 +783,12 @@ timeNow =  Date.now()
 		
 
 
-Events.wrap(window).addEventListener "keydown", (event) ->
-	if firebaseStatus isnt 'connected'
-		print 'not ready yet'
-		return
-	if event.keyCode is 78 #this is 'n' for 'new team'
-		print 'starting process'
-		# lookup more here: http://keycode.info
-		#here's where we're going to make a new team
-		newTeamName = 'Cats of Wynnum'
-		teamFindFreeCodeAndCreateTeam()
+
 
 
 
 teamAddToUserAccount = (teamPath) ->
-	#'add teams to users'
+	#this adds a team to a user's account
 	print 'path in teamAddToUserAccount' + teamPath
 
 	teamPath = "/users/" + username + "/teams/" + newTeamKey + "/"
@@ -789,8 +828,6 @@ teamLookupTeamNameByCode = (teamCode, callback) ->
 		else callback('Sorry, team not found')
 
 	
-
-#bookmark
 
 
 teamAddedToUserAccountSuccess = () ->
@@ -1050,41 +1087,6 @@ document.body.style.cursor = "auto"
 # Turn off purple hints
 Framer.Extras.Hints.disable()
 
-# Original Form Data
-
-# Object where we store the data
-data =
-	name: ""
-	name2: ''
-	type: "Dog"
-	age: 2
-	notes: ""
-	personality: ""
-	fixed: false
-
-# Function used to display data on screen using the "results" textLayer
-displayFormData = () ->
-	results.text = JSON.stringify(data)
-	
-# Fire it on load
-displayFormData()
-
-# Text Input
-
-# This function wraps the layer in a real input
-input1 = InputLayer.wrap(textInput, placeholderText)
-input1.fontWeight = 800
-input1.backgroundColor = 'white'
-# When the user types...
-input1.onValueChange ->
-	# Store the data in the Object
-	data.name = input1.value
-	# And display it on the screen.
-	displayFormData()
-	
-	
-# remember to name inputs with care
-	
 
 
 # Drop Down
@@ -1245,8 +1247,8 @@ window.onresize = () ->
 	updateCanvasDimensions?()
 
 updateCanvasDimensions = () ->
-	teamDashboardScreen.width = Canvas.width
-	teamDashboardScreen.height = Canvas.height
+	teamDashboardScreen.size = Screen.size
+	teamSignOrCreateScreen.size = Screen.size
 	scroll.width = teamDashboardScreen.width
 	scroll.y = Align.bottom
 	updateTabbyView?()
@@ -1582,7 +1584,7 @@ rotate3.start()
 motivationOverlayText = new TextLayer
 	text: '🏆'
 	parent: motivationOverlay
-	padding: 40
+	padding: 10
 	textAlign: 'center'
 	fontSize: 100
 	fontWeight: 800
@@ -1747,6 +1749,7 @@ document.onmousemove = (e) ->
 # this is the thing that makes the confettis
 class Confetti
 	# this builds a confetti
+
 	constructor: ->
 		@style = COLORS[~~Utils.randomNumber(0,5)]
 		@rgb = "rgba(#{@style[0]},#{@style[1]},#{@style[2]}"
@@ -1775,7 +1778,7 @@ class Confetti
 		if !(0 < @x < @xmax)
 			@x = (@x + @xmax) % @xmax
 		drawCircle(~~@x,~~@y,@r,"#{@rgb},#{@opacity})")
-
+		c.draw() for c in confetti
 # this makes an array full of constructed confetti from above
 
 
@@ -1787,7 +1790,7 @@ window.step = ->
 	if !shouldStop 
 		requestAnimationFrame(step)
 		context.clearRect(0,0,w,h)
-		c.draw() for c in confetti
+
 
 # this starts the first loop
 Utils.delay .1, -> 
@@ -1812,6 +1815,201 @@ confettiStop = () ->
 configTeam = () ->
 	#todo if user has no teams, then create a /teamMemberships and in it add 
 	# /tabby which has property of /active = true and /description which is 'A public channel for all '
+
+
+
+
+
+
+
+
+
+#  Input thing
+# Made by Taylor Palmer from uxtools.co
+# Need help? Contact me at taylor@uxtools.co
+
+# Using Benjamin's input module: 
+# https://github.com/benjamindenboer/FramerInput
+
+
+
+# Original Form Data
+
+# Object where we store the data
+data =
+	name: ""
+	name2: ''
+	type: "Dog"
+	age: 2
+	notes: ""
+	personality: ""
+	fixed: false
+
+# Function used to display data on screen using the "results" textLayer
+displayFormData = () ->
+	results.text = JSON.stringify(data)
+	
+# Fire it on load
+displayFormData()
+
+# Text Input
+
+# This function wraps the layer in a real input
+input1 = InputLayer.wrap(input1JoinCode, placeholderText1)
+	
+# When the user types...
+input1.onValueChange ->
+	# Store the data in the Object
+	data.name = input1.value
+	# And display it on the screen.
+	displayFormData()
+	
+# # This function wraps the layer in a real input
+# Input2TeamName = InputLayer.wrap(textInput2, placeholderText2)
+# # When the user types...
+# Input2TeamName.onValueChange ->
+# 	print input2.value
+# 	# Store the data in the Object
+# 	data.name2 = input2.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 	
+# 
+# 
+# # Drop Down
+# 
+# # When the drop down is clicked
+# dropDown.onClick () ->
+# 	# Show or hide its menu
+# 	if dropDownMenu.visible
+# 		dropDownMenu.visible = false
+# 	else
+# 		dropDownMenu.visible = true
+# 
+# 	# For each menu option
+# 	for option, i in dropDownMenu.children
+# 		# When it's clicked
+# 		dropDownMenu.children[i].onClick (event, layer) ->
+# 			# Show the selected option in the drop down
+# 			dropDown.selectChild("text").text = layer.text
+# 			# Hide the menu
+# 			dropDownMenu.visible = false
+# 			# Update the data
+# 			data.type = layer.text
+# 			# Display data on screen
+# 			displayFormData()
+# 
+# # Stepper
+# 
+# # This function wraps the layer in a real input
+# stepper1 = InputLayer.wrap(stepper, stepperText)
+# stepper1.value = 2
+# 
+# increaseValue = () ->
+# 	currentValue = parseInt(stepper1.value)
+# 	stepper1.value = currentValue + 1
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# decreaseValue = () ->
+# 	currentValue = parseInt(stepper1.value)
+# 	stepper1.value = currentValue - 1
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# stepUp.onClick () ->
+# 	increaseValue()
+# 	
+# stepDown.onClick () ->
+# 	decreaseValue()
+# 
+# stepper1._inputElement.addEventListener 'keydown', (event) ->
+# 	initialValue = parseInt(stepper1.value)
+# 	# If it's the arrow up key
+# 	if event.which == 38
+# 		increaseValue(initialValue)
+# 	# If it's the arrow down key
+# 	if event.which == 40
+# 		decreaseValue(initialValue)
+# 		
+# # When the value changes...
+# # Note: this won't catch the clicks on the arrows
+# # 		because they aren't real events on the input
+# stepper1.onValueChange ->
+# 	# Store the data in the Object
+# 	data.age = stepper1.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# # Multi-line Text Input
+# 
+# # This function wraps the layer in a real input
+# input2 = InputLayer.wrap(textarea, textareaText, multiLine: true)
+# # When the user types...
+# input2.onValueChange ->
+# 	# Store the data in the Object
+# 	data.notes = input2.value
+# 	# And display it on the screen.
+# 	displayFormData()
+# 
+# # Radio Buttons
+# 
+# # Create array of radio buttons
+# radioButtons = [RadioBase1, RadioBase2, RadioBase3]
+# 
+# # Loop through the array
+# for button, i in radioButtons
+# 	# Find the "outerCircle" child layer
+# 	# and creates states for it
+# 	button.selectChild("outerCircle").states =
+# 		selected:
+# 			backgroundColor: "#1199EE"
+# 			borderColor: "transparent"
+# 		deselected:
+# 			backgroundColor: "white"
+# 			borderColor: "#CED4DA"
+# 	# When a radio button is clicked
+# 	radioButtons[i].onClick (event, layer) ->
+# 		# Deselect all the radio buttons
+# 		for button, c in radioButtons
+# 			radioButtons[c].selectChild("outerCircle").stateSwitch("deselected")
+# 		# Select the one that was clicked
+# 		layer.selectChild("outerCircle").stateSwitch("selected")
+# 		# Update the data object
+# 		data.personality = layer.selectChild("label").text
+# 		# And display it on the screen.
+# 		displayFormData()
+# 
+# # Check Box
+# 
+# # Create states for the check icon
+# checkIcon.states =
+# 	selected:
+# 		fill: "#1199EE"
+# 	deselected:
+# 		fill: "white"
+# 
+# # When the check box is clicked
+# checkBox.onClick (event, layer) ->
+# 	# Toggle the states of the icon
+# 	checkIcon.stateCycle("selected", "deselected")
+# 	# Use the name of the state to update the data property
+# 	if checkIcon.states.current.name == "selected"
+# 		data.fixed = true
+# 	else
+# 		data.fixed = false
+# 	# Display the data on screen
+# 	displayFormData()
+
+
+
+
+
+
 
 
 
