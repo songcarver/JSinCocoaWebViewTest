@@ -1974,7 +1974,7 @@
                           "LINEHEIGHT:1.2",
                           "SIZE:13",
                           "ALIGN:center",
-                          "COLOR:hsl(0, 0%, 100%)"
+                          "COLOR:rgba(96, 106, 119, 1.00)"
                         ]
                       },
                       "depth" : 0,
@@ -2010,7 +2010,7 @@
                         {
                           "length" : 4,
                           "offset" : 0,
-                          "style" : "COLOR:hsl(0, 0%, 100%)"
+                          "style" : "COLOR:rgba(96, 106, 119, 1.00)"
                         }
                       ],
                       "key" : "csrdq",
@@ -2038,7 +2038,7 @@
             "exportOptions" : [
 
             ],
-            "fillColor" : "rgba(255, 255, 255, 0.22)",
+            "fillColor" : "rgba(255, 255, 2, 1.00)",
             "fillEnabled" : true,
             "fillGradient" : {
               "__class" : "LinearGradient",
@@ -7577,7 +7577,7 @@
                           "LINEHEIGHT:1.2",
                           "SIZE:13",
                           "ALIGN:center",
-                          "COLOR:hsl(0, 0%, 100%)"
+                          "COLOR:rgba(96, 106, 119, 1.00)"
                         ]
                       },
                       "depth" : 0,
@@ -7613,7 +7613,7 @@
                         {
                           "length" : 9,
                           "offset" : 0,
-                          "style" : "COLOR:hsl(0, 0%, 100%)"
+                          "style" : "COLOR:rgba(96, 106, 119, 1.00)"
                         }
                       ],
                       "key" : "csrdq",
@@ -7641,7 +7641,7 @@
             "exportOptions" : [
 
             ],
-            "fillColor" : "rgba(255, 255, 255, 0.22)",
+            "fillColor" : "#ffff00",
             "fillEnabled" : true,
             "fillGradient" : {
               "__class" : "LinearGradient",
@@ -7748,7 +7748,7 @@
                     "brightnessEnabled" : 0,
                     "centerAnchorX" : 0.5009765625,
                     "centerAnchorY" : 0.5078125,
-                    "constraintsLocked" : false,
+                    "constraintsLocked" : true,
                     "contrast" : 100,
                     "contrastEnabled" : 0,
                     "editable" : false,
@@ -7980,11 +7980,11 @@
             "blur" : 12,
             "blurEnabled" : 0,
             "blurType" : "layer",
-            "bottom" : 14,
+            "bottom" : 256,
             "brightness" : 100,
             "brightnessEnabled" : 0,
             "centerAnchorX" : 0.5,
-            "centerAnchorY" : 0.5263671875,
+            "centerAnchorY" : 0.2900390625,
             "constraintsLocked" : false,
             "contrast" : 100,
             "contrastEnabled" : 0,
@@ -7994,7 +7994,7 @@
             ],
             "grayscale" : 0,
             "grayScaleEnabled" : 0,
-            "height" : 457,
+            "height" : 215,
             "heightFactor" : null,
             "hueRotate" : 0,
             "hueRotateEnabled" : 0,

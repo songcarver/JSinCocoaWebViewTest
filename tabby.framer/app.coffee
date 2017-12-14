@@ -6,8 +6,8 @@ shouldStop = true
 
 lastUserWorkInertiaLevel = {}
 
-
-
+newTeamName = ""
+teamName = ""
 haveConfetti = false
 
 appVersion = 0.17
@@ -576,6 +576,7 @@ updateUserTeamUI()
 ##### teamflowstuff
 
 button_group.onClick (event, layer) ->
+	# show screen to create or sign in
 	flow.showNext(teamSignOrCreateScreen)
 	flow.header.visible = true
 
@@ -593,22 +594,9 @@ buttonJoinTeam.onClick (event, layer) ->
 	flow.showNext(teamJoinScreen)
 	
 	
-teamLookupCallback = () ->
-	print 'teamLookupCallback called'
-	print newTeamName
+
 	
-	
-	
-# 	bookmark
-buttonJoinTeamWithCode.onClick (event, layer) ->
-	#now we need to validate the code
-	
-	print 'buttonJoingTeamWithCode called'	
-	newTeamName = newTeamName(data.teamCode, teamLookupCallback)
-	
-	
-	flow.showNext(teamJoinSuccess)
-	
+
 	
 	
 
@@ -787,15 +775,35 @@ timeNow =  Date.now()
 
 
 
-teamAddToUserAccount = (teamPath) ->
+teamAddToUserAccount = (newTeamKey) ->
 	#this adds a team to a user's account
-	print 'path in teamAddToUserAccount' + teamPath
+	print 'path in teamAddToUserAccount'
 
 	teamPath = "/users/" + username + "/teams/" + newTeamKey + "/"
 	demoDB.put(teamPath, "active", teamAddedToUserAccountSuccess)
+	print newTeamKey + ' was added to user account'
+
+
+teamLookupCallback = () ->
+	#successf
+	print 'teamLookupCallback called'
+	print teamName
+	print 'team name from teamlookup = ' + teamName
+	teamAddToUserAccount(teamName)
 	
+# 	bookmark
+buttonJoinTeamWithCode.onClick (event, layer) ->
+	#now we need to validate the code
+	print 'teamjoincode = ' + data.teamJoinCode
+	if !data.teamJoinScreen?
+			print 'Sorry, team not found'
+			errorText.text = 'Sorry, team not found'
+			flow.showNext(errorOverlayScreen)
+	else teamLookupTeamNameByCode(data.teamJoinCode, teamLookupCallback)
 
-
+	
+	
+	
 
 
 
@@ -821,21 +829,29 @@ teamFindFreeCodeAndCreateTeam = () ->
 
 teamLookupTeamNameByCode = (teamCode, callback) ->
 	theKey = "/teamDirectory/" + teamCode + '/'
-	demoDB.get theKey, (teamName) ->
+	demoDB.get theKey, (teamNameReturned) ->
+		teamName = teamNameReturned
 		if teamName?
 			print 'value is ' + teamName
 			callback(teamName)
-		else callback('Sorry, team not found')
-
+		else 
+			print 'Sorry, team not found'
+			errorText.text = 'Sorry, team not found'
+			flow.showNext(errorOverlayScreen)
 	
 
 
 teamAddedToUserAccountSuccess = () ->
-	print 'teamAddedToUserAccountSuccess'
-	teamLookupTeamNameByCode(newTeamKey, showTeamName)
+	flow.showNext(teamJoinSuccess)
+	
+buttonToDashboard.on Events.Click, (event, layer) ->
+	# show success screen
+	flow.header.visible = false
+	flow.showNext(teamDashboardScreen)
 
-showTeamName = (value) ->
-	print 'UI: team created' + value
+
+showTeamName = () ->
+	print 'UI: team created' + teamName
 	
 
 # teamNameToCreate = 'test team'
@@ -1818,12 +1834,6 @@ configTeam = () ->
 
 
 
-
-
-
-
-
-
 #  Input thing
 # Made by Taylor Palmer from uxtools.co
 # Need help? Contact me at taylor@uxtools.co
@@ -1837,8 +1847,8 @@ configTeam = () ->
 
 # Object where we store the data
 data =
-	name: ""
-	name2: ''
+	teamJoinCode: ""
+	teamCreateName: ''
 	type: "Dog"
 	age: 2
 	notes: ""
@@ -1860,7 +1870,7 @@ input1 = InputLayer.wrap(input1JoinCode, placeholderText1)
 # When the user types...
 input1.onValueChange ->
 	# Store the data in the Object
-	data.name = input1.value
+	data.teamJoinCode = input1.value
 	# And display it on the screen.
 	displayFormData()
 	
