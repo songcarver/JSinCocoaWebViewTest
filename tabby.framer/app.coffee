@@ -1,7 +1,7 @@
 {InputLayer} = require "input"
 
 
-sandbox = true
+sandbox = false
 shouldStop = true
 
 lastUserWorkInertiaLevel = {}
@@ -178,6 +178,9 @@ oldUserString = ""
 	username = myName
 	cocoaBridgeIsUp = true
 	
+@getKeyValueFromMac = (theKey, theValue) ->
+	print theKey, theValue
+	
 	
 	
 
@@ -282,9 +285,25 @@ myButtonArray = []
 
 allButtons = new Layer
 	parent: teamDashboardScreen
+	y: Align.bottom()
 	width: Screen.width
-	height: 100
+	height: 90
 	backgroundColor: 'transparent'
+	
+allButtons.originY = 1
+	
+allButtonsScrim = new Layer
+	parent: allButtons
+	size: allButtons.size
+	backgroundColor: 'black'
+	opacity: 0.6
+
+
+allButtonsScrim.on Events.Click, (event, Layer) ->
+	allButtons.visible = false
+	
+allButtonsScrim.sendToBack()
+	
 
 
 
@@ -975,6 +994,7 @@ updateUserWorkInertia = (theUsers) ->
 							time: 9
 					
 					animateInertia.start()
+					
 
 
 
@@ -1044,10 +1064,16 @@ Utils.interval 10, ->
 			updateUserWorkInertia(theUsers)
 			updateUserList()
 
-updateMacUserID = (userID) ->
-	CocoaBridge.writeUDID_(userID) #send it to the mac
+
+
+@writeKeyValuePairToMacStorage = (key, value) ->
+	if cocoaBridgeIsUp
+		print 'writeKeyValuePairToMacStorage was called'
+		CocoaBridge.writeKeyValuePairToMac(key, value) #send it to the mac
 		
-		
+
+Utils.delay 5, ->
+	writeKeyValuePairToMacStorage("hello", "world")		
 
 @photoAngle = 0
 # 
@@ -1259,6 +1285,13 @@ Canvas.on "change:size", ->
 # window resizes #########
 
 
+scaleToFill = (target, source) ->
+	maxDimension = Math.max(target.height, target.width)
+	minDimension = Math.max(source.width, source.height)
+	scalar = target.width / target.height
+	return target
+	
+
 window.onresize = () ->
 	updateCanvasDimensions?()
 
@@ -1273,6 +1306,9 @@ updateCanvasDimensions = () ->
 		
 	updateButtonLayout(myButtonArray, myButtons)
 	#update where the buttons are placed
+	allButtons.size = Canvas.size
+	
+	allButtons.y = Screen.height - allButtons.height
 	
 	
 updateCanvasDimensions?()
@@ -1341,7 +1377,9 @@ updateUserList = () ->
 					if theUsername isnt 'Elon Musky' 
 						userArray.push(theUsername)
 						
-		
+			
+			
+			
 
 #				commented logic out below to show current username as well. 
 # 				if theUsername isnt username 
@@ -1476,7 +1514,13 @@ updateUserList = () ->
 				opacity: 1
 				backgroundColor: 'transparent'
 				
-
+			
+			
+			#book
+			# make each cell clickable
+			cell.on Events.Click, (event, layer) ->
+				if layer.name is username
+					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
 				
 				
 
@@ -1509,7 +1553,9 @@ showUpdateAvailableBanner = () ->
 		`window.open("https://www.evernote.com/l/AAF3kITp759C2p4zTphJt6qGpjCrS5r3msQ");`
 		buildOverlay.visible = false
 	
-	
+
+
+
 
 #### Loops
 
@@ -1710,8 +1756,10 @@ if sandbox
 		text: 'SANDBOX'
 		fontSize: 9
 		fontWeight: 800
-		color: 'black'
+		color: 'red'
 		padding: 2
+		opacity: 0.2
+		x: Align.right()
 
 
 
@@ -2021,7 +2069,7 @@ input1.onValueChange ->
 
 
 
-
+allButtons.visible = false #experimental
 
 
 forceFlowUpdate()

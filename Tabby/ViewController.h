@@ -9,7 +9,7 @@
 
 
 @interface ViewController : NSViewController <WebUIDelegate,WebDownloadDelegate,WebFrameLoadDelegate,WebResourceLoadDelegate,WebPolicyDelegate>
--(BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
+//-(BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
 
 
 

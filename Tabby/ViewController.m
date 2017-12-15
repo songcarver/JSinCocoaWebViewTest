@@ -54,7 +54,6 @@
 
 
 
-// todo the problem seems to be here. The function never gets called properly
 - (void) methodToSendUserName;
 {
 	NSLog(@"methodToSendUserName was called");
@@ -68,6 +67,22 @@
 	[self.webView stringByEvaluatingJavaScriptFromString:userName];
 }
 
+
+
+- (void) getKeyValuePairFromMac:(NSString*) keyToLookup {
+//bookmark
+	
+	
+	
+	NSString *valueToReturnString = [[NSUserDefaults standardUserDefaults]
+							  stringForKey:keyToLookup];
+	
+	// book
+	NSString * stringToSend = [NSString stringWithFormat:@"getKeyValueFromMac('%@', '%@');",stringForKey,keyToLookup];
+	[self.webView stringByEvaluatingJavaScriptFromString:stringToSend];
+	
+	
+}
 
 
 
@@ -226,7 +241,8 @@
 													                  @"photoFlipped",
 													 @"photoRotated:",
 													 @"showMacNotification:",
-													 @"writeUDID:"
+													 @"writeKeyValuePairToMac:",
+													 @"getKeyValueFromMac:"
 													 ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
@@ -246,7 +262,7 @@
 
 
 
-
+// JS calls this and tells MacOS to show notification
 - (void) showMacNotification:(NSString *) text {
 		NSLog(@"should show Mac notification");
 	// play notification sound
@@ -274,9 +290,9 @@
 
 
 
-- (void) writeUDID: (NSString *) userID {
-	  NSString *valueToSave = userID;
-	  [[NSUserDefaults standardUserDefaults] setObject:valueToSave forKey:@"userID"];
+- (void) writeKeyValuePairToMac: (NSString*) keyString :(NSString*) valueString{
+
+	  [[NSUserDefaults standardUserDefaults] setObject:valueString forKey:keyString];
 	  [[NSUserDefaults standardUserDefaults] synchronize];
 		  
 }
@@ -300,10 +316,13 @@
 }
 
 
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
-{
-	return YES;
-}
+
+
+
+//- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+//{
+//	return YES;
+//}
 
 
 

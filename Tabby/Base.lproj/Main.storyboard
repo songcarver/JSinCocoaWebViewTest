@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -684,14 +684,30 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Tabby" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
-                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                <windowController showSeguePresentationStyle="single" id="B8D-0N-5wS" sceneMemberID="viewController">
+                    <window key="window" title="Tabby" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" titlebarAppearsTransparent="YES" titleVisibility="hidden" id="IQv-IB-iLA">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" fullSizeContentView="YES"/>
                         <windowPositionMask key="initialPositionMask" bottomStrut="YES"/>
-                        <rect key="contentRect" x="751" y="11" width="320" height="160"/>
+                        <rect key="contentRect" x="751" y="11" width="320" height="90"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <value key="minSize" type="size" width="200" height="160"/>
+                        <value key="minSize" type="size" width="200" height="90"/>
                         <value key="maxSize" type="size" width="768" height="512"/>
+                        <toolbar key="toolbar" implicitIdentifier="573D4D21-FFDC-42D2-8585-E3930D2874D8" autosavesConfiguration="NO" displayMode="labelOnly" sizeMode="small" id="Fm8-2m-Moo">
+                            <allowedToolbarItems>
+                                <toolbarItem implicitItemIdentifier="NSToolbarShowColorsItem" id="Xyh-re-UY8"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarShowFontsItem" id="s70-bw-3Hx"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="KgD-TC-VY9"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="o9B-YI-T3f"/>
+                                <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="hJS-Sp-Nto"/>
+                                <toolbarItem implicitItemIdentifier="601459FE-113D-4BC7-B7C0-152ECB3F72FA" label="Shoo" paletteLabel="Shoo" tag="-1" image="iconBroom" id="f6F-lf-PVG"/>
+                                <toolbarItem implicitItemIdentifier="A2F2EDF6-8EC0-43F6-8AD0-78400A88B8A8" label="Update" paletteLabel="Update…" tag="-1" image="iconHammer" id="MeA-o6-wkA"/>
+                            </allowedToolbarItems>
+                            <defaultToolbarItems>
+                                <toolbarItem reference="f6F-lf-PVG"/>
+                                <toolbarItem reference="hJS-Sp-Nto"/>
+                                <toolbarItem reference="MeA-o6-wkA"/>
+                            </defaultToolbarItems>
+                        </toolbar>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
                         </connections>
@@ -709,11 +725,11 @@
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="90"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="w6u-1q-Hwi">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="160"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="90"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>
                         </subviews>
@@ -727,4 +743,8 @@
             <point key="canvasLocation" x="75" y="655"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="iconBroom" width="32" height="32"/>
+        <image name="iconHammer" width="32" height="32"/>
+    </resources>
 </document>

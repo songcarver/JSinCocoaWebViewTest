@@ -14,12 +14,12 @@
 // trying to get clickthough working
 
 // trying to get clickthough working
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent {
-	
-	return YES;
-	
-	
-}
+//- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent {
+//	
+//	return YES;
+//	
+//	
+//}
 
 
 
