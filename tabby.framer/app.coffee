@@ -1,7 +1,9 @@
 {InputLayer} = require "input"
 
 
-sandbox = false
+
+
+sandbox = true
 shouldStop = true
 
 lastUserWorkInertiaLevel = {}
@@ -84,6 +86,7 @@ forceFlowUpdate = () ->
 	teamManagementScreen.size = Canvas.size
 	teamDetailViewScreen.size = Canvas.size
 	teamCreatePendingScreen.size = Canvas.size
+	teamJoinSuccess.size = Canvas.size
 	
 	
 	
@@ -292,17 +295,18 @@ allButtons = new Layer
 	
 allButtons.originY = 1
 	
-allButtonsScrim = new Layer
-	parent: allButtons
-	size: allButtons.size
-	backgroundColor: 'black'
-	opacity: 0.6
-
-
-allButtonsScrim.on Events.Click, (event, Layer) ->
-	allButtons.visible = false
-	
-allButtonsScrim.sendToBack()
+# allButtonsScrim = new Layer
+# 	parent: allButtons
+# 	size: allButtons.size
+# 	backgroundColor: 'black'
+# 	opacity: 0.6
+# 	visible: true
+# 
+# allButtonsScrim.on Events.Click, (event, Layer) ->
+# 	allButtons.visible = false
+# 	print 'scrim'
+# 	
+# allButtonsScrim.sendToBack()
 	
 
 
@@ -595,6 +599,7 @@ updateUserTeamUI()
 ##### teamflowstuff
 
 button_group.onClick (event, layer) ->
+	print 'clicked'
 	# show screen to create or sign in
 	flow.showNext(teamSignOrCreateScreen)
 	flow.header.visible = true
@@ -669,16 +674,15 @@ scroll.mouseWheelEnabled = true
 
 scroll.content.backgroundColor = 'transparent'
 #empty state
-funCheckingText = Utils.randomChoice(['checking alleyways…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world…'])
+funCheckingText = Utils.randomChoice(['lowers sunglasses…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world…'])
 
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	backgroundColor: 'transparent'
-	fontSize: 11
+	fontSize: 10
 	textAlign: "center"
-	fontWeight: 400
-	letterSpacing: 1
-	color: "#ffffff"
+	fontWeight: 600
+	color: "#111111"
 	text: funCheckingText
 	padding: 4
 	x: Align.center()
@@ -814,10 +818,10 @@ teamLookupCallback = () ->
 buttonJoinTeamWithCode.onClick (event, layer) ->
 	#now we need to validate the code
 	print 'teamjoincode = ' + data.teamJoinCode
-	if !data.teamJoinScreen?
-			print 'Sorry, team not found'
-			errorText.text = 'Sorry, team not found'
-			flow.showNext(errorOverlayScreen)
+	if !data.teamJoinCode?
+		print 'Sorry, team not found'
+		errorText.text = 'Sorry, team not found'
+		flow.showNext(errorOverlayScreen)
 	else teamLookupTeamNameByCode(data.teamJoinCode, teamLookupCallback)
 
 	
@@ -862,6 +866,7 @@ teamLookupTeamNameByCode = (teamCode, callback) ->
 
 teamAddedToUserAccountSuccess = () ->
 	flow.showNext(teamJoinSuccess)
+	buttonToDashboard.visible = true
 	
 buttonToDashboard.on Events.Click, (event, layer) ->
 	# show success screen
@@ -970,7 +975,8 @@ checkUserIPAddress = () ->
 ############## work inertia workinertia stuff
 
 colorFromInertia = (theUserName, inertiaLevel) ->
-	return  Color.mix("#4C545E", colorFromName(theUserName), (inertiaLevel /16), true)
+
+	return Color.mix("#4C545E", colorFromName(theUserName), (inertiaLevel /16), true)
 	
 # blurry fuzzy thing
 updateUserWorkInertia = (theUsers) ->
@@ -1048,8 +1054,8 @@ demoDB.onChange "/lastUpdate", (value) ->
 						showNotificationBanner(eventNotification, theEvent.eventKey)
 						
 					if theEvent.username isnt username #don't show the notification if it's me
-						if !sandbox
-							try CocoaBridge.showMacNotification_(eventNotification) #send it to the mac
+						try CocoaBridge.showMacNotification_(eventNotification) #send it to the mac	
+						print 'tried to send notification'
 
 					updateUsersBadge(theEvent)
 
@@ -1066,14 +1072,14 @@ Utils.interval 10, ->
 
 
 
-@writeKeyValuePairToMacStorage = (key, value) ->
+@writeKeyValuePairToMac = (key, value) ->
 	if cocoaBridgeIsUp
 		print 'writeKeyValuePairToMacStorage was called'
 		CocoaBridge.writeKeyValuePairToMac(key, value) #send it to the mac
 		
 
-Utils.delay 5, ->
-	writeKeyValuePairToMacStorage("hello", "world")		
+# Utils.delay 5, ->
+# 	writeKeyValuePairToMac("hello", "world")		
 
 @photoAngle = 0
 # 
@@ -1322,6 +1328,8 @@ colorFromName = (name) ->
 		h: myHue
 		l: 0.30
 		s: 1
+	
+	if name is "Chris Raethke" then theColor = "#00AAFF"
 	return theColor
 	
 	
@@ -1519,8 +1527,9 @@ updateUserList = () ->
 			#book
 			# make each cell clickable
 			cell.on Events.Click, (event, layer) ->
-				if layer.name is username
-					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
+				print 'cell click'
+# 				if layer.name is username
+# 					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
 				
 				
 
@@ -1850,6 +1859,7 @@ class Confetti
 # theres a way to replace this with the framer loop that would
 # probably make it a bit more performant but i cant
 # remember how
+
 window.step = ->
 	if !shouldStop 
 		requestAnimationFrame(step)
@@ -1868,6 +1878,7 @@ confettiStart = () ->
 	confettiLayer.visible = true
 	shouldStop = false
 	step()
+	
 confettiStop = () ->
 	shouldStop = true
 	confettiLayer.visible = false
@@ -1910,18 +1921,28 @@ displayFormData = () ->
 # Fire it on load
 displayFormData()
 
+
+
 # Text Input
 
 # This function wraps the layer in a real input
+# InputLayer.originX = 0
+# InputLayer.midX = Screen.midX
+
 input1 = InputLayer.wrap(input1JoinCode, placeholderText1)
-	
+
 # When the user types...
 input1.onValueChange ->
 	# Store the data in the Object
 	data.teamJoinCode = input1.value
 	# And display it on the screen.
 	displayFormData()
-	
+
+
+
+
+
+
 # # This function wraps the layer in a real input
 # Input2TeamName = InputLayer.wrap(textInput2, placeholderText2)
 # # When the user types...
@@ -2069,7 +2090,7 @@ input1.onValueChange ->
 
 
 
-allButtons.visible = false #experimental
+# allButtons.visible = false #experimental
 
 
 forceFlowUpdate()

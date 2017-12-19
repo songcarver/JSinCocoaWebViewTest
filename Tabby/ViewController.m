@@ -59,6 +59,7 @@
 	NSLog(@"methodToSendUserName was called");
 	NSString *fullUserName = NSFullUserName();
 	
+//	NSString *stringForKey = @"";
 	NSString *userIDString = [[NSUserDefaults standardUserDefaults]
 							  stringForKey:@"userID"];
 	
@@ -74,11 +75,11 @@
 	
 	
 	
-	NSString *valueToReturnString = [[NSUserDefaults standardUserDefaults]
+	NSString *stringForKey = [[NSUserDefaults standardUserDefaults]
 							  stringForKey:keyToLookup];
 	
 	// book
-	NSString * stringToSend = [NSString stringWithFormat:@"getKeyValueFromMac('%@', '%@');",stringForKey,keyToLookup];
+	NSString * stringToSend = [NSString stringWithFormat:@"setKeyValueFromMac('%@', '%@');",stringForKey,keyToLookup];
 	[self.webView stringByEvaluatingJavaScriptFromString:stringToSend];
 	
 	
@@ -273,7 +274,13 @@
 	notification.title = text;
 	notification.informativeText = [NSString stringWithFormat: text];
 	//   notification.soundName = NSUserNotificationDefaultSoundName;
-	notification.soundName = @"tabby_bell.aiff";
+	NSString *code = [text substringFromIndex: [text length] - 1];
+	
+	if ([code isEqualToString:@"🏆"])
+	{notification.soundName = @"mediumCrowdCheer.aiff";}
+	else if ([code isEqualToString:@"🔨"])
+		{notification.soundName = @"anvil.aiff";}
+	else {notification.soundName = @"tabby_bell.aiff";}
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }
