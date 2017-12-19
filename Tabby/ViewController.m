@@ -45,7 +45,7 @@
     [self methodA];
 //	[self methodToSendUserName];
 //
-    
+
     
 }
 
@@ -159,7 +159,7 @@
 	
 	
 	[self methodToSendUserName];
-
+	[self showMacNotification:@"hello world" withAlertSound:@"hammer"];
 	
 }
 
@@ -239,9 +239,8 @@
 
 + (BOOL) isSelectorExcludedFromWebScript:(SEL)aSelector {
     NSArray *  allowedSelectorNamesForJavaScript = @[
-													                  @"photoFlipped",
+													 @"photoFlipped",
 													 @"photoRotated:",
-													 @"showMacNotification:",
 													 @"writeKeyValuePairToMac:",
 													 @"getKeyValueFromMac:"
 													 ];
@@ -264,7 +263,7 @@
 
 
 // JS calls this and tells MacOS to show notification
-- (void) showMacNotification:(NSString *) text {
+- (void) showMacNotification:(NSString *)text withAlertSound:(NSString *)alertSound{
 		NSLog(@"should show Mac notification");
 	// play notification sound
 //	NSSound * myAwesomeSound = [NSSound soundNamed:@"tabby_bell.aiff"];
@@ -274,13 +273,18 @@
 	notification.title = text;
 	notification.informativeText = [NSString stringWithFormat: text];
 	//   notification.soundName = NSUserNotificationDefaultSoundName;
-	NSString *code = [text substringFromIndex: [text length] - 1];
 	
-	if ([code isEqualToString:@"🏆"])
+	
+//	NSString * alertSound = @"nothing";
+	
+	NSLog(alertSound);
+	
+	notification.soundName = @"tabby_bell.aiff";
+	if ([alertSound isEqualToString: @"trophy"])
 	{notification.soundName = @"mediumCrowdCheer.aiff";}
-	else if ([code isEqualToString:@"🔨"])
+	else if ([alertSound isEqualToString: @"hammer"])
 		{notification.soundName = @"anvil.aiff";}
-	else {notification.soundName = @"tabby_bell.aiff";}
+	notification.soundName = @"hammer.aiff";
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }

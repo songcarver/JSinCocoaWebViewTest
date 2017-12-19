@@ -180,6 +180,7 @@ oldUserString = ""
 # 	if userID?
 	username = myName
 	cocoaBridgeIsUp = true
+	print 'cocoa bridge is up'
 	
 @getKeyValueFromMac = (theKey, theValue) ->
 	print theKey, theValue
@@ -1054,7 +1055,12 @@ demoDB.onChange "/lastUpdate", (value) ->
 						showNotificationBanner(eventNotification, theEvent.eventKey)
 						
 					if theEvent.username isnt username #don't show the notification if it's me
-						try CocoaBridge.showMacNotification_(eventNotification) #send it to the mac	
+						alertSound = 'bell'
+						if theEvent.eventKey is '🏆' then alertSound = 'trophy'
+						if theEvent.eventKey is '🔨' then alertSound = 'hammer'
+						
+						message = eventNotification + ' withAlertSound:' + alertSound
+						try CocoaBridge.showMacNotification_(message) #send it to the mac	
 						print 'tried to send notification'
 
 					updateUsersBadge(theEvent)

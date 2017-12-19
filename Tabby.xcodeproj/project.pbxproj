@@ -13,6 +13,7 @@
 		2B76730E1FE36C2700387B99 /* iconBroom@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B76730D1FE36C2700387B99 /* iconBroom@2x.png */; };
 		2B7673101FE36C2B00387B99 /* iconHammer@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B76730F1FE36C2B00387B99 /* iconHammer@2x.png */; };
 		2B83A1471FE8CBD6005F97C9 /* mediumCrowdCheer.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */; };
+		2B83A1491FE8E177005F97C9 /* hammer.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A1481FE8E177005F97C9 /* hammer.aiff */; };
 		2B99EACA1FA83B6E00E33113 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAC91FA83B6E00E33113 /* AppDelegate.m */; };
 		2B99EACD1FA83B6E00E33113 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EACC1FA83B6E00E33113 /* ViewController.m */; };
 		2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B99EACE1FA83B6E00E33113 /* Assets.xcassets */; };
@@ -21,7 +22,6 @@
 		2B99EAE01FA83B6E00E33113 /* embeddedJSViewExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */; };
 		2B99EAEB1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */; };
 		2BB028F91FB15966005FE8FB /* tabby.framer in Resources */ = {isa = PBXBuildFile; fileRef = 2BB028F81FB15965005FE8FB /* tabby.framer */; };
-		2BCDBF5D1FB4391700B323B1 /* anvil.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5C1FB4391600B323B1 /* anvil.aiff */; };
 		2BF74B4C1FCFCD190090CFC8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5A1FB2E15100B323B1 /* Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +49,7 @@
 		2B76730D1FE36C2700387B99 /* iconBroom@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconBroom@2x.png"; sourceTree = "<group>"; };
 		2B76730F1FE36C2B00387B99 /* iconHammer@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iconHammer@2x.png"; sourceTree = "<group>"; };
 		2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = mediumCrowdCheer.aiff; sourceTree = "<group>"; };
+		2B83A1481FE8E177005F97C9 /* hammer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = hammer.aiff; sourceTree = "<group>"; };
 		2B99EAC51FA83B6E00E33113 /* Tabby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EAC81FA83B6E00E33113 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2B99EAC91FA83B6E00E33113 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -66,7 +67,6 @@
 		2B99EAEC1FA83B6E00E33113 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2BB028F81FB15965005FE8FB /* tabby.framer */ = {isa = PBXFileReference; lastKnownFileType = folder; path = tabby.framer; sourceTree = SOURCE_ROOT; };
 		2BCDBF5A1FB2E15100B323B1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2BCDBF5C1FB4391600B323B1 /* anvil.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = anvil.aiff; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,12 +102,12 @@
 				2B99EAE91FA83B6E00E33113 /* TabbyUITests */,
 				2B99EAC61FA83B6E00E33113 /* Products */,
 				2B565B111FB18E2E00814DE1 /* tabby_bell.aiff */,
-				2BCDBF5C1FB4391600B323B1 /* anvil.aiff */,
 				2B7673071FE369B100387B99 /* broom.png */,
 				2B76730B1FE36B1800387B99 /* hammer.png */,
 				2B76730D1FE36C2700387B99 /* iconBroom@2x.png */,
 				2B76730F1FE36C2B00387B99 /* iconHammer@2x.png */,
 				2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */,
+				2B83A1481FE8E177005F97C9 /* hammer.aiff */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -272,11 +272,11 @@
 				2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */,
 				2B99EAD21FA83B6E00E33113 /* Main.storyboard in Resources */,
 				2B7673081FE369B100387B99 /* broom.png in Resources */,
-				2BCDBF5D1FB4391700B323B1 /* anvil.aiff in Resources */,
 				2B83A1471FE8CBD6005F97C9 /* mediumCrowdCheer.aiff in Resources */,
 				2BB028F91FB15966005FE8FB /* tabby.framer in Resources */,
 				2B76730E1FE36C2700387B99 /* iconBroom@2x.png in Resources */,
 				2B565B121FB18E2F00814DE1 /* tabby_bell.aiff in Resources */,
+				2B83A1491FE8E177005F97C9 /* hammer.aiff in Resources */,
 				2B76730C1FE36B1800387B99 /* hammer.png in Resources */,
 				2B7673101FE36C2B00387B99 /* iconHammer@2x.png in Resources */,
 			);
