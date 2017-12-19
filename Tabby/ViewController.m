@@ -265,9 +265,7 @@
 // JS calls this and tells MacOS to show notification
 - (void) showMacNotification:(NSString *)text withAlertSound:(NSString *)alertSound{
 		NSLog(@"should show Mac notification");
-	// play notification sound
-//	NSSound * myAwesomeSound = [NSSound soundNamed:@"tabby_bell.aiff"];
-//	[myAwesomeSound play];
+
 	
 	NSUserNotification *notification = [[NSUserNotification alloc] init];
 	notification.title = text;
@@ -283,8 +281,8 @@
 	if ([alertSound isEqualToString: @"trophy"])
 	{notification.soundName = @"mediumCrowdCheer.aiff";}
 	else if ([alertSound isEqualToString: @"hammer"])
-		{notification.soundName = @"anvil.aiff";}
-	notification.soundName = @"hammer.aiff";
+		{notification.soundName = @"hammer.aiff";}
+	notification.soundName = @"mediumCrowdCheer.aiff";
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }
