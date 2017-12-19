@@ -279,10 +279,11 @@
 	
 	notification.soundName = @"tabby_bell.aiff";
 	if ([alertSound isEqualToString: @"trophy"])
-	{notification.soundName = @"mediumCrowdCheer.aiff";}
+	{notification.soundName = @"mediumCrowdCheer3.aiff";}
 	else if ([alertSound isEqualToString: @"hammer"])
 		{notification.soundName = @"hammer.aiff";}
-	notification.soundName = @"mediumCrowdCheer.aiff";
+	
+	notification.soundName = @"mediumCrowdCheer3.aiff";
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }

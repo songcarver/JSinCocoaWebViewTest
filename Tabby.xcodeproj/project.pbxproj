@@ -15,6 +15,7 @@
 		2B83A1471FE8CBD6005F97C9 /* mediumCrowdCheer.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */; };
 		2B83A1491FE8E177005F97C9 /* hammer.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A1481FE8E177005F97C9 /* hammer.aiff */; };
 		2B83A14B1FE8E340005F97C9 /* mediumCrowdCheer2.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A14A1FE8E340005F97C9 /* mediumCrowdCheer2.aiff */; };
+		2B83A14D1FE8E491005F97C9 /* mediumCrowdCheer3.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 2B83A14C1FE8E491005F97C9 /* mediumCrowdCheer3.aiff */; };
 		2B99EACA1FA83B6E00E33113 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAC91FA83B6E00E33113 /* AppDelegate.m */; };
 		2B99EACD1FA83B6E00E33113 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EACC1FA83B6E00E33113 /* ViewController.m */; };
 		2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B99EACE1FA83B6E00E33113 /* Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = mediumCrowdCheer.aiff; sourceTree = "<group>"; };
 		2B83A1481FE8E177005F97C9 /* hammer.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = hammer.aiff; sourceTree = "<group>"; };
 		2B83A14A1FE8E340005F97C9 /* mediumCrowdCheer2.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = mediumCrowdCheer2.aiff; sourceTree = "<group>"; };
+		2B83A14C1FE8E491005F97C9 /* mediumCrowdCheer3.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = mediumCrowdCheer3.aiff; sourceTree = "<group>"; };
 		2B99EAC51FA83B6E00E33113 /* Tabby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B99EAC81FA83B6E00E33113 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2B99EAC91FA83B6E00E33113 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				2B83A1461FE8CBD6005F97C9 /* mediumCrowdCheer.aiff */,
 				2B83A1481FE8E177005F97C9 /* hammer.aiff */,
 				2B83A14A1FE8E340005F97C9 /* mediumCrowdCheer2.aiff */,
+				2B83A14C1FE8E491005F97C9 /* mediumCrowdCheer3.aiff */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
@@ -275,6 +278,7 @@
 				2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */,
 				2B99EAD21FA83B6E00E33113 /* Main.storyboard in Resources */,
 				2B7673081FE369B100387B99 /* broom.png in Resources */,
+				2B83A14D1FE8E491005F97C9 /* mediumCrowdCheer3.aiff in Resources */,
 				2B83A1471FE8CBD6005F97C9 /* mediumCrowdCheer.aiff in Resources */,
 				2BB028F91FB15966005FE8FB /* tabby.framer in Resources */,
 				2B76730E1FE36C2700387B99 /* iconBroom@2x.png in Resources */,
