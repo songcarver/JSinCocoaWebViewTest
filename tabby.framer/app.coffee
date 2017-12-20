@@ -2,7 +2,6 @@
 
 
 
-
 sandbox = true
 shouldStop = true
 
@@ -34,6 +33,8 @@ newTeamName = ""
 teamKey = ""
 path = ""
 teamPath = ""
+newTeamCode = ""
+
 
 localTeamDirectory = {}
 localUserTeamMembershipsList = {}
@@ -61,8 +62,11 @@ flow.header.visible = false
 
 userTeams = 
 	"Tabby": true
-	"Design Labs": false
-	"Mac Dev Team": true
+	
+teamNameLookupFromCode = 
+	Tabby: "tabby"
+
+	
 
 forceFlowUpdate = () ->
 	teamCreateScreen.size = Canvas.size
@@ -180,10 +184,10 @@ oldUserString = ""
 # 	if userID?
 	username = myName
 	cocoaBridgeIsUp = true
-	print 'cocoa bridge is up'
+	#print 'cocoa bridge is up'
 	
 @getKeyValueFromMac = (theKey, theValue) ->
-	print theKey, theValue
+	#print theKey, theValue
 	
 	
 	
@@ -289,12 +293,12 @@ myButtonArray = []
 
 allButtons = new Layer
 	parent: teamDashboardScreen
-	y: Align.bottom()
+	y: 0
 	width: Screen.width
 	height: 90
 	backgroundColor: 'transparent'
 	
-allButtons.originY = 1
+# allButtons.originY = 0
 	
 # allButtonsScrim = new Layer
 # 	parent: allButtons
@@ -305,7 +309,7 @@ allButtons.originY = 1
 # 
 # allButtonsScrim.on Events.Click, (event, Layer) ->
 # 	allButtons.visible = false
-# 	print 'scrim'
+# 	#print 'scrim'
 # 	
 # allButtonsScrim.sendToBack()
 	
@@ -396,7 +400,7 @@ buttonTips = new TextLayer
 	text: 'Having a win'
 	fontSize: 11
 	fontWeight: 800
-	color: '#eeee00'
+	color: '#111111'
 # 	backgroundColor: '111100'
 	padding: 4
 # 	width: Screen.width
@@ -600,9 +604,9 @@ updateUserTeamUI()
 ##### teamflowstuff
 
 button_group.onClick (event, layer) ->
-	print 'clicked'
 	# show screen to create or sign in
 	flow.showNext(teamSignOrCreateScreen)
+	teamAddToUserAccount("tabby")
 	flow.header.visible = true
 
 buttonEeek.onClick (event, layer) ->
@@ -795,37 +799,75 @@ timeNow =  Date.now()
 		
 
 
+#teamstuff
 
 
 
 
-teamAddToUserAccount = (newTeamKey) ->
+#todo sync network teams and 
+
+
+#todo check if user is in one of my current teams
+
+#book
+teamNameInput = InputLayer.wrap(textInputName, nameTeamPlaceholderText)
+
+buttonCreateTeam.onClick ->
+	flow.showNext(teamCreateScreen)
+		
+	# When the user types...
+teamNameInput.onValueChange ->
+	# Store the data in the Object
+	data.teamName = teamNameInput.value
+	# And display it on the screen.
+
+teamNameInput.onInputFocus ->
+	teamNameInput.color = "transparent"
+	
+buttonCreateTeamWithName.onClick ->
+	teamFindFreeCodeAndCreateTeam(data.teamName)
+# 	textInputName
+# todo wrap the text input
+# then create a new team based on this name
+# add this team to your database
+#show success
+
+
+teamAddToUserAccount = (newTeamCode) ->
 	#this adds a team to a user's account
-	print 'path in teamAddToUserAccount'
+	#print 'path in teamAddToUserAccount'
 
-	teamPath = "/users/" + username + "/teams/" + newTeamKey + "/"
-	demoDB.put(teamPath, "active", teamAddedToUserAccountSuccess)
-	print newTeamKey + ' was added to user account'
+	teamPath = "/users/" + username + "/teams/" + newTeamCode + "/"
+	if newTeamCode isnt 'tabby'
+		demoDB.put(teamPath, "active", teamAddedToUserAccountSuccess)
+	else 
+		demoDB.put(teamPath, "active")
+	#print newTeamKey + ' was added to user account'
 
 
 teamLookupCallback = () ->
 	#successf
-	print 'teamLookupCallback called'
-	print teamName
-	print 'team name from teamlookup = ' + teamName
-	teamAddToUserAccount(teamName)
+	#print 'teamLookupCallback called'
+	#print teamName
+	#print 'team name from teamlookup = ' + teamName
+	teamAddToUserAccount(teamCode)
 	
-# 	bookmark
+
 buttonJoinTeamWithCode.onClick (event, layer) ->
 	#now we need to validate the code
-	print 'teamjoincode = ' + data.teamJoinCode
 	if !data.teamJoinCode?
-		print 'Sorry, team not found'
-		errorText.text = 'Sorry, team not found'
+		errorText.text = 'Sorry, team not found.'
 		flow.showNext(errorOverlayScreen)
 	else teamLookupTeamNameByCode(data.teamJoinCode, teamLookupCallback)
 
-	
+
+
+isUserInMyActiveTeams = (userToCheck) ->
+	theKey = "/users/" + userToCheck + '/teams/'
+	demoDB.get theKey, (teamObject) ->
+		if !teamObject? then print 'it doesnt exist'
+		for eachTeam, value of teamObject
+			userTeams[eachTeam] = value
 	
 	
 
@@ -839,15 +881,16 @@ teamFindFreeCodeAndCreateTeam = () ->
 		for theKey, value of teamCodeList
 			if value is ""  #we found an empty slot, create team
 				newTeamKey = theKey
+				newTeamCode = newTeamKey
 				teamPath = "/teamDirectory/" + newTeamKey
-				print "path:" + teamPath
+# 				#print "path:" + teamPath
 				demoDB.put(teamPath, newTeamName, teamAddToUserAccount)
 				break
 				
 				#now we add this team to the user's account
 				
 				
-		if newTeamKey is '' then print '''Error, couldn't create team'''		
+		if newTeamKey is '' then #print '''Error, couldn't create team'''		
 
 
 
@@ -856,10 +899,9 @@ teamLookupTeamNameByCode = (teamCode, callback) ->
 	demoDB.get theKey, (teamNameReturned) ->
 		teamName = teamNameReturned
 		if teamName?
-			print 'value is ' + teamName
+			#print 'value is ' + teamName
 			callback(teamName)
 		else 
-			print 'Sorry, team not found'
 			errorText.text = 'Sorry, team not found'
 			flow.showNext(errorOverlayScreen)
 	
@@ -876,7 +918,7 @@ buttonToDashboard.on Events.Click, (event, layer) ->
 
 
 showTeamName = () ->
-	print 'UI: team created' + teamName
+	#print 'UI: team created' + teamName
 	
 
 # teamNameToCreate = 'test team'
@@ -1061,7 +1103,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 						
 						message = eventNotification + ' withAlertSound:' + alertSound
 						try CocoaBridge.showMacNotification_(message) #send it to the mac	
-						print 'tried to send notification'
+						#print 'tried to send notification'
 
 					updateUsersBadge(theEvent)
 
@@ -1080,7 +1122,7 @@ Utils.interval 10, ->
 
 @writeKeyValuePairToMac = (key, value) ->
 	if cocoaBridgeIsUp
-		print 'writeKeyValuePairToMacStorage was called'
+		#print 'writeKeyValuePairToMacStorage was called'
 		CocoaBridge.writeKeyValuePairToMac(key, value) #send it to the mac
 		
 
@@ -1133,146 +1175,10 @@ Utils.interval 10, ->
 
 # Using Benjamin's input module: 
 # https://github.com/benjamindenboer/FramerInput
-{InputLayer} = require "input"
-
-# Reset the cursor to normal
-document.body.style.cursor = "auto"
-
-# Turn off purple hints
-Framer.Extras.Hints.disable()
 
 
 
-# Drop Down
 
-# # When the drop down is clicked
-# dropDown.onClick () ->
-# 	# Show or hide its menu
-# 	if dropDownMenu.visible
-# 		dropDownMenu.visible = false
-# 	else
-# 		dropDownMenu.visible = true
-# 
-# 	# For each menu option
-# 	for option, i in dropDownMenu.children
-# 		# When it's clicked
-# 		dropDownMenu.children[i].onClick (event, layer) ->
-# 			# Show the selected option in the drop down
-# 			dropDown.selectChild("text").text = layer.text
-# 			# Hide the menu
-# 			dropDownMenu.visible = false
-# 			# Update the data
-# 			data.type = layer.text
-# 			# Display data on screen
-# 			displayFormData()
-
-# Stepper
-
-# # This function wraps the layer in a real input
-# stepper1 = InputLayer.wrap(stepper, stepperText)
-# stepper1.value = 2
-# 
-# increaseValue = () ->
-# 	currentValue = parseInt(stepper1.value)
-# 	stepper1.value = currentValue + 1
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# decreaseValue = () ->
-# 	currentValue = parseInt(stepper1.value)
-# 	stepper1.value = currentValue - 1
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# stepUp.onClick () ->
-# 	increaseValue()
-# 	
-# stepDown.onClick () ->
-# 	decreaseValue()
-# 
-# stepper1._inputElement.addEventListener 'keydown', (event) ->
-# 	initialValue = parseInt(stepper1.value)
-# 	# If it's the arrow up key
-# 	if event.which == 38
-# 		increaseValue(initialValue)
-# 	# If it's the arrow down key
-# 	if event.which == 40
-# 		decreaseValue(initialValue)
-# 		
-# # When the value changes...
-# # Note: this won't catch the clicks on the arrows
-# # 		because they aren't real events on the input
-# stepper1.onValueChange ->
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# # Multi-line Text Input
-
-# # This function wraps the layer in a real input
-# input2 = InputLayer.wrap(textarea, textareaText, multiLine: true)
-# # When the user types...
-# input2.onValueChange ->
-# 	# Store the data in the Object
-# 	data.notes = input2.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# # Radio Buttons
-
-# # Create array of radio buttons
-# radioButtons = [RadioBase1, RadioBase2, RadioBase3]
-# 
-# # Loop through the array
-# for button, i in radioButtons
-# 	# Find the "outerCircle" child layer
-# 	# and creates states for it
-# 	button.selectChild("outerCircle").states =
-# 		selected:
-# 			backgroundColor: "#1199EE"
-# 			borderColor: "transparent"
-# 		deselected:
-# 			backgroundColor: "white"
-# 			borderColor: "#CED4DA"
-# 	# When a radio button is clicked
-# 	radioButtons[i].onClick (event, layer) ->
-# 		# Deselect all the radio buttons
-# 		for button, c in radioButtons
-# 			radioButtons[c].selectChild("outerCircle").stateSwitch("deselected")
-# 		# Select the one that was clicked
-# 		layer.selectChild("outerCircle").stateSwitch("selected")
-# 		# Update the data object
-# 		data.personality = layer.selectChild("label").text
-# 		# And display it on the screen.
-# 		displayFormData()
-
-# Check Box
-
-# # Create states for the check icon
-# checkIcon.states =
-# 	selected:
-# 		fill: "#1199EE"
-# 	deselected:
-# 		fill: "white"
-
-# # When the check box is clicked
-# checkBox.onClick (event, layer) ->
-# 	# Toggle the states of the icon
-# 	checkIcon.stateCycle("selected", "deselected")
-# 	# Use the name of the state to update the data property
-# 	if checkIcon.states.current.name == "selected"
-# 		data.fixed = true
-# 	else
-# 		data.fixed = false
-# 	# Display the data on screen
-# 	displayFormData()
-
-# testRectangle.clip = false
 
 Canvas.on "change:size", ->
 	forceFlowUpdate()
@@ -1286,6 +1192,14 @@ Canvas.on "change:size", ->
 
 
 
+#todo sync onine user team subscriptions and personal subscriptions
+
+
+
+
+
+
+# allButtons.visible = false
 
 
 
@@ -1318,9 +1232,10 @@ updateCanvasDimensions = () ->
 		
 	updateButtonLayout(myButtonArray, myButtons)
 	#update where the buttons are placed
-	allButtons.size = Canvas.size
+	allButtons.width = Canvas.width
+	allButtons.height = 90
 	
-	allButtons.y = Screen.height - allButtons.height
+# 	allButtons.y = Screen.height - allButtons.height
 	
 	
 updateCanvasDimensions?()
@@ -1507,9 +1422,9 @@ updateUserList = () ->
 				textAlign: 'center'
 				fontWeight: 600
 				fontSize: 9
-				letterSpacing: 1
+				letterSpacing: 0.5
 				color: 'white'
-				padding: 4
+				padding: 2
 			
 			#tofix
 			try cell.backgroundColor = colorFromInertia(userInitials, (lastUserWorkInertiaLevel[userInitials]))
@@ -1530,10 +1445,10 @@ updateUserList = () ->
 				
 			
 			
-			#book
+			
 			# make each cell clickable
 			cell.on Events.Click, (event, layer) ->
-				print 'cell click'
+				#print 'cell click'
 # 				if layer.name is username
 # 					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
 				
@@ -1914,11 +1829,7 @@ configTeam = () ->
 data =
 	teamJoinCode: ""
 	teamCreateName: ''
-	type: "Dog"
-	age: 2
-	notes: ""
-	personality: ""
-	fixed: false
+
 
 # Function used to display data on screen using the "results" textLayer
 displayFormData = () ->
@@ -1931,10 +1842,7 @@ displayFormData()
 
 # Text Input
 
-# This function wraps the layer in a real input
-# InputLayer.originX = 0
-# InputLayer.midX = Screen.midX
-
+# placeholderText1.text = ""
 input1 = InputLayer.wrap(input1JoinCode, placeholderText1)
 
 # When the user types...
@@ -1942,159 +1850,18 @@ input1.onValueChange ->
 	# Store the data in the Object
 	data.teamJoinCode = input1.value
 	# And display it on the screen.
-	displayFormData()
+
+
+
+input1.onInputFocus ->
+	input1.color = "transparent"
+		
 
 
 
 
-
-
-# # This function wraps the layer in a real input
-# Input2TeamName = InputLayer.wrap(textInput2, placeholderText2)
-# # When the user types...
-# Input2TeamName.onValueChange ->
-# 	print input2.value
-# 	# Store the data in the Object
-# 	data.name2 = input2.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 	
-# 
-# 
-# # Drop Down
-# 
-# # When the drop down is clicked
-# dropDown.onClick () ->
-# 	# Show or hide its menu
-# 	if dropDownMenu.visible
-# 		dropDownMenu.visible = false
-# 	else
-# 		dropDownMenu.visible = true
-# 
-# 	# For each menu option
-# 	for option, i in dropDownMenu.children
-# 		# When it's clicked
-# 		dropDownMenu.children[i].onClick (event, layer) ->
-# 			# Show the selected option in the drop down
-# 			dropDown.selectChild("text").text = layer.text
-# 			# Hide the menu
-# 			dropDownMenu.visible = false
-# 			# Update the data
-# 			data.type = layer.text
-# 			# Display data on screen
-# 			displayFormData()
-# 
-# # Stepper
-# 
-# # This function wraps the layer in a real input
-# stepper1 = InputLayer.wrap(stepper, stepperText)
-# stepper1.value = 2
-# 
-# increaseValue = () ->
-# 	currentValue = parseInt(stepper1.value)
-# 	stepper1.value = currentValue + 1
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# decreaseValue = () ->
-# 	currentValue = parseInt(stepper1.value)
-# 	stepper1.value = currentValue - 1
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# stepUp.onClick () ->
-# 	increaseValue()
-# 	
-# stepDown.onClick () ->
-# 	decreaseValue()
-# 
-# stepper1._inputElement.addEventListener 'keydown', (event) ->
-# 	initialValue = parseInt(stepper1.value)
-# 	# If it's the arrow up key
-# 	if event.which == 38
-# 		increaseValue(initialValue)
-# 	# If it's the arrow down key
-# 	if event.which == 40
-# 		decreaseValue(initialValue)
-# 		
-# # When the value changes...
-# # Note: this won't catch the clicks on the arrows
-# # 		because they aren't real events on the input
-# stepper1.onValueChange ->
-# 	# Store the data in the Object
-# 	data.age = stepper1.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# # Multi-line Text Input
-# 
-# # This function wraps the layer in a real input
-# input2 = InputLayer.wrap(textarea, textareaText, multiLine: true)
-# # When the user types...
-# input2.onValueChange ->
-# 	# Store the data in the Object
-# 	data.notes = input2.value
-# 	# And display it on the screen.
-# 	displayFormData()
-# 
-# # Radio Buttons
-# 
-# # Create array of radio buttons
-# radioButtons = [RadioBase1, RadioBase2, RadioBase3]
-# 
-# # Loop through the array
-# for button, i in radioButtons
-# 	# Find the "outerCircle" child layer
-# 	# and creates states for it
-# 	button.selectChild("outerCircle").states =
-# 		selected:
-# 			backgroundColor: "#1199EE"
-# 			borderColor: "transparent"
-# 		deselected:
-# 			backgroundColor: "white"
-# 			borderColor: "#CED4DA"
-# 	# When a radio button is clicked
-# 	radioButtons[i].onClick (event, layer) ->
-# 		# Deselect all the radio buttons
-# 		for button, c in radioButtons
-# 			radioButtons[c].selectChild("outerCircle").stateSwitch("deselected")
-# 		# Select the one that was clicked
-# 		layer.selectChild("outerCircle").stateSwitch("selected")
-# 		# Update the data object
-# 		data.personality = layer.selectChild("label").text
-# 		# And display it on the screen.
-# 		displayFormData()
-# 
-# # Check Box
-# 
-# # Create states for the check icon
-# checkIcon.states =
-# 	selected:
-# 		fill: "#1199EE"
-# 	deselected:
-# 		fill: "white"
-# 
-# # When the check box is clicked
-# checkBox.onClick (event, layer) ->
-# 	# Toggle the states of the icon
-# 	checkIcon.stateCycle("selected", "deselected")
-# 	# Use the name of the state to update the data property
-# 	if checkIcon.states.current.name == "selected"
-# 		data.fixed = true
-# 	else
-# 		data.fixed = false
-# 	# Display the data on screen
-# 	displayFormData()
-
-
-
-
-
-
+button_group.bringToFront()
+teamListControl.bringToFront()
 
 # allButtons.visible = false #experimental
 

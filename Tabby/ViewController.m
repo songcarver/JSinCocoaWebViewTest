@@ -65,7 +65,16 @@
 	
 	
 	NSString * userName = [NSString stringWithFormat:@"updateUserName('%@', '%@');",fullUserName,userIDString];
-	[self.webView stringByEvaluatingJavaScriptFromString:userName];
+	
+	@try
+	{
+			[self.webView stringByEvaluatingJavaScriptFromString:userName ];
+	}
+	@catch (NSException * e)
+	{
+		NSLog(@"Cocoa bridge tried to call the Webkit window with no response");
+	}
+	
 }
 
 

@@ -24,7 +24,6 @@
 		2B99EAE01FA83B6E00E33113 /* embeddedJSViewExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EADF1FA83B6E00E33113 /* embeddedJSViewExampleTests.m */; };
 		2B99EAEB1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B99EAEA1FA83B6E00E33113 /* embeddedJSViewExampleUITests.m */; };
 		2BB028F91FB15966005FE8FB /* tabby.framer in Resources */ = {isa = PBXBuildFile; fileRef = 2BB028F81FB15965005FE8FB /* tabby.framer */; };
-		2BF74B4C1FCFCD190090CFC8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2BCDBF5A1FB2E15100B323B1 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -225,7 +224,7 @@
 		2B99EABD1FA83B6E00E33113 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Keith Lang";
 				TargetAttributes = {
 					2B99EAC41FA83B6E00E33113 = {
@@ -274,7 +273,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BF74B4C1FCFCD190090CFC8 /* Info.plist in Resources */,
 				2B99EACF1FA83B6E00E33113 /* Assets.xcassets in Resources */,
 				2B99EAD21FA83B6E00E33113 /* Main.storyboard in Resources */,
 				2B7673081FE369B100387B99 /* broom.png in Resources */,
