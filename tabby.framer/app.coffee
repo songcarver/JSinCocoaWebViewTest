@@ -29,6 +29,7 @@ button_group.visible = true
 
 
 newTeamKey = ""
+teamCode = ""
 newTeamName = ""
 teamKey = ""
 path = ""
@@ -184,10 +185,8 @@ oldUserString = ""
 # 	if userID?
 	username = myName
 	cocoaBridgeIsUp = true
-	#print 'cocoa bridge is up'
 	
 @getKeyValueFromMac = (theKey, theValue) ->
-	#print theKey, theValue
 	
 	
 	
@@ -309,7 +308,6 @@ allButtons = new Layer
 # 
 # allButtonsScrim.on Events.Click, (event, Layer) ->
 # 	allButtons.visible = false
-# 	#print 'scrim'
 # 	
 # allButtonsScrim.sendToBack()
 	
@@ -566,12 +564,15 @@ updateButtonLayout(myButtonArray, myButtons)
 ########## team control UI
 
 updateUserTeamUI = () ->
+	'updateUserTeam called'
 	for things in teamListControl.children
 		things.destroy()
 		
 	
 	lastXPosition = 0
+	c = 0
 	for theTeam, isActive of userTeams
+
 		if isActive then textOpacity = 1 else textOpacity = 0.2
 		buttonTeam = new TextLayer
 			name: theTeam
@@ -587,14 +588,27 @@ updateUserTeamUI = () ->
 			opacity: textOpacity
 		lastXPosition = (buttonTeam.maxX + 4)
 		
+		
+		if theTeam is teamName
+			buttonTeam.color = 'red'
+			teamButtonAnimation = new Animation buttonTeam,
+				color: '#606A77'
+				options:
+					time: 20
+			teamButtonAnimation.start()
+		
+		
+		
 		buttonTeam.onClick (event, layer) ->
 			tempName = ""
 			tempName = layer.name
+			
 			for iTeam, value of userTeams
-				if userTeams[tempName] is true
-					userTeams[tempName] = false
-				else userTeams[tempName] = true
-				updateUserTeamUI()
+				if iTeam is layer.name #to solve for non-unique layer names
+					if value is true
+						userTeams[iTeam] = false
+					else userTeams[iTeam] = true
+					updateUserTeamUI()
 	
 updateUserTeamUI()
 
@@ -606,7 +620,9 @@ updateUserTeamUI()
 button_group.onClick (event, layer) ->
 	# show screen to create or sign in
 	flow.showNext(teamSignOrCreateScreen)
-	teamAddToUserAccount("tabby")
+	teamCode = "tabby"
+	teamAddToUserAccount()
+	teamCode = ""
 	flow.header.visible = true
 
 buttonEeek.onClick (event, layer) ->
@@ -809,7 +825,6 @@ timeNow =  Date.now()
 
 #todo check if user is in one of my current teams
 
-#book
 teamNameInput = InputLayer.wrap(textInputName, nameTeamPlaceholderText)
 
 buttonCreateTeam.onClick ->
@@ -833,32 +848,10 @@ buttonCreateTeamWithName.onClick ->
 #show success
 
 
-teamAddToUserAccount = (newTeamCode) ->
-	#this adds a team to a user's account
-	#print 'path in teamAddToUserAccount'
-
-	teamPath = "/users/" + username + "/teams/" + newTeamCode + "/"
-	if newTeamCode isnt 'tabby'
-		demoDB.put(teamPath, "active", teamAddedToUserAccountSuccess)
-	else 
-		demoDB.put(teamPath, "active")
-	#print newTeamKey + ' was added to user account'
 
 
-teamLookupCallback = () ->
-	#successf
-	#print 'teamLookupCallback called'
-	#print teamName
-	#print 'team name from teamlookup = ' + teamName
-	teamAddToUserAccount(teamCode)
+
 	
-
-buttonJoinTeamWithCode.onClick (event, layer) ->
-	#now we need to validate the code
-	if !data.teamJoinCode?
-		errorText.text = 'Sorry, team not found.'
-		flow.showNext(errorOverlayScreen)
-	else teamLookupTeamNameByCode(data.teamJoinCode, teamLookupCallback)
 
 
 
@@ -881,31 +874,60 @@ teamFindFreeCodeAndCreateTeam = () ->
 		for theKey, value of teamCodeList
 			if value is ""  #we found an empty slot, create team
 				newTeamKey = theKey
-				newTeamCode = newTeamKey
+				teamCode = newTeamKey
 				teamPath = "/teamDirectory/" + newTeamKey
-# 				#print "path:" + teamPath
 				demoDB.put(teamPath, newTeamName, teamAddToUserAccount)
 				break
 				
 				#now we add this team to the user's account
 				
 				
-		if newTeamKey is '' then #print '''Error, couldn't create team'''		
+		if newTeamKey is ''
+			errorText = '''Error, couldnt create team'''		
+			flow.showOverlayTop(errorOverlayScreen)
+			
 
 
 
-teamLookupTeamNameByCode = (teamCode, callback) ->
+buttonJoinTeamWithCode.onClick (event, layer) ->
+	#now we need to validate the code
+
+	if !data.teamJoinCode?
+		errorText.text = 'Sorry, team not found.'
+		flow.showNext(errorOverlayScreen)
+	else 
+		teamCode = data.teamJoinCode
+		teamLookupTeamNameByCode(teamAddToUserAccount)
+
+
+
+
+teamLookupTeamNameByCode = (callback) ->
 	theKey = "/teamDirectory/" + teamCode + '/'
 	demoDB.get theKey, (teamNameReturned) ->
 		teamName = teamNameReturned
 		if teamName?
-			#print 'value is ' + teamName
-			callback(teamName)
+			callback()
 		else 
 			errorText.text = 'Sorry, team not found'
 			flow.showNext(errorOverlayScreen)
 	
+teamAddToUserAccount = () ->
+	#this adds a team to a user's account
+	teamPath = "/users/" + username + "/teams/" + teamCode + "/"
 
+	if teamCode is 'tabby' 
+		userTeams["Tabby"] = true
+		updateUserTeamUI()
+		demoDB.put(teamPath, true)
+		
+	else
+		userTeams[teamName] = true
+		updateUserTeamUI()
+		demoDB.put(teamPath, true, teamAddedToUserAccountSuccess)
+
+	
+	
 
 teamAddedToUserAccountSuccess = () ->
 	flow.showNext(teamJoinSuccess)
@@ -918,7 +940,6 @@ buttonToDashboard.on Events.Click, (event, layer) ->
 
 
 showTeamName = () ->
-	#print 'UI: team created' + teamName
 	
 
 # teamNameToCreate = 'test team'
@@ -1103,7 +1124,6 @@ demoDB.onChange "/lastUpdate", (value) ->
 						
 						message = eventNotification + ' withAlertSound:' + alertSound
 						try CocoaBridge.showMacNotification_(message) #send it to the mac	
-						#print 'tried to send notification'
 
 					updateUsersBadge(theEvent)
 
@@ -1122,7 +1142,6 @@ Utils.interval 10, ->
 
 @writeKeyValuePairToMac = (key, value) ->
 	if cocoaBridgeIsUp
-		#print 'writeKeyValuePairToMacStorage was called'
 		CocoaBridge.writeKeyValuePairToMac(key, value) #send it to the mac
 		
 
@@ -1448,7 +1467,6 @@ updateUserList = () ->
 			
 			# make each cell clickable
 			cell.on Events.Click, (event, layer) ->
-				#print 'cell click'
 # 				if layer.name is username
 # 					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
 				
