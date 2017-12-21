@@ -1,9 +1,13 @@
 {InputLayer} = require "input"
 
 
-
+# testing variables 
 sandbox = true
 shouldStop = true
+testFirstRun = true
+
+####################
+
 
 lastUserWorkInertiaLevel = {}
 
@@ -24,9 +28,11 @@ if testingWorkInertia
 lastWorkInertiaTimeCheck = 0
 
 
-teamListControl.visible = true
+teamListControl.opacity = 0
 button_group.visible = true
 
+firstRun = false
+if testFirstRun then firstRun = true
 
 newTeamKey = ""
 teamCode = ""
@@ -35,7 +41,7 @@ teamKey = ""
 path = ""
 teamPath = ""
 newTeamCode = ""
-
+newUser = true
 
 localTeamDirectory = {}
 localUserTeamMembershipsList = {}
@@ -61,12 +67,9 @@ flow.showNext(teamDashboardScreen)
 flow.header = navBar
 flow.header.visible = false
 
-userTeams = 
-	"Tabby": true
+userTeams = {}
 	
-teamNameLookupFromCode = 
-	Tabby: "tabby"
-
+teamNameLookupFromCode = {}
 	
 
 forceFlowUpdate = () ->
@@ -181,15 +184,29 @@ oldUserString = ""
 @updatePhotoText = (text) ->
 #	photoLabel.text = text
 
+
+
+doFirstRunThings = () ->
+	# lets check if this is a new users
+	
+
+
+
 @updateUserName = (myName, userID) ->
 # 	if userID?
 	username = myName
 	cocoaBridgeIsUp = true
 	
-@getKeyValueFromMac = (theKey, theValue) ->
+	if !firstRun then doFirstRunThings()
+	firstRun = true
 	
 	
+getKeyValueFromMacStorage = (theKey) ->
+	try CocoaBridge.getKeyValueFromMac_(message)
+
 	
+@setKeyValueFromMac = (key, value) ->
+	print 'Mac value:' + key, value
 
 coverPageText = new TextLayer
 # 	backgroundColor: '#ffff00'
@@ -234,7 +251,7 @@ hasHeardFromServer = false
 #toDo - Make a mode here which fakes CocoaBridge
 
 
-if sandbox then username = "Susan Farley"
+if sandbox then username = "JS Bach"
 if username  is ""  then username = "Susan Yīn"
 
 
@@ -262,6 +279,8 @@ else
 		secret: "oParj369e6kYid1tungWZPDTMnYgrwOaC0hmBCnG" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
 
 
+
+#cloudready
 demoDB.onChange "connection", (status) ->
 	if status? then firebaseStatus = status
 	# status is either `connected´ or `disconnected´
@@ -270,10 +289,14 @@ demoDB.onChange "connection", (status) ->
 		scrollEmptyStateLabel.animate("disconnected")
 		oldUserString = "" #reload user list after outage
 		updateUserList()
-	else 
+	if firebaseStatus is 'connected' 
 		scrollEmptyStateLabel.animate("connected")
-		updateUserList()
+# 		updateUserList()
 		serverReady = true
+		teamUpdateFromCloud(updateUserList)
+	else 
+		print 'Connection error:' + status
+
 
 
 
@@ -596,7 +619,7 @@ updateUserTeamUI = () ->
 				options:
 					time: 20
 			teamButtonAnimation.start()
-		
+			teamName = ""
 		
 		
 		buttonTeam.onClick (event, layer) ->
@@ -799,34 +822,50 @@ timeNow =  Date.now()
 
 
 
-
-
-
-# todo
-# joinTeam(teamCode)
-# show code Screen to user
-# get codeVariable
-# look up the code to see if valid
-# Add this name to the user's teamMemberships
-# if not valid code, show error
-# if success, show screen to add
-# update UI
-
 		
 
 
 #teamstuff
 
 
+startNewUserFlow = () ->
+	teamCode = 'tabby'
+	teamLookupTeamNameByCode(teamAddToUserAccount)
+	flow.showNext(teamSignOrCreateScreen)
 
 
 #todo sync network teams and 
+teamUpdateFromCloud = (callback) ->
+	# read the users' team and add them to local array
+	addToLocalStorage = (eachTeamName,eachTeamValue ) ->
+		userTeams[eachTeamName] = eachTeamValue
+		
+	theKey = "/users/" + username + '/teams/'
+	demoDB.get theKey, (teamObject) ->
+		if teamObject is null
+			#this means they're a new user
+			startNewUserFlow()
+			writeUserStatusEvent(startNewUserFlow) ->
+			#book
+			return
+		for eachTeam, value of teamObject
+			addToLocalStorage(eachTeam, value)
 
+			#todo this should be looking up actual teams, not the code
 
-#todo check if user is in one of my current teams
+			updateUserTeamUI()
+		teamListControl.opacity = 1
+		callback()
+	
+
 
 teamNameInput = InputLayer.wrap(textInputName, nameTeamPlaceholderText)
 
+
+buttonIDontHaveTeam.onClick ->
+	flow.showNext(noTeamInfoScreen)
+	
+	
 buttonCreateTeam.onClick ->
 	flow.showNext(teamCreateScreen)
 		
@@ -860,7 +899,9 @@ isUserInMyActiveTeams = (userToCheck) ->
 	demoDB.get theKey, (teamObject) ->
 		if !teamObject? then print 'it doesnt exist'
 		for eachTeam, value of teamObject
-			userTeams[eachTeam] = value
+			if userTeams[eachTeam] = value
+				return true
+		return false
 	
 	
 
@@ -1295,10 +1336,9 @@ makeStringFromObject = (theObject) ->
 
 
 
-
+#book
 updateUserList = () ->
-	
-	# here we update all the 
+	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
 	demoDB.get userListKey, (theUsers) ->

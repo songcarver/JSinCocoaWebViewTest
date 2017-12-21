@@ -168,7 +168,7 @@
 	
 	
 	[self methodToSendUserName];
-	[self showMacNotification:@"hello world" withAlertSound:@"hammer"];
+//	[self showMacNotification:@"hello world" withAlertSound:@"hammer"];
 	
 }
 
@@ -251,7 +251,7 @@
 													 @"photoFlipped",
 													 @"photoRotated:",
 													 @"writeKeyValuePairToMac:",
-													 @"getKeyValueFromMac:"
+													 @"setKeyValueFromMac:"
 													 ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
