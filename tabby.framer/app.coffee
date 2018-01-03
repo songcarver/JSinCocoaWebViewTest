@@ -132,7 +132,7 @@ thisUser =
 	isInOffice : false
 	
 
-motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1" ]
+motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1", "You got this.", "You've done it before, and you'll do it again", "Use the Force", "I am one with the Force, the Force is with me" ]
 
 userLabelArray = []
 
@@ -294,8 +294,7 @@ demoDB.onChange "connection", (status) ->
 # 		updateUserList()
 		serverReady = true
 		teamUpdateFromCloud(updateUserList)
-	else 
-		print 'Connection error:' + status
+
 
 
 
@@ -586,52 +585,65 @@ updateButtonLayout(myButtonArray, myButtons)
 
 ########## team control UI
 
+#  
 updateUserTeamUI = () ->
 	'updateUserTeam called'
 	for things in teamListControl.children
 		things.destroy()
-		
 	
-	lastXPosition = 0
-	c = 0
-	for theTeam, isActive of userTeams
 
-		if isActive then textOpacity = 1 else textOpacity = 0.2
-		buttonTeam = new TextLayer
-			name: theTeam
-			parent: teamListControl
-			x: lastXPosition
-			y: Align.center()
-			fontSize: 11
-			color: '#606A77'
-			fontWeight: 600
-			padding: 2
-			y: Align.center()
-			text: theTeam
-			opacity: textOpacity
-		lastXPosition = (buttonTeam.maxX + 4)
+# 	for theTeam of userTeams
+# 		#book
+# 		# Here I think we filter out any people that are not on the same teams
+# 	print 'the Team: ' + theTeam
+# todo 1: fill the array with all current teams.
+# todo 2: update the user List with 
+
+
+
 		
 		
-		if theTeam is teamName
-			buttonTeam.color = 'red'
-			teamButtonAnimation = new Animation buttonTeam,
+	drawTeamUI = () ->
+		lastXPosition = 0
+		c = 0
+		for theTeam, isActive of userTeams
+	
+			if isActive then textOpacity = 1 else textOpacity = 0.2
+			buttonTeam = new TextLayer
+				name: theTeam
+				parent: teamListControl
+				x: lastXPosition
+				y: Align.center()
+				fontSize: 11
 				color: '#606A77'
-				options:
-					time: 20
-			teamButtonAnimation.start()
-			teamName = ""
-		
-		
-		buttonTeam.onClick (event, layer) ->
-			tempName = ""
-			tempName = layer.name
+				fontWeight: 600
+				padding: 2
+				y: Align.center()
+				text: theTeam
+				opacity: textOpacity
+			lastXPosition = (buttonTeam.maxX + 4)
 			
-			for iTeam, value of userTeams
-				if iTeam is layer.name #to solve for non-unique layer names
-					if value is true
-						userTeams[iTeam] = false
-					else userTeams[iTeam] = true
-					updateUserTeamUI()
+			
+			if theTeam is teamName
+				buttonTeam.color = 'red'
+				teamButtonAnimation = new Animation buttonTeam,
+					color: '#606A77'
+					options:
+						time: 20
+				teamButtonAnimation.start()
+				teamName = ""
+			
+			
+			buttonTeam.onClick (event, layer) ->
+				tempName = ""
+				tempName = layer.name
+				
+				for iTeam, value of userTeams
+					if iTeam is layer.name #to solve for non-unique layer names
+						if value is true
+							userTeams[iTeam] = false
+						else userTeams[iTeam] = true
+						updateUserTeamUI()
 	
 updateUserTeamUI()
 
@@ -827,7 +839,18 @@ timeNow =  Date.now()
 
 #teamstuff
 
-
+buttonManageTeams.onClick ->
+	flow.showNext(teamManagementScreen)
+	
+	#build a string for the UI to display, listing all user's teams
+	tempTeamString = ""
+	for teamCode, Value of userTeams
+		tempTeamString += localTeamDirectory[teamCode] + '\n'
+	teamManagementNameList.text = tempTeamString
+	
+buttonTeamTabby.onClick ->
+	flow.showNext(teamDashboardScreen)
+	
 startNewUserFlow = () ->
 	teamCode = 'tabby'
 	teamLookupTeamNameByCode(teamAddToUserAccount)
@@ -846,11 +869,10 @@ teamUpdateFromCloud = (callback) ->
 			#this means they're a new user
 			startNewUserFlow()
 			writeUserStatusEvent(startNewUserFlow) ->
-			#book
 			return
 		for eachTeam, value of teamObject
-			addToLocalStorage(eachTeam, value)
 
+			addToLocalStorage(eachTeam, value)
 			#todo this should be looking up actual teams, not the code
 
 			updateUserTeamUI()
@@ -932,6 +954,8 @@ teamFindFreeCodeAndCreateTeam = () ->
 
 buttonJoinTeamWithCode.onClick (event, layer) ->
 	#now we need to validate the code
+	flow.header = navBar
+
 
 	if !data.teamJoinCode?
 		errorText.text = 'Sorry, team not found.'
@@ -958,7 +982,7 @@ teamAddToUserAccount = () ->
 	teamPath = "/users/" + username + "/teams/" + teamCode + "/"
 
 	if teamCode is 'tabby' 
-		userTeams["Tabby"] = true
+# 		userTeams["Tabby"] = true
 		updateUserTeamUI()
 		demoDB.put(teamPath, true)
 		
@@ -1336,7 +1360,6 @@ makeStringFromObject = (theObject) ->
 
 
 
-#book
 updateUserList = () ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
