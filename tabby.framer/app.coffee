@@ -28,7 +28,7 @@ if testingWorkInertia
 lastWorkInertiaTimeCheck = 0
 
 
-teamListControl.opacity = 0
+teamListControl.opacity = 1
 button_group.visible = true
 
 firstRun = false
@@ -43,8 +43,8 @@ teamPath = ""
 newTeamCode = ""
 newUser = true
 
-localTeamDirectory = {}
 localUserTeamMembershipsList = {}
+localTeamDirectory = {} #local key value pair to 
 
 lastMouse = 
 	x:  0
@@ -68,8 +68,8 @@ flow.header = navBar
 flow.header.visible = false
 
 userTeams = {}
+		
 	
-teamNameLookupFromCode = {}
 	
 
 forceFlowUpdate = () ->
@@ -587,12 +587,12 @@ updateButtonLayout(myButtonArray, myButtons)
 
 #  
 updateUserTeamUI = () ->
-	'updateUserTeam called'
+	#'updateUserTeam called'
 	for things in teamListControl.children
 		things.destroy()
 	
 
-# 	for theTeam of userTeams
+# 	for theTeam of userTeamss
 # 		#book
 # 		# Here I think we filter out any people that are not on the same teams
 # 	print 'the Team: ' + theTeam
@@ -835,9 +835,20 @@ timeNow =  Date.now()
 
 
 		
-
-
 #teamstuff
+
+getTeamNamesFromTeamCodeInCloud = () ->
+# 	making a key value pair of all teams that user is in
+# todo This should really be a single object with many properties
+#	get each value from the cloud and add it to the team directory 	
+	localTeamDirectory = {}
+	for aTeam of userTeams
+		p = "/teamDirectory/" + aTeam
+		# Simple 2, expecting dataset
+		demoDB.get p, (realTeamName) ->
+			localTeamDirectory[aTeam] = realTeamName
+	
+
 
 buttonManageTeams.onClick ->
 	flow.showNext(teamManagementScreen)
@@ -862,7 +873,8 @@ teamUpdateFromCloud = (callback) ->
 	# read the users' team and add them to local array
 	addToLocalStorage = (eachTeamName,eachTeamValue ) ->
 		userTeams[eachTeamName] = eachTeamValue
-		
+		getTeamNamesFromTeamCodeInCloud()
+
 	theKey = "/users/" + username + '/teams/'
 	demoDB.get theKey, (teamObject) ->
 		if teamObject is null
