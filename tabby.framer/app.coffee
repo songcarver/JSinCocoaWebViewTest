@@ -8,6 +8,11 @@ testFirstRun = true
 
 ####################
 
+# UI variables 
+cellHeight = 48
+cellWidth = 64
+
+
 
 lastUserWorkInertiaLevel = {}
 
@@ -260,8 +265,6 @@ if username  is ""  then username = "Susan Yīn"
 # Firebase
 {Firebase} = require 'firebase'
 
-# UI variables 
-cellSize = 56
 
 
 if sandbox
@@ -314,24 +317,10 @@ myButtonArray = []
 
 allButtons = new Layer
 	parent: teamDashboardScreen
-	y: 0
+	y: Align.bottom(0)
 	width: Screen.width
 	height: 90
 	backgroundColor: 'transparent'
-	
-# allButtons.originY = 0
-	
-# allButtonsScrim = new Layer
-# 	parent: allButtons
-# 	size: allButtons.size
-# 	backgroundColor: 'black'
-# 	opacity: 0.6
-# 	visible: true
-# 
-# allButtonsScrim.on Events.Click, (event, Layer) ->
-# 	allButtons.visible = false
-# 	
-# allButtonsScrim.sendToBack()
 	
 
 
@@ -417,7 +406,7 @@ showConfetti = () ->
 	
 buttonTips = new TextLayer
 	parent: teamDashboardScreen
-	text: 'Having a win'
+	text: ''
 	fontSize: 11
 	fontWeight: 800
 	color: '#111111'
@@ -471,11 +460,11 @@ createButtonLayer = (name, x, y) ->
 		parent: allButtons
 		name: name
 		text: name
-		fontSize: 16
+		fontSize: 14
 		padding: 8
-		backgroundColor: '#C8C8C6'
-		borderRadius: 2
-		borderColor: 'white' 
+		backgroundColor: '#F8F8F6'
+		borderRadius: 1
+
 		
 
 	@myLayer.states.down = 
@@ -690,7 +679,7 @@ Screen.backgroundColor = '#606A77'
 
 # update the main view
 updateTabbyView = () ->
-	maxDimension = Math.min(teamDashboardScreen.width, (teamDashboardScreen.height - cellSize))
+	maxDimension = Math.min(teamDashboardScreen.width, (teamDashboardScreen.height - cellHeight))
 	tabbyView.y = 0
 	tabbyView.height = maxDimension
 	tabbyView.width = maxDimension
@@ -719,7 +708,7 @@ scroll = new ScrollComponent
 	parent: bottom_rectangle
 	size: Screen.size
 	scrollHorizontal: false
-	height: cellSize
+	height: cellHeight
 	width: Screen.width
 	y: Align.bottom
 	backgroundColor: "#transparent"
@@ -1320,6 +1309,9 @@ window.onresize = () ->
 updateCanvasDimensions = () ->
 	teamDashboardScreen.size = Screen.size
 	teamSignOrCreateScreen.size = Screen.size
+	buttonTips.y =  Align.top(84)
+	buttonTips.x = Align.center(-32)
+	allButtons.y = Align.bottom(0)
 	scroll.width = teamDashboardScreen.width
 	scroll.y = Align.bottom
 	updateTabbyView?()
@@ -1438,9 +1430,9 @@ updateUserList = () ->
 		for index in [0...columns]
 
 			cell = new Layer
-				width:  cellSize
-				height: cellSize
-				x: index * (cellSize + gutter)
+				width:  cellWidth
+				height: cellHeight
+				x: index * (cellWidth + gutter)
 				parent: scroll.content
 				backgroundColor: "#4C545E"
 				clip: false
