@@ -33,7 +33,6 @@ if testingWorkInertia
 lastWorkInertiaTimeCheck = 0
 
 
-teamListControl.opacity = 1
 button_group.visible = true
 
 firstRun = false
@@ -64,7 +63,13 @@ lastMouse =
         }
     }`
 	
-
+`function isEmpty(obj) {
+	for(var key in obj) {
+		if(obj.hasOwnProperty(key))
+			return false;
+	}
+	return true;
+}`
 
 	
 flow = new FlowComponent
@@ -319,7 +324,7 @@ allButtons = new Layer
 	parent: teamDashboardScreen
 	y: Align.bottom(0)
 	width: Screen.width
-	height: 90
+	height: 80
 	backgroundColor: 'transparent'
 	
 
@@ -471,11 +476,11 @@ createButtonLayer = (name, x, y) ->
 		backgroundColor: '#B6C9E0'
 		
 	@myLayer.states.over = 
-		backgroundColor: '#333A43'
+		backgroundColor: '#E3E3E0'
 	
 	@myLayer.states.default = 
 		x: x
-		backgroundColor: '#C8C8C6'
+		backgroundColor: '#F8F8F6'
 		
 		
 	
@@ -524,13 +529,13 @@ createButtonLayer = (name, x, y) ->
 		
 #### emoji buttons
 
-myButtons = ['👋','🔨','🤔','🏆','☕️','🍔','🚌','🚪']
+myButtons = ['👋','🔨','👏','🏆','☕️','🍔','🔋','🚪']
 
 myButtonHelperText = 
 	'👋': 'Hi!'
-	'🤔': 'Little feedback/help?'
+	'👏': 'Clap to kudos'
 	'🔨': 'Hammering on something'
-	'🚌': 'Travelling/ extra-remote'
+	'🔋': 'Recharging'
 	'🏆': 'Winning!'
 	'☕️': 'Shorter break'
 	'🍔': 'Longer break'
@@ -538,7 +543,7 @@ myButtonHelperText =
 	
 myButtonColor = 
 	'👋': '#B37BA4'
-	'🤔': '#6EEB83'
+	'👏': '#6EEB83'
 	'🔨': '#A5CCD1'
 	'🚌': '#64A6BD'
 	'🏆': '#ffff00'
@@ -575,12 +580,65 @@ updateButtonLayout(myButtonArray, myButtons)
 ########## team control UI
 
 #  
+# here we st
+drawTeamUI = () ->
+	lastXPosition = 0
+	c = 0
+
+
+	for theTeam, isActive of userTeams
+		if isActive then textOpacity = 1 else textOpacity = 0.2
+		tempName = localTeamDirectory[theTeam]
+		buttonTeam = new TextLayer
+			name: theTeam
+			parent: teamListControl
+			x: lastXPosition
+			y: Align.center()
+			fontSize: 10
+			color: '#ffffff'
+			fontWeight: 600
+			padding: 2
+			y: Align.center()
+			text: tempName
+			opacity: textOpacity
+			textTransform: 'uppercase' 
+		lastXPosition = (buttonTeam.maxX + 4)
+		
+		teamListControl.bringToFront()	
+		
+		#just a temp color to show user what's changed, ie what new team they joined
+		if theTeam is teamName
+			buttonTeam.color = 'red'
+			teamButtonAnimation = new Animation buttonTeam,
+				color: '#606A77'
+				options:
+					time: 20
+			teamButtonAnimation.start()
+			teamName = ""
+		
+		
+		#this logic toggles teams being on or off (actively filtering or not)
+		buttonTeam.onClick (event, layer) ->
+			tempName = ""
+			tempName = layer.name
+			
+			for iTeam, value of userTeams
+				if iTeam is layer.name #to solve for non-unique layer names
+					if value is true
+						userTeams[iTeam] = false
+					else userTeams[iTeam] = true
+					updateUserTeamUI()
+					
+					
 updateUserTeamUI = () ->
-	#'updateUserTeam called'
+	if Object.keys(userTeams).length is 0
+		return
+	# if userTeams object is empty, there's no reason to run this
+	#delete all existing words
 	for things in teamListControl.children
 		things.destroy()
+	drawTeamUI()
 	
-
 # 	for theTeam of userTeamss
 # 		#book
 # 		# Here I think we filter out any people that are not on the same teams
@@ -588,51 +646,6 @@ updateUserTeamUI = () ->
 # todo 1: fill the array with all current teams.
 # todo 2: update the user List with 
 
-
-
-		
-		
-	drawTeamUI = () ->
-		lastXPosition = 0
-		c = 0
-		for theTeam, isActive of userTeams
-	
-			if isActive then textOpacity = 1 else textOpacity = 0.2
-			buttonTeam = new TextLayer
-				name: theTeam
-				parent: teamListControl
-				x: lastXPosition
-				y: Align.center()
-				fontSize: 11
-				color: '#606A77'
-				fontWeight: 600
-				padding: 2
-				y: Align.center()
-				text: theTeam
-				opacity: textOpacity
-			lastXPosition = (buttonTeam.maxX + 4)
-			
-			
-			if theTeam is teamName
-				buttonTeam.color = 'red'
-				teamButtonAnimation = new Animation buttonTeam,
-					color: '#606A77'
-					options:
-						time: 20
-				teamButtonAnimation.start()
-				teamName = ""
-			
-			
-			buttonTeam.onClick (event, layer) ->
-				tempName = ""
-				tempName = layer.name
-				
-				for iTeam, value of userTeams
-					if iTeam is layer.name #to solve for non-unique layer names
-						if value is true
-							userTeams[iTeam] = false
-						else userTeams[iTeam] = true
-						updateUserTeamUI()
 	
 updateUserTeamUI()
 
@@ -826,7 +839,7 @@ timeNow =  Date.now()
 		
 #teamstuff
 
-getTeamNamesFromTeamCodeInCloud = () ->
+getTeamNamesFromTeamCodeInCloud = (callback) ->
 # 	making a key value pair of all teams that user is in
 # todo This should really be a single object with many properties
 #	get each value from the cloud and add it to the team directory 	
@@ -835,9 +848,11 @@ getTeamNamesFromTeamCodeInCloud = () ->
 		p = "/teamDirectory/" + aTeam
 		# Simple 2, expecting dataset
 		demoDB.get p, (realTeamName) ->
-			localTeamDirectory[aTeam] = realTeamName
-	
-
+			if realTeamName isnt "" 
+				localTeamDirectory[aTeam] = realTeamName
+				updateUserTeamUI()
+				
+	if callback? then callback()
 
 buttonManageTeams.onClick ->
 	flow.showNext(teamManagementScreen)
@@ -862,6 +877,7 @@ teamUpdateFromCloud = (callback) ->
 	# read the users' team and add them to local array
 	addToLocalStorage = (eachTeamName,eachTeamValue ) ->
 		userTeams[eachTeamName] = eachTeamValue
+		#add each team to the local array
 		getTeamNamesFromTeamCodeInCloud()
 
 	theKey = "/users/" + username + '/teams/'
@@ -876,8 +892,7 @@ teamUpdateFromCloud = (callback) ->
 			addToLocalStorage(eachTeam, value)
 			#todo this should be looking up actual teams, not the code
 
-			updateUserTeamUI()
-		teamListControl.opacity = 1
+
 		callback()
 	
 
@@ -1169,7 +1184,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 		#Don't do anything on launch, because the onChange gets called on launch. 
 		
 		if firebaseStatus is 'connected'
-			lastUpdateString = '/' + value
+			lastUpdateString = '/allUserEvents/' + value
 			demoDB.get lastUpdateString, (theEvent) ->
 				if theEvent?
 					myArray = theEvent.username.split " "
@@ -1203,6 +1218,8 @@ Utils.interval 10, ->
 			
 			updateUserWorkInertia(theUsers)
 			updateUserList()
+# 			updateUserTeamUI()
+			
 
 
 
@@ -1364,7 +1381,7 @@ makeStringFromObject = (theObject) ->
 
 
 
-updateUserList = () ->
+updateUserList = (callback) ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
@@ -1434,7 +1451,7 @@ updateUserList = () ->
 				height: cellHeight
 				x: index * (cellWidth + gutter)
 				parent: scroll.content
-				backgroundColor: "#4C545E"
+				backgroundColor: "#ffffff"
 				clip: false
 			
 			
@@ -1536,7 +1553,7 @@ updateUserList = () ->
 			cell.on Events.Click, (event, layer) ->
 # 				if layer.name is username
 # 					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
-				
+	if callback? then callback()
 				
 
 showUpdateAvailableBanner = () ->
@@ -1945,10 +1962,13 @@ input1.onInputFocus ->
 
 
 
-button_group.bringToFront()
-teamListControl.bringToFront()
+
 
 # allButtons.visible = false #experimental
 
 
 forceFlowUpdate()
+
+button_group.bringToFront()
+
+

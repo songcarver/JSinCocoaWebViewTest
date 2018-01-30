@@ -334,9 +334,11 @@
 	return webView;
 }
 
-
-
-
+//
+//
+//- (BOOL)isMovableByWindowBackground {
+//	return YES;
+//}
 
 
 //- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent

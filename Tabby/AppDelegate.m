@@ -26,8 +26,8 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
 	
-    [NSApplication sharedApplication].mainWindow.level = NSFloatingWindowLevel;
-    //    here's where I should type my stuff
+//    [NSApplication sharedApplication].mainWindow.level = NSFloatingWindowLevel;
+//    //    make the window float above all others
 
 	}
 
