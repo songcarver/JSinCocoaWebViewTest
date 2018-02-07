@@ -133,6 +133,7 @@
 
 - (void) methodB:(NSTimer *)timer
 {
+		NSLog(@"hello world");
 	// Get mouse position, send it along as factor of screen
     //Do calculations.
     NSPoint mouseLoc = [NSEvent mouseLocation]; //get current mouse position
@@ -144,8 +145,8 @@
 	
 	NSRect screenRect;
 	NSArray *screenArray = [NSScreen screens];
-	unsigned screenCount = [screenArray count];
-	unsigned index  = 0;
+	NSUInteger screenCount = [screenArray count];
+	NSUInteger index  = 0;
 	
 	for (index; index < screenCount; index++)
 	{
@@ -153,7 +154,13 @@
 		screenRect = [screen visibleFrame];
 	}
 	
+
 	
+	
+	// experimental bring app window to front if user mouse is at 0,0
+//	if ((mouseLoc.x == 0) && (mouseLoc.y == 0))
+//	{NSLog(@"mouse at 0,0");
+//		[[NSApplication sharedApplication] activateIgnoringOtherApps : YES];}
 	
 //    send mouse coordinates
 	NSString * mouseX = [NSString stringWithFormat:@"updateMouseX(%f, %f);",

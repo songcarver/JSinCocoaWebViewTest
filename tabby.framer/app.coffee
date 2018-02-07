@@ -3,8 +3,8 @@
 
 # testing variables 
 sandbox = true
-shouldStop = true
-testFirstRun = true
+shouldStop = false
+testFirstRun = false
 
 ####################
 
@@ -554,9 +554,61 @@ myButtonColor =
 	
 #todo add a Zz 😴
 
-for buttons in myButtons
-	createButtonLayer(buttons)
+# for buttons in myButtons
+# 	createButtonLayer(buttons)
 
+
+# here's an alternative labelling
+
+formatForMinutesAndSeconds = (totalSeconds) ->
+	workingString = ''
+	minutes = Math.floor(totalSeconds / 60)
+	if minutes < 10 then workingString = '0'
+	workingString += minutes
+	workingString += ':'
+	seconds = Math.ceil(totalSeconds % 60)
+	if seconds <10 then workingString += '0'
+	workingString += seconds
+	return workingString
+	
+buttonStart.onClick ->
+	flow.showOverlayCenter(workSession)
+	startTimer(25 * 60, showSessionFinish, workTickUpdate)
+	
+workTickUpdate = (percentage, secondsRemaining) ->
+	frameTimeBar.width = ((Screen.width - 20) * percentage)
+	timeText.text = formatForMinutesAndSeconds(secondsRemaining)
+
+showSessionFinish = ->
+	eventNotification  = 'You did it.'
+	message = eventNotification
+	try CocoaBridge.showMacNotification_(message) #send it to the mac	
+	flow.showNext(workSessionComplete)
+	startTimer(5 * 60 , showRelaxFinish, relaxTickUpdate)
+	
+relaxTickUpdate = (percentage, secondsRemaining) ->
+	relaxTimeBar.width = ((Screen.width - 20) * percentage)
+	relaxTimeDisplay.text = formatForMinutesAndSeconds(secondsRemaining)
+	
+
+showRelaxFinish = ->
+	eventNotification  = 'Relax time finished.'
+	message = eventNotification
+	try CocoaBridge.showMacNotification_(message) #send it to the mac	
+	flow.showPrevious(teamDashboardScreen)
+	
+	
+	
+buttonStop.onClick ->
+	stoptimer()
+	flow.showPrevious()
+	
+buttonStopRelaxing.onClick ->
+	flow.showNext(teamDashboardScreen)
+	
+
+
+	
 
 updateButtonLayout = (myButtonArray, myButtons) ->
 	for index, eachButton of myButtonArray
@@ -1304,7 +1356,20 @@ Canvas.on "change:size", ->
 # allButtons.visible = false
 
 
-
+ 
+interval = null
+startTimer= (durationSeconds, doneFunction, tickFunction) ->
+	start = durationSeconds
+	interval = Utils.interval 1, ->
+		
+		tickFunction(start / durationSeconds, start )
+		if start <= 0
+			stoptimer()
+			doneFunction()
+		start -= 1
+		
+stoptimer = ->
+	clearInterval(interval)
 
 
 
@@ -1326,6 +1391,9 @@ window.onresize = () ->
 updateCanvasDimensions = () ->
 	teamDashboardScreen.size = Screen.size
 	teamSignOrCreateScreen.size = Screen.size
+	workSession.size = Screen.size
+	workSessionComplete.size = Screen.size
+	
 	buttonTips.y =  Align.top(84)
 	buttonTips.x = Align.center(-32)
 	allButtons.y = Align.bottom(0)
@@ -1585,6 +1653,7 @@ showUpdateAvailableBanner = () ->
 		`window.open("https://www.evernote.com/l/AAF3kITp759C2p4zTphJt6qGpjCrS5r3msQ");`
 		buildOverlay.visible = false
 	
+
 
 
 
@@ -1964,7 +2033,7 @@ input1.onInputFocus ->
 
 
 
-# allButtons.visible = false #experimental
+allButtons.visible = false #experimental
 
 
 forceFlowUpdate()
