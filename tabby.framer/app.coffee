@@ -1,8 +1,7 @@
 {InputLayer} = require "input"
 
-
 # testing variables 
-sandbox = true
+sandbox = false
 shouldStop = false
 testFirstRun = false
 
@@ -15,11 +14,11 @@ cellWidth = 64
 
 
 lastUserWorkInertiaLevel = {}
-
+data = {}
 newTeamName = ""
 teamName = ""
 haveConfetti = false
-
+teamPath = ''
 appVersion = 0.17
 appVersionString = ''
 username = ''
@@ -73,7 +72,7 @@ lastMouse =
 
 	
 flow = new FlowComponent
-flow.showNext(teamDashboardScreen)
+flow.showNext(homeScreen)
 flow.header = navBar
 flow.header.visible = false
 
@@ -84,7 +83,7 @@ userTeams = {}
 
 forceFlowUpdate = () ->
 	teamCreateScreen.size = Canvas.size
-	teamDashboardScreen.size = Canvas.size
+	homeScreen.size = Canvas.size
 	teamSignOrCreateScreen.size = Canvas.size
 	teamManagementScreen.size = Canvas.size
 	teamDetailViewScreen.size = Canvas.size
@@ -97,7 +96,7 @@ forceFlowUpdate = () ->
 	welcome3Screen.size = Canvas.size
 	teamSignOrCreateScreen.size = Canvas.size
 	licenceScreen.size = Canvas.size
-	teamDashboardScreen.size = Canvas.size
+	homeScreen.size = Canvas.size
 	teamJoinScreen.size = Canvas.size
 	teamCreateSuccessScreen.size = Canvas.size
 	teamCreateScreen.size = Canvas.size
@@ -142,7 +141,10 @@ thisUser =
 	isInOffice : false
 	
 
-motivationalStringArray = [ "Hey, check out https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1", "You got this.", "You've done it before, and you'll do it again", "Use the Force", "I am one with the Force, the Force is with me" ]
+motivationalStringArray = [ "You got this.", "You've done this before.", "Be a force of nature.","Use the force.", "Remember the why.", "Do it.", "Got those cans on?", "Hit play.", "Only you can do this.", "Work is Soul."  ]
+
+
+# https://open.spotify.com/album/52PLNrXUMtPUZwcueV75J1
 
 userLabelArray = []
 
@@ -275,21 +277,21 @@ if username  is ""  then username = "Susan Yīn"
 if sandbox
 	#SANDBOX
 	
-	demoDB = new Firebase
+	tabbyDB = new Firebase
 		projectID: "tabbysandbox" # ... Database → first part of URL
 		secret: "TBkoOoRnmPev8TfFtcTJViG3Wb0gFP1IGVXoJ8kT" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
 
 else
 # 	PRODUCTION ONE:
 # 	The required information is located at https://firebase.google.com → Console → YourProject → ...
-	demoDB = new Firebase
+	tabbyDB = new Firebase
 		projectID: "tabbytest-8e201" # ... Database → first part of URL
 		secret: "oParj369e6kYid1tungWZPDTMnYgrwOaC0hmBCnG" # ... Project Settings → Service Accounts → Database Secrets → Show (mouse-over)
 
 
 
 #cloudready
-demoDB.onChange "connection", (status) ->
+tabbyDB.onChange "connection", (status) ->
 	if status? then firebaseStatus = status
 	# status is either `connected´ or `disconnected´
 	if firebaseStatus is 'disconnected'
@@ -321,7 +323,7 @@ demoDB.onChange "connection", (status) ->
 myButtonArray = []
 
 allButtons = new Layer
-	parent: teamDashboardScreen
+	parent: homeScreen
 	y: Align.bottom(0)
 	width: Screen.width
 	height: 80
@@ -410,7 +412,7 @@ showConfetti = () ->
 
 	
 buttonTips = new TextLayer
-	parent: teamDashboardScreen
+	parent: homeScreen
 	text: ''
 	fontSize: 11
 	fontWeight: 800
@@ -572,8 +574,33 @@ formatForMinutesAndSeconds = (totalSeconds) ->
 	return workingString
 	
 buttonStart.onClick ->
-	flow.showOverlayCenter(workSession)
-	startTimer(25 * 60, showSessionFinish, workTickUpdate)
+	#Pomodoro
+	motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
+	Utils.delay 300, ->
+			motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
+	Utils.delay 600, ->
+		motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
+	Utils.delay 1200, ->
+		motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
+	
+	
+# 	timeText.minY = motivationalQuote.maxY  #this should be moving the text to sit below, but it's not working well
+	
+	
+	# Count-down animation
+	flow.showNext(workSession)	
+	flow.showOverlayCenter(workSessionCount3)
+	
+	Utils.delay 1, ->
+		flow.showOverlayCenter(workSessionCount2)
+	Utils.delay 2, ->
+		flow.showOverlayCenter(workSessionCount1)
+	Utils.delay 3, ->
+		flow.showOverlayCenter(workSessionCount4)
+		
+	Utils.delay 4, ->
+		flow.showNext(workSession, animate:false)
+		startTimer((25 * 60), showSessionFinish, workTickUpdate)
 	
 workTickUpdate = (percentage, secondsRemaining) ->
 	frameTimeBar.width = ((Screen.width - 20) * percentage)
@@ -595,16 +622,16 @@ showRelaxFinish = ->
 	eventNotification  = 'Relax time finished.'
 	message = eventNotification
 	try CocoaBridge.showMacNotification_(message) #send it to the mac	
-	flow.showPrevious(teamDashboardScreen)
+	flow.showPrevious(homeScreen)
 	
 	
 	
 buttonStop.onClick ->
 	stoptimer()
-	flow.showPrevious()
+	flow.showNext(homeScreen, animate: false)
 	
 buttonStopRelaxing.onClick ->
-	flow.showNext(teamDashboardScreen)
+	flow.showNext(homeScreen)
 	
 
 
@@ -637,7 +664,8 @@ drawTeamUI = () ->
 	lastXPosition = 0
 	c = 0
 
-
+	#todo there's some duplicate teams being displayed. User data seems OK.
+	# set up the team clickbale labels
 	for theTeam, isActive of userTeams
 		if isActive then textOpacity = 1 else textOpacity = 0.2
 		tempName = localTeamDirectory[theTeam]
@@ -647,8 +675,8 @@ drawTeamUI = () ->
 			x: lastXPosition
 			y: Align.center()
 			fontSize: 10
-			color: '#ffffff'
-			fontWeight: 600
+			color: 'white'
+			fontWeight: 800
 			padding: 2
 			y: Align.center()
 			text: tempName
@@ -657,6 +685,8 @@ drawTeamUI = () ->
 		lastXPosition = (buttonTeam.maxX + 4)
 		
 		teamListControl.bringToFront()	
+		
+		
 		
 		#just a temp color to show user what's changed, ie what new team they joined
 		if theTeam is teamName
@@ -692,7 +722,7 @@ updateUserTeamUI = () ->
 	drawTeamUI()
 	
 # 	for theTeam of userTeamss
-# 		#book
+# 		#todo
 # 		# Here I think we filter out any people that are not on the same teams
 # 	print 'the Team: ' + theTeam
 # todo 1: fill the array with all current teams.
@@ -721,7 +751,7 @@ navBarButtonArrowBack.onClick (event, layer) ->
 	flow.showPrevious()
 	
 flow.onTransitionEnd ->
-	if flow.current is teamDashboardScreen
+	if flow.current is homeScreen
 		flow.header.visible = false
 	
 buttonJoinTeam.onClick (event, layer) ->
@@ -744,14 +774,14 @@ Screen.backgroundColor = '#606A77'
 
 # update the main view
 updateTabbyView = () ->
-	maxDimension = Math.min(teamDashboardScreen.width, (teamDashboardScreen.height - cellHeight))
+	maxDimension = Math.min(homeScreen.width, (homeScreen.height - cellHeight))
 	tabbyView.y = 0
 	tabbyView.height = maxDimension
 	tabbyView.width = maxDimension
 	tabbyView.midX = Screen.midX
 	
 tabbyView = new Layer
-	parent: teamDashboardScreen
+	parent: homeScreen
 	backgroundColor: '#444B54'
 	opacity: 0
 
@@ -784,19 +814,20 @@ scroll.mouseWheelEnabled = true
 
 scroll.content.backgroundColor = 'transparent'
 #empty state
-funCheckingText = Utils.randomChoice(['lowers sunglasses…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', 'helloooo world…'])
+funCheckingText = Utils.randomChoice(['lowers sunglasses…', 'meowing for others…', 'sniffing internets…', 'coolpeeps radar on…', 'anyone cool as you?…', ' meowing…'])
 
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	backgroundColor: 'transparent'
-	fontSize: 10
+	fontSize: 11
 	textAlign: "center"
-	fontWeight: 600
-	color: "#111111"
+	fontWeight: 800
+	color: "black" 
 	text: funCheckingText
 	padding: 4
 	x: Align.center()
 	y: Align.center()
+	textTransform: 'uppercase'
 	animationOptions: 
 		time: 1
 
@@ -899,7 +930,7 @@ getTeamNamesFromTeamCodeInCloud = (callback) ->
 	for aTeam of userTeams
 		p = "/teamDirectory/" + aTeam
 		# Simple 2, expecting dataset
-		demoDB.get p, (realTeamName) ->
+		tabbyDB.get p, (realTeamName) ->
 			if realTeamName isnt "" 
 				localTeamDirectory[aTeam] = realTeamName
 				updateUserTeamUI()
@@ -916,7 +947,7 @@ buttonManageTeams.onClick ->
 	teamManagementNameList.text = tempTeamString
 	
 buttonTeamTabby.onClick ->
-	flow.showNext(teamDashboardScreen)
+	flow.showNext(homeScreen)
 	
 startNewUserFlow = () ->
 	teamCode = 'tabby'
@@ -933,7 +964,9 @@ teamUpdateFromCloud = (callback) ->
 		getTeamNamesFromTeamCodeInCloud()
 
 	theKey = "/users/" + username + '/teams/'
-	demoDB.get theKey, (teamObject) ->
+	
+	
+	tabbyDB.get theKey, (teamObject) ->
 		if teamObject is null
 			#this means they're a new user
 			startNewUserFlow()
@@ -954,6 +987,7 @@ teamNameInput = InputLayer.wrap(textInputName, nameTeamPlaceholderText)
 
 buttonIDontHaveTeam.onClick ->
 	flow.showNext(noTeamInfoScreen)
+	#if user is not in teamTabby, then add them to that team
 	
 	
 buttonCreateTeam.onClick ->
@@ -986,7 +1020,7 @@ buttonCreateTeamWithName.onClick ->
 
 isUserInMyActiveTeams = (userToCheck) ->
 	theKey = "/users/" + userToCheck + '/teams/'
-	demoDB.get theKey, (teamObject) ->
+	tabbyDB.get theKey, (teamObject) ->
 		if !teamObject? then print 'it doesnt exist'
 		for eachTeam, value of teamObject
 			if userTeams[eachTeam] = value
@@ -996,25 +1030,28 @@ isUserInMyActiveTeams = (userToCheck) ->
 	
 
 
-
+#bookmark
 teamFindFreeCodeAndCreateTeam = () ->
+	# loop through all keys. If one has no property, use that for the next team
 	theKey = "/teamDirectory/"
-	demoDB.get theKey, (teamCodeList) ->
+	tabbyDB.get theKey, (teamCodeList) ->
 	#find a spare code
 		newKey = ""
 		for theKey, value of teamCodeList
 			if value is ""  #we found an empty slot, create team
 				newTeamKey = theKey
 				teamCode = newTeamKey
-				teamPath = "/teamDirectory/" + newTeamKey
-				demoDB.put(teamPath, newTeamName, teamAddToUserAccount)
+				teamNameString = ""
+				teamNameString = data.teamName
+				teamPath = '/teamDirectory/' + theKey
+				tabbyDB.put(teamPath, teamNameString, teamAddToUserAccount)
 				break
 				
 				#now we add this team to the user's account
 				
 				
 		if newTeamKey is ''
-			errorText = '''Error, couldnt create team'''		
+			errorText = '''Error, couldnt create team. tabby@teampurr.com'''		
 			flow.showOverlayTop(errorOverlayScreen)
 			
 
@@ -1023,27 +1060,35 @@ teamFindFreeCodeAndCreateTeam = () ->
 buttonJoinTeamWithCode.onClick (event, layer) ->
 	#now we need to validate the code
 	flow.header = navBar
-
-
+	
+	# no text entered
 	if !data.teamJoinCode?
 		errorText.text = 'Sorry, team not found.'
 		flow.showNext(errorOverlayScreen)
+		
 	else 
 		teamCode = data.teamJoinCode
+		#now down the rabbithole of callbacks…
 		teamLookupTeamNameByCode(teamAddToUserAccount)
 
 
 
 
 teamLookupTeamNameByCode = (callback) ->
+	#make a call to find the value (team name) of the teamCode 
 	theKey = "/teamDirectory/" + teamCode + '/'
-	demoDB.get theKey, (teamNameReturned) ->
+	tabbyDB.get theKey, (teamNameReturned) ->
 		teamName = teamNameReturned
 		if teamName?
 			callback()
+			
+		# todo check that user is not already on team
 		else 
+			# team does not exist
 			errorText.text = 'Sorry, team not found'
 			flow.showNext(errorOverlayScreen)
+			
+	
 	
 teamAddToUserAccount = () ->
 	#this adds a team to a user's account
@@ -1052,24 +1097,26 @@ teamAddToUserAccount = () ->
 	if teamCode is 'tabby' 
 # 		userTeams["Tabby"] = true
 		updateUserTeamUI()
-		demoDB.put(teamPath, true)
+		tabbyDB.put(teamPath, true)
 		
 	else
 		userTeams[teamName] = true
 		updateUserTeamUI()
-		demoDB.put(teamPath, true, teamAddedToUserAccountSuccess)
+		
+		tabbyDB.put(teamPath, true, teamAddedToUserAccountSuccess)
 
 	
 	
 
 teamAddedToUserAccountSuccess = () ->
-	flow.showNext(teamJoinSuccess)
+	teamShareCode.text = teamCode
+	flow.showNext(teamCreateSuccessScreen)
 	buttonToDashboard.visible = true
 	
 buttonToDashboard.on Events.Click, (event, layer) ->
 	# show success screen
 	flow.header.visible = false
-	flow.showNext(teamDashboardScreen)
+	flow.showNext(homeScreen)
 
 
 showTeamName = () ->
@@ -1108,16 +1155,16 @@ writeUserStatusEvent = (username) ->
 		
 		Event = 
 			username
-		lastUpdatedString = "/" + timeNow
+		lastUpdatedString = "/allUserEvents/" + timeNow
 		userPath = "/users/"+ username
 		lastUpdatedKey = userPath + '/lastUpdated'
-		demoDB.put(lastUpdatedKey, timeNow)
+		tabbyDB.put(lastUpdatedKey, timeNow)
 		workInertiakey =  userPath + '/workInertia'
 		workInertia = Math.max(workInertia, 0)
-		demoDB.put(workInertiakey, workInertia)
+		tabbyDB.put(workInertiakey, workInertia)
 	
 writeNewEvent = (username, userEventKey) ->
-	# write a new entry
+	# write a new entry for a win, hammer 🔨 or other event
 	if firebaseStatus is 'connected'
 		myArray = username.split " "
 		firstNameWinner = myArray[0]
@@ -1130,20 +1177,21 @@ writeNewEvent = (username, userEventKey) ->
 			unixTime: timeNow
 			eventString: eventString
 		
-		dbString = "/" + timeNow
+		dbString = "/allUserEvents/" + timeNow
 		
-		demoDB.put(dbString,Event)
+		tabbyDB.put(dbString,Event)
 		
-		demoDB.put('/lastUpdate', timeNow)
+		tabbyDB.put('/lastUpdate', timeNow)
 		
 
 
 writeLastUpdatedEvent = (thisTime) ->
+	# writes in unixtime the last time the database was updated
 	if firebaseStatus is 'connected'
 		if not thisTime? then timeNow = Date.now()
 		else timeNow = thisTime
 		dbString = "/" + timeNow
-		demoDB.put('/lastUpdate', timeNow)
+		tabbyDB.put('/lastUpdate', timeNow)
 ###############
 
 
@@ -1225,7 +1273,7 @@ updateUsersBadge = (theEvent) ->
 					#todo consider making the times dynaic to the event. For example,
 					# 9 minute coffee
 
-demoDB.onChange "/lastUpdate", (value) -> 
+tabbyDB.onChange "/lastUpdate", (value) -> 
 	if firebaseStatus isnt 'connected' then return
 	if !hasHeardFromServer 
 		hasHeardFromServer = true
@@ -1237,7 +1285,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 		
 		if firebaseStatus is 'connected'
 			lastUpdateString = '/allUserEvents/' + value
-			demoDB.get lastUpdateString, (theEvent) ->
+			tabbyDB.get lastUpdateString, (theEvent) ->
 				if theEvent?
 					myArray = theEvent.username.split " "
 					eventNotification =  theEvent.eventString
@@ -1266,7 +1314,7 @@ demoDB.onChange "/lastUpdate", (value) ->
 Utils.interval 10, ->
 	if firebaseStatus is 'connected' and workInertiaActive
 		userListKey = "/users/"
-		demoDB.get userListKey, (theUsers) ->
+		tabbyDB.get userListKey, (theUsers) ->
 			
 			updateUserWorkInertia(theUsers)
 			updateUserList()
@@ -1389,7 +1437,7 @@ window.onresize = () ->
 	updateCanvasDimensions?()
 
 updateCanvasDimensions = () ->
-	teamDashboardScreen.size = Screen.size
+	homeScreen.size = Screen.size
 	teamSignOrCreateScreen.size = Screen.size
 	workSession.size = Screen.size
 	workSessionComplete.size = Screen.size
@@ -1397,11 +1445,11 @@ updateCanvasDimensions = () ->
 	buttonTips.y =  Align.top(84)
 	buttonTips.x = Align.center(-32)
 	allButtons.y = Align.bottom(0)
-	scroll.width = teamDashboardScreen.width
+	scroll.width = homeScreen.width
 	scroll.y = Align.bottom
 	updateTabbyView?()
 	if scrollEmptyStateLabel?
-		scrollEmptyStateLabel.midX = teamDashboardScreen.midX
+		scrollEmptyStateLabel.midX = homeScreen.midX
 		
 	updateButtonLayout(myButtonArray, myButtons)
 	#update where the buttons are placed
@@ -1453,7 +1501,7 @@ updateUserList = (callback) ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
-	demoDB.get userListKey, (theUsers) ->
+	tabbyDB.get userListKey, (theUsers) ->
 		
 		if oldUserString is makeStringFromObject(theUsers)
 			return
@@ -1522,7 +1570,10 @@ updateUserList = (callback) ->
 				backgroundColor: "#ffffff"
 				clip: false
 			
-			
+			cell.onClick ->
+				print cell.name
+				#todo add new view per user.
+				
 			# todo code to change daylight / sunglight cell brightness
 # 			testView = new Layer
 # 				width: 64
@@ -1663,7 +1714,7 @@ showUpdateAvailableBanner = () ->
 
 # Motivation Overlay Setup
 motivationOverlay = new Layer
-	parent: teamDashboardScreen
+	parent: homeScreen
 	width: Screen.width
 	height: Screen.height
 	backgroundColor: '#D1C300'
@@ -1768,7 +1819,7 @@ keyDropAnimation = new Animation motivationOverlayText,
 checkAppVersion = () ->
 	#here's where we check the database for updates
 	if firebaseStatus is 'connected'
-		demoDB.get "/latestAppVersion", (theEvent) ->
+		tabbyDB.get "/latestAppVersion", (theEvent) ->
 			if theEvent?
 				if theEvent > appVersion
 					showUpdateAvailableBanner?()
@@ -1797,7 +1848,7 @@ else
 			
 			
 			userListKey = "/users/"
-			demoDB.get userListKey, (theUsers) ->
+			tabbyDB.get userListKey, (theUsers) ->
 				updateUserWorkInertia(theUsers)
 
 
@@ -1815,7 +1866,7 @@ isFresh = (someTime) ->
 Utils.interval 86400, ->
 	serverReady?()
 	
-demoDB.onChange "/users", (status) ->
+tabbyDB.onChange "/users", (status) ->
 	updateUserList?()
 	
 	
@@ -2032,7 +2083,15 @@ input1.onInputFocus ->
 
 
 
+buttonSuccessDone.onClick ->
+	flow.showNext(homeScreen)
 
+buttonHammering.onClick ->
+	writeNewEvent(username, '🔨')
+
+
+buttonRecharge.onClick ->
+	flow.showNext(screenRechargeSession)
 allButtons.visible = false #experimental
 
 
@@ -2041,3 +2100,5 @@ forceFlowUpdate()
 button_group.bringToFront()
 
 
+
+#first launch
