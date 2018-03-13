@@ -11,7 +11,7 @@ testFirstRun = false
 cellHeight = 48
 cellWidth = 64
 
-
+localTeamDirectory = {}
 
 lastUserWorkInertiaLevel = {}
 data = {}
@@ -77,10 +77,10 @@ flow.header = navBar
 flow.header.visible = false
 
 userTeams = {}
-		
-	
-	
 
+	
+	
+# redraw all the views when the window resizes
 forceFlowUpdate = () ->
 	teamCreateScreen.size = Canvas.size
 	homeScreen.size = Canvas.size
@@ -199,7 +199,7 @@ oldUserString = ""
 
 
 doFirstRunThings = () ->
-	# lets check if this is a new users
+	# lets check if this is a new user
 	
 
 
@@ -272,7 +272,24 @@ if username  is ""  then username = "Susan Yīn"
 # Firebase
 {Firebase} = require 'firebase'
 
-
+# kick off a timer to make sure we can connect. 
+Utils.delay 4, ->
+	if firebaseStatus is ''
+	# was unable to connect on launch, prob no network
+	# todo hide team UI, go to offline mode
+		teamListControl.visible = false
+		clearScrollView()
+		scrollEmptyStateLabel.animate("disconnected")
+		oldUserString = "" #reload user list after outage
+		drawUserCellView()
+		button_group.visible = false
+		buttonWin.visible = false
+		buttonHammering.visible = false
+		buttonWave.visible = false
+		#todo make sure I put these back visible when we go back online
+		
+	
+	
 
 if sandbox
 	#SANDBOX
@@ -295,16 +312,25 @@ tabbyDB.onChange "connection", (status) ->
 	if status? then firebaseStatus = status
 	# status is either `connected´ or `disconnected´
 	if firebaseStatus is 'disconnected'
+		teamListControl.visible = false
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
 		oldUserString = "" #reload user list after outage
-		updateUserList()
+		drawUserCellView()
+		button_group.visible = false
+		
+		
 	if firebaseStatus is 'connected' 
 		scrollEmptyStateLabel.animate("connected")
-# 		updateUserList()
+# 		drawUserCellView()
 		serverReady = true
-		teamUpdateFromCloud(updateUserList)
-
+		
+		getTeamSubscriptionsFromCloud(drawTeamToggleView)
+		#when we get the human names for teams back, then draw view
+		
+		drawUserCellView()
+		
+		button_group.visible = true
 
 
 
@@ -459,9 +485,51 @@ allButtons.onMouseOver (event, layer) ->
 	lastTriggered = Date.now()
 	triggered()
 
+
+#apply mouseDown behaviour to the set of buttons
+for layers in buttonFrame.children
+	layers.states.down = 
+		backgroundColor: '#B6C9E0'
+		
+	layers.states.over = 
+		backgroundColor: '#E3E3E0'
 	
-			
+	layers.onMouseDown (event, layer) ->
+		layer.stateSwitch('down')
+
+buttonWin.onClick ->
+	name = '🏆'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	showMotivationOverlay(name)
+	buttonFramesReset()
+		
+buttonHammering.onClick ->
+	name = '🔨'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	showMotivationOverlay(name)
+	buttonFramesReset()
 	
+buttonWave.onClick ->
+	name = '👋'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	showMotivationOverlay(name)
+	buttonFramesReset()
+	
+		
+		
+buttonFrame.onMouseUp ->
+	buttonFramesReset()
+
+
+buttonFramesReset = ->
+	for layers in buttonFrame.children
+		layers.stateSwitch('default')
+	
+		
+#Event buttons
 createButtonLayer = (name, x, y) ->
 	@myLayer = new TextLayer
 		parent: allButtons
@@ -509,7 +577,7 @@ createButtonLayer = (name, x, y) ->
 		showMotivationOverlay(name)
 		
 	myButtonArray.push(@myLayer)
-	1
+	
 
 
 # #fun extras
@@ -554,7 +622,6 @@ myButtonColor =
 	'🚪': '#161925'
 	
 	
-#todo add a Zz 😴
 
 # for buttons in myButtons
 # 	createButtonLayer(buttons)
@@ -658,19 +725,22 @@ updateButtonLayout(myButtonArray, myButtons)
 
 ########## team control UI
 
-#  
-# here we st
-drawTeamUI = () ->
+# draw the text controls for turning on and off teams
+drawTeamToggleView = () ->
+	print 'drawTeamToggleView called'
 	lastXPosition = 0
 	c = 0
-
+	print Object.keys(localTeamDirectory).length
 	#todo there's some duplicate teams being displayed. User data seems OK.
 	# set up the team clickbale labels
-	for theTeam, isActive of userTeams
+	for theTeamCode, isActive of userTeams
 		if isActive then textOpacity = 1 else textOpacity = 0.2
-		tempName = localTeamDirectory[theTeam]
+		print 'theTeamCode:' + theTeamCode
+		tempName = localTeamDirectory[theTeamCode] #bookmark. #bug some issue with using
+		# a number as the key…maybe it thinks its an array?
+		print tempName
 		buttonTeam = new TextLayer
-			name: theTeam
+			name: theTeamCode
 			parent: teamListControl
 			x: lastXPosition
 			y: Align.center()
@@ -689,7 +759,7 @@ drawTeamUI = () ->
 		
 		
 		#just a temp color to show user what's changed, ie what new team they joined
-		if theTeam is teamName
+		if theTeamCode is teamName
 			buttonTeam.color = 'red'
 			teamButtonAnimation = new Animation buttonTeam,
 				color: '#606A77'
@@ -719,12 +789,12 @@ updateUserTeamUI = () ->
 	#delete all existing words
 	for things in teamListControl.children
 		things.destroy()
-	drawTeamUI()
+	drawTeamToggleView()
 	
-# 	for theTeam of userTeamss
+# 	for theTeamCode of userTeamss
 # 		#todo
 # 		# Here I think we filter out any people that are not on the same teams
-# 	print 'the Team: ' + theTeam
+# 	print 'the Team: ' + theTeamCode
 # todo 1: fill the array with all current teams.
 # todo 2: update the user List with 
 
@@ -819,7 +889,7 @@ funCheckingText = Utils.randomChoice(['lowers sunglasses…', 'meowing for other
 scrollEmptyStateLabel = new TextLayer
 	parent: scroll
 	backgroundColor: 'transparent'
-	fontSize: 11
+	fontSize: 9
 	textAlign: "center"
 	fontWeight: 800
 	color: "black" 
@@ -840,7 +910,7 @@ scrollEmptyStateLabel.states.alone =
 		time: 1
 	
 scrollEmptyStateLabel.states.disconnected =
-	text: 'Offline mode'
+	text: 'Offline AKA get more work done.'
 	opacity: 1
 	textAlign: "center"
 	animationOptions:
@@ -922,20 +992,29 @@ timeNow =  Date.now()
 		
 #teamstuff
 
-getTeamNamesFromTeamCodeInCloud = (callback) ->
+getTeamNamesFromCloudWithTeamCode = (callback) ->
+	print 'getTeamNamesFromCloudWithTeamCode called'
 # 	making a key value pair of all teams that user is in
 # todo This should really be a single object with many properties
 #	get each value from the cloud and add it to the team directory 	
+	print 'hi'
 	localTeamDirectory = {}
+	countReturned = 0 #cheap and chirpy way to wait until names all are returned
+	print 'length is ' + Object.keys(userTeams).length
 	for aTeam of userTeams
 		p = "/teamDirectory/" + aTeam
 		# Simple 2, expecting dataset
 		tabbyDB.get p, (realTeamName) ->
 			if realTeamName isnt "" 
 				localTeamDirectory[aTeam] = realTeamName
-				updateUserTeamUI()
+				print realTeamName
+				countReturned += 1
+				if countReturned is Object.keys(userTeams).length
+					#this means we've got the last of the team Names back from the serverReady
+					print 'last of names are back'
+					callback()
 				
-	if callback? then callback()
+
 
 buttonManageTeams.onClick ->
 	flow.showNext(teamManagementScreen)
@@ -956,29 +1035,36 @@ startNewUserFlow = () ->
 
 
 #todo sync network teams and 
-teamUpdateFromCloud = (callback) ->
+getTeamSubscriptionsFromCloud = (callback) ->
+	localTeamDirectory = {}
 	# read the users' team and add them to local array
-	addToLocalStorage = (eachTeamName,eachTeamValue ) ->
-		userTeams[eachTeamName] = eachTeamValue
+	print 'getTeamSubscriptionsFromCloud called'
+	
+	addToLocalStorage = (eachTeamCode,eachTeamValue ) ->
+		userTeams[eachTeamCode] = eachTeamValue
 		#add each team to the local array
-		getTeamNamesFromTeamCodeInCloud()
 
 	theKey = "/users/" + username + '/teams/'
-	
+
 	
 	tabbyDB.get theKey, (teamObject) ->
+
+		#team object looks good
 		if teamObject is null
 			#this means they're a new user
 			startNewUserFlow()
 			writeUserStatusEvent(startNewUserFlow) ->
 			return
+
 		for eachTeam, value of teamObject
-
-			addToLocalStorage(eachTeam, value)
-			#todo this should be looking up actual teams, not the code
-
-
-		callback()
+			#eachteam is a team code
+			try addToLocalStorage(eachTeam, value)
+# 			running this in the Framer IDE means this fails 
+			#bookmark
+			#debug
+			
+		getTeamNamesFromCloudWithTeamCode(callback)
+		
 	
 
 
@@ -1030,7 +1116,6 @@ isUserInMyActiveTeams = (userToCheck) ->
 	
 
 
-#bookmark
 teamFindFreeCodeAndCreateTeam = () ->
 	# loop through all keys. If one has no property, use that for the next team
 	theKey = "/teamDirectory/"
@@ -1075,6 +1160,7 @@ buttonJoinTeamWithCode.onClick (event, layer) ->
 
 
 teamLookupTeamNameByCode = (callback) ->
+	print 'teamLookupTeamNameByCode called'
 	#make a call to find the value (team name) of the teamCode 
 	theKey = "/teamDirectory/" + teamCode + '/'
 	tabbyDB.get theKey, (teamNameReturned) ->
@@ -1250,8 +1336,6 @@ updateUserWorkInertia = (theUsers) ->
 
 
 
-
-
 ############ Badge stuff
 updateUsersBadge = (theEvent) ->
 	#update the users's badge
@@ -1274,6 +1358,7 @@ updateUsersBadge = (theEvent) ->
 					# 9 minute coffee
 
 tabbyDB.onChange "/lastUpdate", (value) -> 
+	#onChange doesnt get called if there's no network
 	if firebaseStatus isnt 'connected' then return
 	if !hasHeardFromServer 
 		hasHeardFromServer = true
@@ -1317,7 +1402,7 @@ Utils.interval 10, ->
 		tabbyDB.get userListKey, (theUsers) ->
 			
 			updateUserWorkInertia(theUsers)
-			updateUserList()
+			drawUserCellView()
 # 			updateUserTeamUI()
 			
 
@@ -1497,7 +1582,8 @@ makeStringFromObject = (theObject) ->
 
 
 
-updateUserList = (callback) ->
+#bookmark
+drawUserCellView = (callback) ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
 	userListKey = "/users/"
@@ -1571,7 +1657,8 @@ updateUserList = (callback) ->
 				clip: false
 			
 			cell.onClick ->
-				print cell.name
+				userToInspect = @.name
+				inspectUser(userToInspect)
 				#todo add new view per user.
 				
 			# todo code to change daylight / sunglight cell brightness
@@ -1627,20 +1714,20 @@ updateUserList = (callback) ->
 			tempUserName = userArray[index]
 			myArray = tempUserName.split " "
 			
-			userInitials = myArray[0].charAt(0) 
+			userCellName = myArray[0].charAt(0) 
 			if myArray[1]
-				userInitials += myArray[1].charAt(0)
+				userCellName += myArray[1].charAt(0)
 			
 			
 			
-			userInitials = userArray[index]
-			cell.name = userInitials
+			userCellName = userArray[index]
+			cell.name = userCellName
 			cellLabel = new TextLayer
 				parent: cell
-				name: userInitials + ' label'
+				name: userCellName + ' label'
 				x: Align.center()
 				y: 0
-				text:  (userInitials.replace(/\s/g, '\n'))
+				text:  (userCellName.replace(/\s/g, '\n'))
 				textAlign: 'center'
 				fontWeight: 600
 				fontSize: 9
@@ -1649,7 +1736,7 @@ updateUserList = (callback) ->
 				padding: 2
 			
 			#tofix
-			try cell.backgroundColor = colorFromInertia(userInitials, (lastUserWorkInertiaLevel[userInitials]))
+			try cell.backgroundColor = colorFromInertia(userCellName, (lastUserWorkInertiaLevel[userCellName]))
 			if cell.backgroundColor.toHexString() is "#000000" 
 				cell.backgroundColor = "#4C545E"
 			
@@ -1704,7 +1791,8 @@ showUpdateAvailableBanner = () ->
 		`window.open("https://www.evernote.com/l/AAF3kITp759C2p4zTphJt6qGpjCrS5r3msQ");`
 		buildOverlay.visible = false
 	
-
+inspectUser = (userToInspect) ->
+	
 
 
 
@@ -1853,7 +1941,7 @@ else
 
 
 serverReady = () ->
-	try updateUserList()
+	try drawUserCellView()
 	checkAppVersion?()
 	
 isFresh = (someTime) ->
@@ -1867,7 +1955,7 @@ Utils.interval 86400, ->
 	serverReady?()
 	
 tabbyDB.onChange "/users", (status) ->
-	updateUserList?()
+	drawUserCellView?()
 	
 	
 	
@@ -2091,7 +2179,9 @@ buttonHammering.onClick ->
 
 
 buttonRecharge.onClick ->
+	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can get your blood flowing again.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.'])
 	flow.showNext(screenRechargeSession)
+	flow.header.visible = true
 allButtons.visible = false #experimental
 
 
