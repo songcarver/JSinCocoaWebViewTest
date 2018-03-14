@@ -6,12 +6,11 @@ shouldStop = false
 testFirstRun = false
 
 ####################
-
+countReturned = 0
 # UI variables 
 cellHeight = 48
 cellWidth = 64
 
-localTeamDirectory = {}
 
 lastUserWorkInertiaLevel = {}
 data = {}
@@ -25,7 +24,7 @@ username = ''
 cocoaBridgeIsUp = false
 workInertiaActive = true
 testingWorkInertia = false
-
+localTeamDirectory = new Object
 workInertia = 0
 if testingWorkInertia
 	workInertia = 4
@@ -54,6 +53,8 @@ lastMouse =
 	y: 0
 	virgin: true
 	
+	
+button_group.visible = false
 	
 `function isRetinaDisplay() {
         if (window.matchMedia) {
@@ -264,7 +265,7 @@ hasHeardFromServer = false
 
 
 if sandbox then username = "JS Bach"
-if username  is ""  then username = "Susan Yīn"
+if username  is ""  then username = "Tabby McTabby"
 
 
 
@@ -280,6 +281,9 @@ Utils.delay 4, ->
 		teamListControl.visible = false
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
+		scrollEmptyStateLabel.x = Align.center
+		
+	
 		oldUserString = "" #reload user list after outage
 		drawUserCellView()
 		button_group.visible = false
@@ -315,12 +319,15 @@ tabbyDB.onChange "connection", (status) ->
 		teamListControl.visible = false
 		clearScrollView()
 		scrollEmptyStateLabel.animate("disconnected")
+		scrollEmptyStateLabel.x = Align.center
 		oldUserString = "" #reload user list after outage
 		drawUserCellView()
 		button_group.visible = false
 		
 		
 	if firebaseStatus is 'connected' 
+		button_group.visible = true
+		teamListControl.visible = true
 		scrollEmptyStateLabel.animate("connected")
 # 		drawUserCellView()
 		serverReady = true
@@ -730,15 +737,23 @@ drawTeamToggleView = () ->
 	print 'drawTeamToggleView called'
 	lastXPosition = 0
 	c = 0
-	print Object.keys(localTeamDirectory).length
+	print 'length teamdirectory in drawTeamToggleView = ' + Object.keys(localTeamDirectory).length
+	print 'count returned' + countReturned
+	
 	#todo there's some duplicate teams being displayed. User data seems OK.
-	# set up the team clickbale labels
+	# set up the team cickable labels
+
+
+	#delete the old buttons
+	for things in teamListControl.children
+		destroy things
+		
 	for theTeamCode, isActive of userTeams
 		if isActive then textOpacity = 1 else textOpacity = 0.2
 		print 'theTeamCode:' + theTeamCode
 		tempName = localTeamDirectory[theTeamCode] #bookmark. #bug some issue with using
 		# a number as the key…maybe it thinks its an array?
-		print tempName
+		print 'tempName:' + tempName
 		buttonTeam = new TextLayer
 			name: theTeamCode
 			parent: teamListControl
@@ -775,20 +790,23 @@ drawTeamToggleView = () ->
 			tempName = layer.name
 			
 			for iTeam, value of userTeams
-				if iTeam is layer.name #to solve for non-unique layer names
+				if iTeam is layer.name # to solve for non-unique layer names
 					if value is true
 						userTeams[iTeam] = false
 					else userTeams[iTeam] = true
 					updateUserTeamUI()
 					
 					
+
+
+
 updateUserTeamUI = () ->
 	if Object.keys(userTeams).length is 0
 		return
 	# if userTeams object is empty, there's no reason to run this
 	#delete all existing words
 	for things in teamListControl.children
-		things.destroy()
+		try things.destroy()
 	drawTeamToggleView()
 	
 # 	for theTeamCode of userTeamss
@@ -798,7 +816,7 @@ updateUserTeamUI = () ->
 # todo 1: fill the array with all current teams.
 # todo 2: update the user List with 
 
-	
+
 updateUserTeamUI()
 
 
@@ -910,11 +928,20 @@ scrollEmptyStateLabel.states.alone =
 		time: 1
 	
 scrollEmptyStateLabel.states.disconnected =
-	text: 'Offline AKA get more work done.'
+	text: 'Offline. Tabby will keep trying to connect.'
 	opacity: 1
 	textAlign: "center"
 	animationOptions:
 		time: 1
+
+
+#feature
+#offline detection
+#ping network every 15 seconds
+#if previous 2 successful pings were within last minute
+# && last 2 failed, then show Mac notification
+# how to detect if lid closed?
+
 
 scrollEmptyStateLabel.states.connected =
 	text: ''
@@ -984,11 +1011,6 @@ timeAtLaunch = Date.now()
 timeNow =  Date.now()
 
 
-
-
-
-
-
 		
 #teamstuff
 
@@ -1001,19 +1023,40 @@ getTeamNamesFromCloudWithTeamCode = (callback) ->
 	localTeamDirectory = {}
 	countReturned = 0 #cheap and chirpy way to wait until names all are returned
 	print 'length is ' + Object.keys(userTeams).length
-	for aTeam of userTeams
-		p = "/teamDirectory/" + aTeam
-		# Simple 2, expecting dataset
-		tabbyDB.get p, (realTeamName) ->
-			if realTeamName isnt "" 
-				localTeamDirectory[aTeam] = realTeamName
-				print realTeamName
-				countReturned += 1
-				if countReturned is Object.keys(userTeams).length
-					#this means we've got the last of the team Names back from the serverReady
-					print 'last of names are back'
-					callback()
+
+
 				
+		
+	for aTeam, valueToIgnore of userTeams
+		getValuesFromCloud =(aTeam) ->
+			p = "/teamDirectory/" + aTeam
+			tempATeam = aTeam
+			#bug is here
+			print 'path is ' + p
+			# Simple 2, expecting dataset
+			tabbyDB.get p, (realTeamName) ->
+				print 'realTeamName is '+ realTeamName
+				if realTeamName isnt "" 
+				
+					#the bug is that tempATeam is the same every tiem
+					print 'aTeam is ' + tempATeam
+					localTeamDirectory[aTeam] = realTeamName
+					print realTeamName
+					countReturned += 1
+					if countReturned is Object.keys(userTeams).length
+						print 'COUNT RETURNED: ' + Object.keys(localTeamDirectory).length
+						#this means we've got the last of the team Names back from the serverReady
+						print 'last of names are back'
+						
+						
+						#here there be dragons.
+						# problem is that localTeamDirectory looks good here
+						# but turns into a single keyed obejct when callback is complete
+						drawTeamToggleView(localTeamDirectory)
+						
+						
+		getValuesFromCloud(aTeam)
+		
 
 
 buttonManageTeams.onClick ->
@@ -1036,7 +1079,10 @@ startNewUserFlow = () ->
 
 #todo sync network teams and 
 getTeamSubscriptionsFromCloud = (callback) ->
+	#blow away local team directory
 	localTeamDirectory = {}
+	
+	
 	# read the users' team and add them to local array
 	print 'getTeamSubscriptionsFromCloud called'
 	
@@ -1047,8 +1093,7 @@ getTeamSubscriptionsFromCloud = (callback) ->
 	theKey = "/users/" + username + '/teams/'
 
 	
-	tabbyDB.get theKey, (teamObject) ->
-
+	tabbyDB.get theKey, (teamObject) =>
 		#team object looks good
 		if teamObject is null
 			#this means they're a new user
@@ -1065,7 +1110,8 @@ getTeamSubscriptionsFromCloud = (callback) ->
 			
 		getTeamNamesFromCloudWithTeamCode(callback)
 		
-	
+
+
 
 
 teamNameInput = InputLayer.wrap(textInputName, nameTeamPlaceholderText)
@@ -1159,14 +1205,14 @@ buttonJoinTeamWithCode.onClick (event, layer) ->
 
 
 
-teamLookupTeamNameByCode = (callback) ->
+teamLookupTeamNameByCode = (callback) =>
 	print 'teamLookupTeamNameByCode called'
 	#make a call to find the value (team name) of the teamCode 
 	theKey = "/teamDirectory/" + teamCode + '/'
-	tabbyDB.get theKey, (teamNameReturned) ->
+	tabbyDB.get theKey, (teamNameReturned) =>
 		teamName = teamNameReturned
 		if teamName?
-			callback()
+			callback(teamName)
 			
 		# todo check that user is not already on team
 		else 
@@ -1526,7 +1572,7 @@ updateCanvasDimensions = () ->
 	teamSignOrCreateScreen.size = Screen.size
 	workSession.size = Screen.size
 	workSessionComplete.size = Screen.size
-	
+	screenRechargeSession.size = Screen.size
 	buttonTips.y =  Align.top(84)
 	buttonTips.x = Align.center(-32)
 	allButtons.y = Align.bottom(0)
@@ -1582,7 +1628,6 @@ makeStringFromObject = (theObject) ->
 
 
 
-#bookmark
 drawUserCellView = (callback) ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
@@ -2172,6 +2217,7 @@ input1.onInputFocus ->
 
 
 buttonSuccessDone.onClick ->
+	drawTeamToggleView()
 	flow.showNext(homeScreen)
 
 buttonHammering.onClick ->
@@ -2179,7 +2225,9 @@ buttonHammering.onClick ->
 
 
 buttonRecharge.onClick ->
-	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can get your blood flowing again.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.'])
+	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can get your blood flowing again.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.',
+	'Tell a loved one, this.', 'Feel something furry, squishy or scratchy'
+	])
 	flow.showNext(screenRechargeSession)
 	flow.header.visible = true
 allButtons.visible = false #experimental

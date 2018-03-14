@@ -86,9 +86,9 @@ function init() {
 		return showBrowserAlert()
 	}
 
-	// if (!isFileLoadingAllowed()) {
-	// 	return showFileLoadingAlert()
-	// }
+	if (!isFileLoadingAllowed()) {
+		return showFileLoadingAlert()
+	}
 
 	loadProject(function(){
 		// CoffeeScript: Framer?.CurrentContext?.emit?("loaded:project")
