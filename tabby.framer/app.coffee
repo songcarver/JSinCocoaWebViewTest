@@ -957,7 +957,7 @@ scrollEmptyStateLabel.sendToBack()
 
 banner = new Layer
 	backgroundColor: '#ffff00'
-	height: 40
+	height: 48
 	width: Screen.width * 3
 	
 winnerName = new TextLayer
@@ -975,7 +975,7 @@ banner.states.showing =
 
 
 banner.states.hidden =
-	y: -40
+	y: -48
 	animationOptions:
 		time: 0.2
 
@@ -1296,7 +1296,7 @@ showTeamName = () ->
 
 
 
-writeUserStatusEvent = (username) ->
+writeUserStatusEvent = (username, userEventKey) ->
 	if firebaseStatus is 'connected'
 		# this writes a key value into /users for the current username and the lastUpdate
 		timeNow =  Date.now()
@@ -1307,6 +1307,11 @@ writeUserStatusEvent = (username) ->
 		userPath = "/users/"+ username
 		lastUpdatedKey = userPath + '/lastUpdated'
 		tabbyDB.put(lastUpdatedKey, timeNow)
+		
+		
+
+		
+		
 		workInertiakey =  userPath + '/workInertia'
 		workInertia = Math.max(workInertia, 0)
 		tabbyDB.put(workInertiakey, workInertia)
@@ -1331,6 +1336,17 @@ writeNewEvent = (username, userEventKey) ->
 		
 		tabbyDB.put('/lastUpdate', timeNow)
 		
+		userPath = "/users/"+ username
+		lastEventKeyPath = userPath + '/lastEvent/eventKey'
+		tabbyDB.put(lastEventKeyPath, userEventKey)
+		
+		lastEventTimePath = userPath + '/lastEvent/eventTime'
+		tabbyDB.put(lastEventTimePath, timeNow)
+		
+		if userEventKey is '▶'
+			workSessionEnd = Date.now() + 1500000
+			workSessionEndPath = userPath + '/lastEvent/workSessionEnd'
+			tabbyDB.put(workSessionEndPath, workSessionEnd)
 
 
 writeLastUpdatedEvent = (thisTime) ->
@@ -1400,25 +1416,30 @@ updateUserWorkInertia = (theUsers) ->
 
 ############ Badge stuff
 updateUsersBadge = (theEvent) ->
+	return
 	#update the users's badge
 	# somebug lives here
 	if theEvent.eventKey isnt '' #if the event isnt blank
 		for theLayer in scroll.content.children
-			if theLayer.name is theEvent.username
-				badgeLayer = theLayer.children[1]
-				badgeLayer.text = theEvent.eventKey
-				badgeLayer.opacity = 1
-				try fadeOutStateAnimation = new Animation badgeLayer,
-					opacity: 0
-					options:
-						time: 1
+			if eachUserName.lastEvent.eventTime?
+				if isFresh(eachUserName.lastEvent.eventTime)
 				
-				Utils.delay 600, -> 
-					fadeOutStateAnimation.start()
-					#keep it on the screen for 10 minutes before fadeing out
-					#idea consider making the times dynaic to the event. For example,
-					# 9 minute coffee
+					badgeLayer = theLayer.children[1]
+					badgeLayer.text = eachUserName.lastEvent.lastEvent
+					badgeLayer.opacity = 1
+					try fadeOutStateAnimation = new Animation badgeLayer,
+						opacity: 0
+						options:
+							time: 1
+					
+					Utils.delay 600, -> 
+						fadeOutStateAnimation.start()
+						#keep it on the screen for 10 minutes before fadeing out
+						#idea consider making the times dynaic to the event. For example,
+						# 9 minute coffee
 
+
+				
 tabbyDB.onChange "/lastUpdate", (value) -> 
 	#onChange doesnt get called if there's no network
 	if firebaseStatus isnt 'connected' then return
@@ -1676,7 +1697,24 @@ updateUserCellView = (callback) ->
 		#when you have both do a crosscheck for who is in the team.
 		# then call to do the actual render
 		#bookmark
+		tempStatusDictionary = {}
+		tempWorkTimerDictionary = {}
 		for eachUserName, theUserData of theUsers #all the usernames and their data
+			tempStatusDictionary[eachUserName] = ''
+			# do some work to prep for badge later on
+			
+			#thumb
+			if theUserData.lastEvent?.eventTime?
+
+				if isFresh(theUserData.lastEvent.eventTime, 120) #make badges stay for 2 minutes
+					tempStatusDictionary[eachUserName] = theUserData.lastEvent.eventKey
+
+			workSessionsPercentage = 0
+			if theUserData.lastEvent?.workSessionEnd?
+				timeDiffInMilliseconds = theUserData.lastEvent.workSessionEnd - Date.now()
+				workSessionsPercentage = Math.max(0, ((timeDiffInMilliseconds / 1500000)))
+				tempWorkTimerDictionary[eachUserName] = workSessionsPercentage
+
 			if eachUserName isnt username #don't count yourself otherwise false positives
 				if isFresh(theUserData.lastUpdated) #has been active recently
 	
@@ -1700,7 +1738,7 @@ updateUserCellView = (callback) ->
 						userArrayToDrawCells.push(eachUserName)
 							# stupid simple implementation
 			#swap so the app user is always first listing always.
-
+		
 		
 		
 		didASwap = false
@@ -1737,6 +1775,13 @@ updateUserCellView = (callback) ->
 				parent: scroll.content
 				backgroundColor: "#ffffff"
 				clip: false
+				
+			cellBacking = new Layer
+				parent: cell
+				backgroundColor: "#ffffff"
+				width:  cellWidth
+				height: cellHeight
+				opacity: 0.7
 			
 			cell.onClick ->
 				userAction = 'cell.onClick'
@@ -1819,29 +1864,44 @@ updateUserCellView = (callback) ->
 				padding: 2
 			
 			#tofix
-			try cell.backgroundColor = colorFromInertia(userCellName, (lastUserWorkInertiaLevel[userCellName]))
-			if cell.backgroundColor.toHexString() is "#000000" 
-				cell.backgroundColor = "#4C545E"
+			try cellBacking.backgroundColor = colorFromInertia(userCellName, (lastUserWorkInertiaLevel[userCellName]))
+			if cellBacking.backgroundColor.toHexString() is "#000000" 
+				cellBacking.backgroundColor = "#4C545E"
 			
 			if userArrayToDrawCells[index] is username
 				cellLabel.color = '#ffffff'
-				
+			
+			badgeTextToUse = tempStatusDictionary[userCellName]
+
+			
+
 			cellBadge  = new TextLayer
 				parent: cell
-				text: ''
+				text: badgeTextToUse
 				fontSize: 12
 				y: Align.bottom(-8)
 				x:8 
 				opacity: 1
 				backgroundColor: 'transparent'
 				
-			
+			if tempWorkTimerDictionary[userCellName]?
+				widthToUse = cell.width *  tempWorkTimerDictionary[userCellName]
+				
+				workTimerLayer = new Layer
+					parent: cell
+					y: Align.bottom
+					x: 0
+					width: widthToUse
+					height: 2
+					backgroundColor: 'ffff00'
 			
 			
 			# make each cell clickable
 			cell.on Events.Click, (event, layer) ->
 # 				if layer.name is username
 # 					if allButtons.visible is true then allButtons.visible = false else allButtons.visible = true
+	
+	
 	if callback? then callback()
 				
 
@@ -2027,9 +2087,13 @@ serverReady = () ->
 	try updateUserCellView()
 	checkAppVersion?()
 	
-isFresh = (someTime) ->
+isFresh = (someTime, optionalSeconds) ->
+	if !optionalSeconds?
+		optionalSeconds = 30
+	
+	theMilliseconds = 1000 * optionalSeconds
 	# if the time handed over is more than 30s old
-	if (Date.now() - someTime ) > 30000
+	if (Date.now() - someTime ) > theMilliseconds
 		return false
 	else 
 		return true

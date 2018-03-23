@@ -7299,7 +7299,7 @@
                 "exportOptions" : [
 
                 ],
-                "fillColor" : "hsl(0, 0%, 100%)",
+                "fillColor" : "rgba(255, 255, 255, 0.7)",
                 "fillEnabled" : true,
                 "fillGradient" : {
                   "__class" : "LinearGradient",
@@ -7327,7 +7327,7 @@
                 "left" : 0,
                 "locked" : false,
                 "name" : "bottom_rectangle",
-                "opacity" : 0.56000000000000005,
+                "opacity" : 1,
                 "parentid" : "3P!=tF.Z",
                 "radius" : 0,
                 "radiusBottomLeft" : 0,
