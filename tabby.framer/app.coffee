@@ -1,7 +1,7 @@
 {InputLayer} = require "input"
 
 # testing variables 
-sandbox = false
+sandbox = true
 shouldStop = false
 testFirstRun = false
 
@@ -82,7 +82,10 @@ flow.header.visible = false
 
 userTeams = {}
 
-	
+
+printOutKeys = (objectToInspect) ->
+	for keys, value of objectToInspect
+		print 'key: ' + keys + ' value: '+ value
 	
 # redraw all the views when the window resizes
 forceFlowUpdate = () ->
@@ -285,7 +288,7 @@ Utils.delay 4, ->
 		
 	
 		oldUserString = "" #reload user list after outage
-		updateUserCellView()
+# 		updateUserCellView()
 		button_group.visible = false
 		buttonWin.visible = false
 		buttonHammering.visible = false
@@ -321,7 +324,7 @@ tabbyDB.onChange "connection", (status) ->
 		scrollEmptyStateLabel.animate("disconnected")
 		scrollEmptyStateLabel.x = Align.center
 		oldUserString = "" #reload user list after outage
-		updateUserCellView()
+# 		updateUserCellView()
 		button_group.visible = false
 		
 		
@@ -335,7 +338,7 @@ tabbyDB.onChange "connection", (status) ->
 		getTeamSubscriptionsFromCloud(drawTeamToggleView)
 		#when we get the human names for teams back, then draw view
 		
-		updateUserCellView()
+# 		updateUserCellView()
 		
 		button_group.visible = true
 
@@ -649,6 +652,12 @@ formatForMinutesAndSeconds = (totalSeconds) ->
 	
 buttonStart.onClick ->
 	#Pomodoro
+	
+	name = '▶'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	buttonFramesReset()
+	
 	motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
 	Utils.delay 300, ->
 			motivationalQuote.text = Utils.randomChoice(motivationalStringArray)
@@ -681,6 +690,14 @@ workTickUpdate = (percentage, secondsRemaining) ->
 	timeText.text = formatForMinutesAndSeconds(secondsRemaining)
 
 showSessionFinish = ->
+
+	name = '🏆'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	showMotivationOverlay(name)
+	buttonFramesReset()
+	
+	
 	eventNotification  = 'You did it.'
 	message = eventNotification
 	try CocoaBridge.showMacNotification_(message) #send it to the mac	
@@ -709,7 +726,6 @@ buttonStopRelaxing.onClick ->
 	
 
 
-	
 
 updateButtonLayout = (myButtonArray, myButtons) ->
 	for index, eachButton of myButtonArray
@@ -789,8 +805,8 @@ drawTeamToggleView = (callback) -> # draw the text controls for turning on and o
 					else userTeams[iTeam] = true
 					updateUserTeamUI()
 					#todo update Cell view
-					
-					
+			
+			updateUserCellView()		
 	callback?()
 
 updateUserTeamUI = (callback) ->
@@ -1003,13 +1019,11 @@ getTeamNamesFromCloudWithTeamCode = (callback) ->
 # 	making a key value pair of all teams that user is in
 # todo This should really be a single object with many properties
 #	get each value from the cloud and add it to the team directory 	
-	print 'getTeamNamesFromCloudWithTeamCode was called'
 	
 	localTeamDirectory = {}
 	countReturned = 0 #cheap and chirpy way to wait until names all are returned
 	
 	for aTeam, valueToIgnore of userTeams
-		print userTeams
 		getValuesFromCloud =(aTeam) ->
 			p = "/teamDirectory/" + aTeam
 			tempATeam = aTeam
@@ -1058,7 +1072,6 @@ startNewUserFlow = () ->
 
 
 getTeamSubscriptionsFromCloud = (callback) ->
-	print 'getTeamSubscriptionsFromCloud called' 
 	
 	#blow away local team directory
 	localTeamDirectory = {}
@@ -1071,7 +1084,7 @@ getTeamSubscriptionsFromCloud = (callback) ->
 		#add each team to the local array
 
 	theKey = "/users/" + username + '/teams/'
-
+	updateLocalUserTeams =  if userTeams is null then true else false
 	
 	tabbyDB.get theKey, (teamObject) =>
 		#team object looks good
@@ -1088,6 +1101,7 @@ getTeamSubscriptionsFromCloud = (callback) ->
 			#bookmark
 			#debug
 			
+			if updateLocalUserTeams then [eachTeam] = value #update the local array
 		getTeamNamesFromCloudWithTeamCode(callback)
 		
 
@@ -1134,7 +1148,7 @@ buttonCreateTeamWithName.onClick ->
 isUserInMyActiveTeams = (userToCheck) ->
 	theKey = "/users/" + userToCheck + '/teams/'
 	tabbyDB.get theKey, (teamObject) ->
-		if !teamObject? then print 'it doesnt exist'
+# 		if !teamObject? then do something smart
 		for eachTeam, value of teamObject
 			if userTeams[eachTeam] = value
 				return true
@@ -1157,6 +1171,10 @@ teamFindFreeCodeAndCreateTeam = () ->
 				teamNameString = data.teamName
 				teamPath = '/teamDirectory/' + theKey
 				tabbyDB.put(teamPath, teamNameString, teamAddToUserAccount(teamAddedToUserAccountSuccess))
+				
+				#hacky hack to update force the toggle view to update after joining team
+				Utils.delay 2, ->
+					drawteamtoggleview()
 				break
 				
 				#now we add this team to the user's account
@@ -1170,6 +1188,7 @@ teamFindFreeCodeAndCreateTeam = () ->
 
 
 buttonJoinTeamWithCode.onClick (event, layer) ->
+	
 	userAction = 'buttonJoinTeamWithCode'
 	#now we need to validate the code
 	flow.header = navBar
@@ -1190,12 +1209,15 @@ buttonJoinTeamWithCode.onClick (event, layer) ->
 		
 		#show the success screen
 		joinTeamStep3 = () ->
+			updateUserCellView()
 			updateUserTeamUI(joinTeamStep4)
+			
 		
 		joinTeamStep4 = () ->
 			flow.showNext(teamJoinSuccess)
 		
 		teamLookupTeamNameByCode(joinTeamStep2) 
+		
 		#we'll get the team name for later
 
 
@@ -1218,8 +1240,7 @@ teamLookupTeamNameByCode = (callback) =>
 teamAddToUserAccount = (callback) ->
 	#this adds a team to a user's account
 	teamPath = "/users/" + username + "/teams/" + teamCode + "/"
-
-	if teamCode is 'tabby' 
+	if teamCode is 'tabby' and userTeams['tabby'] is true
 # 		userTeams["Tabby"] = true
 		updateUserTeamUI()
 		tabbyDB.put(teamPath, true)
@@ -1441,7 +1462,6 @@ Utils.interval 10, ->
 	if firebaseStatus is 'connected' and workInertiaActive
 		userListKey = "/users/"
 		tabbyDB.get userListKey, (theUsers) ->
-			
 			updateUserWorkInertia(theUsers)
 			updateUserCellView()
 # 			updateUserTeamUI()
@@ -1615,11 +1635,10 @@ clearScrollView = () ->
  
 makeStringFromObject = (theObject) ->
 	theString = ""
-	for theUsername, theUserdata of theObject
-		if isFresh(theUserdata.lastUpdated)
-			theString += theUsername
+	for theUserName, theUserData of theObject
+		if isFresh(theUserData.lastUpdated)
+			theString += theUserName
 	return theString
-
 
 
 updateUserCellView = (callback) ->
@@ -1628,11 +1647,10 @@ updateUserCellView = (callback) ->
 	userListKey = "/users/"
 	tabbyDB.get userListKey, (theUsers) ->
 		
-		
 		# the list of alluser is identical, so no need to redraw
-		if oldUserString is makeStringFromObject(theUsers)
-			return
-		oldUserString = makeStringFromObject(theUsers)
+# 		if oldUserString is makeStringFromObject(theUsers)
+# 			return
+# 		oldUserString = makeStringFromObject(theUsers)
 		
 		if not isJson(theUsers)
 			return
@@ -1645,7 +1663,7 @@ updateUserCellView = (callback) ->
 		
 		numUsers =  Object.keys(theUsers).length
 		
-		userArray = []
+		userArrayToDrawCells = []
 		
 		# now we go through entire userlist, and see whose teams 
 		# match the ones we have on
@@ -1657,51 +1675,53 @@ updateUserCellView = (callback) ->
 		# get the entire team Database
 		#when you have both do a crosscheck for who is in the team.
 		# then call to do the actual render
-		
 		#bookmark
-		for theUsername, theUserdata of theUsers #all the usernames and their data
-			if isFresh(theUserdata.lastUpdated) #has been active recently
-				for theTeamCode, isActive of userTeams #codes that current user has active
-				
+		for eachUserName, theUserData of theUsers #all the usernames and their data
+			if eachUserName isnt username #don't count yourself otherwise false positives
+				if isFresh(theUserData.lastUpdated) #has been active recently
+	
+					
 					teamCrosscheckCounter = 0
-					for eachTeamCode in theUserdata.teams
-						if eachTeamCode is theTeamCode
-							teamCrosscheckCounter =+ 1
-							#the teamCode matches one in the current active team
-							
-					if teamCrosscheckCounter isnt 0 
-						userArray.push(theUsername)
-						# stupid simple implementation
-						# 
-			
-				
-			
+					if (theUserData.teams)? #if this user has a teams object
+						
 
-#				commented logic out below to show current username as well. 
-# 				if theUsername isnt username 
-# 					userArray.push(theUsername)
+						for theTeamCode, isActive of userTeams #for all codes that this user has
+							if isActive
+								for eachTeamCode, subscribed of theUserData.teams
+									if subscribed
+										if eachTeamCode is theTeamCode #the same team appears
+											teamCrosscheckCounter += 1
+										#isActive refers to the team being toggled ON in the UI
+										
+										#the teamCode matches one in the current active team
+										# and the user currently has that team active
+								
+					if teamCrosscheckCounter isnt 0 
+						userArrayToDrawCells.push(eachUserName)
+							# stupid simple implementation
+			#swap so the app user is always first listing always.
+
 		
-		#swap so the app user is always first listing always.
 		
 		didASwap = false
-		for allTheUsers, index in userArray
+		for allTheUsers, index in userArrayToDrawCells
 			if allTheUsers is username
-				[userArray[index], userArray[0]] = [userArray[0], userArray[index]]
+				[userArrayToDrawCells[index], userArrayToDrawCells[0]] = [userArrayToDrawCells[0], userArrayToDrawCells[index]]
 				didASwap = true
 		if not didASwap 
 		#this means we never found our own name, 
 		# which is probably because the database wasn't updated when we first called its user list
-			userArray.unshift(username)
+			userArrayToDrawCells.unshift(username)
 			
 		# Variables
 		
 		
 		
-		columns = userArray.length
+		columns = userArrayToDrawCells.length
 		gutter = 0
 		
 		
-		if userArray.length is 0 
+		if userArrayToDrawCells.length is 0 
 			scrollEmptyStateLabel.animate("alone")
 		else 
 			scrollEmptyStateLabel.animate("connected")
@@ -1774,7 +1794,7 @@ updateUserCellView = (callback) ->
 
 			
 			# this makes name into initials
-			tempUserName = userArray[index]
+			tempUserName = userArrayToDrawCells[index]
 			myArray = tempUserName.split " "
 			
 			userCellName = myArray[0].charAt(0) 
@@ -1783,7 +1803,7 @@ updateUserCellView = (callback) ->
 			
 			
 			
-			userCellName = userArray[index]
+			userCellName = userArrayToDrawCells[index]
 			cell.name = userCellName
 			cellLabel = new TextLayer
 				parent: cell
@@ -1794,7 +1814,7 @@ updateUserCellView = (callback) ->
 				textAlign: 'center'
 				fontWeight: 600
 				fontSize: 9
-				letterSpacing: 0.5
+				letterSpacing: 0.1
 				color: 'white'
 				padding: 2
 			
@@ -1803,7 +1823,7 @@ updateUserCellView = (callback) ->
 			if cell.backgroundColor.toHexString() is "#000000" 
 				cell.backgroundColor = "#4C545E"
 			
-			if userArray[index] is username
+			if userArrayToDrawCells[index] is username
 				cellLabel.color = '#ffffff'
 				
 			cellBadge  = new TextLayer
@@ -2018,7 +2038,7 @@ Utils.interval 86400, ->
 	serverReady?()
 	
 tabbyDB.onChange "/users", (status) ->
-	updateUserCellView?()
+	#updateUserCellView?()
 	
 	
 	
@@ -2243,8 +2263,14 @@ buttonHammering.onClick ->
 
 
 buttonRecharge.onClick ->
+	name = '🔋'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	buttonFramesReset()
+	
+	
 	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can get your blood flowing again.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.',
-	'Tell a loved one, this.', 'Feel something furry, squishy or scratchy'
+	'Tell someone you love them.', 'Feel something furry, squishy or scratchy'
 	])
 	flow.showNext(screenRechargeSession)
 	flow.header.visible = true
