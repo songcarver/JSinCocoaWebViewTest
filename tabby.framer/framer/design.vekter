@@ -3993,14 +3993,14 @@
             "borderStyle" : "solid",
             "borderTop" : 1,
             "borderWidth" : 1,
-            "bottom" : 20,
+            "bottom" : null,
             "boxShadows" : [
 
             ],
             "brightness" : 100,
             "brightnessEnabled" : 0,
-            "centerAnchorX" : 0.5009765625,
-            "centerAnchorY" : 0.9326171875,
+            "centerAnchorX" : 0.8798828125,
+            "centerAnchorY" : 0.2197265625,
             "children" : [
               {
                 "__class" : "TextNode",
@@ -4166,14 +4166,14 @@
             "radiusPerCorner" : false,
             "radiusTopLeft" : 3,
             "radiusTopRight" : 3,
-            "right" : null,
+            "right" : 6,
             "rotation" : 0,
             "saturate" : 100,
             "saturateEnabled" : 0,
             "sepia" : 0,
             "sepiaEnabled" : 0,
             "targetName" : "buttonCreateTeamWithName",
-            "top" : null,
+            "top" : 98,
             "visible" : true,
             "width" : 111,
             "widthFactor" : null
@@ -4202,7 +4202,7 @@
             "brightness" : 100,
             "brightnessEnabled" : 0,
             "centerAnchorX" : 0.50390625,
-            "centerAnchorY" : 0.216796875,
+            "centerAnchorY" : 0.142578125,
             "children" : [
               {
                 "__class" : "TextNode",
@@ -4369,7 +4369,7 @@
             "sepia" : 0,
             "sepiaEnabled" : 0,
             "targetName" : "textInputName",
-            "top" : 92,
+            "top" : 54,
             "visible" : true,
             "width" : 496,
             "widthFactor" : null
@@ -4386,7 +4386,7 @@
             "brightness" : 100,
             "brightnessEnabled" : 0,
             "centerAnchorX" : 0.103515625,
-            "centerAnchorY" : 0.158203125,
+            "centerAnchorY" : 0.083984375,
             "constraintsLocked" : false,
             "contrast" : 100,
             "contrastEnabled" : 0,
@@ -4480,7 +4480,7 @@
               }
             },
             "targetName" : null,
-            "top" : 76,
+            "top" : 38,
             "visible" : true,
             "width" : 86,
             "widthFactor" : null
@@ -4571,117 +4571,6 @@
         "centerAnchorY" : 0,
         "children" : [
           {
-            "__class" : "TextNode",
-            "autoSize" : false,
-            "blendingEnabled" : 0,
-            "blendingMode" : "normal",
-            "blur" : 12,
-            "blurEnabled" : 0,
-            "blurType" : "layer",
-            "bottom" : 14,
-            "brightness" : 100,
-            "brightnessEnabled" : 0,
-            "centerAnchorX" : 0.5,
-            "centerAnchorY" : 0.5263671875,
-            "constraintsLocked" : false,
-            "contrast" : 100,
-            "contrastEnabled" : 0,
-            "editable" : false,
-            "exportOptions" : [
-
-            ],
-            "grayscale" : 0,
-            "grayScaleEnabled" : 0,
-            "height" : 457,
-            "heightFactor" : null,
-            "hueRotate" : 0,
-            "hueRotateEnabled" : 0,
-            "id" : "b:Emx_!2",
-            "invert" : 0,
-            "invertEnabled" : 0,
-            "left" : 20,
-            "locked" : false,
-            "name" : "textTeamSuccess",
-            "opacity" : 1,
-            "parentid" : "%8}t0H#E",
-            "right" : 20,
-            "rotation" : 0,
-            "saturate" : 100,
-            "saturateEnabled" : 0,
-            "sepia" : 0,
-            "sepiaEnabled" : 0,
-            "shadows" : [
-
-            ],
-            "styledText" : {
-              "__class" : "StyledTextDraft",
-              "blocks" : [
-                {
-                  "data" : {
-                    "emptyStyle" : [
-                      "FONT:SFUIText-Bold",
-                      "COLOR:hsl(0, 0%, 100%)",
-                      "LETTERSPACING:0",
-                      "LINEHEIGHT:1.2",
-                      "SIZE:13"
-                    ]
-                  },
-                  "depth" : 0,
-                  "entityRanges" : [
-
-                  ],
-                  "inlineStyleRanges" : [
-                    {
-                      "length" : 38,
-                      "offset" : 0,
-                      "style" : "FONT:SFUIText-Bold"
-                    },
-                    {
-                      "length" : 38,
-                      "offset" : 0,
-                      "style" : "COLOR:hsl(0, 0%, 100%)"
-                    },
-                    {
-                      "length" : 38,
-                      "offset" : 0,
-                      "style" : "LETTERSPACING:0"
-                    },
-                    {
-                      "length" : 38,
-                      "offset" : 0,
-                      "style" : "LINEHEIGHT:1.2"
-                    },
-                    {
-                      "length" : 38,
-                      "offset" : 0,
-                      "style" : "SIZE:13"
-                    }
-                  ],
-                  "key" : "1vfse",
-                  "text" : "Share this access code with your team:",
-                  "type" : "unstyled"
-                }
-              ],
-              "cached" : {
-                "html" : "<span data-offset-key=\"1vfse-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.2\"><span data-text=\"true\">Share this access code with your team:<\/span><\/span>",
-                "os" : "10_13",
-                "size" : {
-                  "height" : 15,
-                  "width" : 473
-                },
-                "width" : 472
-              },
-              "entityMap" : {
-
-              }
-            },
-            "targetName" : "textTeamSuccess",
-            "top" : 41,
-            "visible" : true,
-            "width" : 472,
-            "widthFactor" : null
-          },
-          {
             "__class" : "FrameNode",
             "aspectRatioLocked" : false,
             "blendingEnabled" : 0,
@@ -4698,14 +4587,14 @@
             "borderStyle" : "solid",
             "borderTop" : 1,
             "borderWidth" : 1,
-            "bottom" : 20,
+            "bottom" : null,
             "boxShadows" : [
 
             ],
             "brightness" : 100,
             "brightnessEnabled" : 0,
-            "centerAnchorX" : 0.5302734375,
-            "centerAnchorY" : 0.9326171875,
+            "centerAnchorX" : 0.4990234375,
+            "centerAnchorY" : 0.2373046875,
             "children" : [
               {
                 "__class" : "TextNode",
@@ -4761,7 +4650,7 @@
                           "LINEHEIGHT:1.2",
                           "SIZE:13",
                           "ALIGN:center",
-                          "COLOR:hsl(0, 0%, 100%)"
+                          "COLOR:rgba(96, 106, 119, 1.00)"
                         ]
                       },
                       "depth" : 0,
@@ -4770,47 +4659,47 @@
                       ],
                       "inlineStyleRanges" : [
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
                           "style" : "FONT:SFUIText-Bold"
                         },
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
                           "style" : "LETTERSPACING:0"
                         },
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
                           "style" : "LINEHEIGHT:1.2"
                         },
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
                           "style" : "SIZE:13"
                         },
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
                           "style" : "ALIGN:center"
                         },
                         {
-                          "length" : 23,
+                          "length" : 28,
                           "offset" : 0,
-                          "style" : "COLOR:hsl(0, 0%, 100%)"
+                          "style" : "COLOR:rgba(96, 106, 119, 1.00)"
                         }
                       ],
                       "key" : "csrdq",
-                      "text" : "OK, I’ll tell the team!",
+                      "text" : "OK, I’ll share with my team!",
                       "type" : "unstyled"
                     }
                   ],
                   "cached" : {
-                    "html" : "<span data-offset-key=\"csrdq-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.2\"><span data-text=\"true\">OK, I’ll tell the team!<\/span><\/span>",
+                    "html" : "<span data-offset-key=\"csrdq-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:rgba(96, 106, 119, 1.00);font-size:13px;letter-spacing:0px;line-height:1.2\"><span data-text=\"true\">OK, I’ll share with my team!<\/span><\/span>",
                     "os" : "10_13",
                     "size" : {
                       "height" : 15,
-                      "width" : 135
+                      "width" : 180
                     },
                     "width" : 0
                   },
@@ -4821,7 +4710,7 @@
                 "targetName" : null,
                 "top" : null,
                 "visible" : true,
-                "width" : 135,
+                "width" : 180,
                 "widthFactor" : null
               }
             ],
@@ -4834,7 +4723,7 @@
             "exportOptions" : [
 
             ],
-            "fillColor" : "rgba(255, 255, 255, 0.22)",
+            "fillColor" : "rgba(255, 255, 2, 1.00)",
             "fillEnabled" : true,
             "fillGradient" : {
               "__class" : "LinearGradient",
@@ -4878,7 +4767,7 @@
             "sepia" : 0,
             "sepiaEnabled" : 0,
             "targetName" : "buttonSuccessDone",
-            "top" : null,
+            "top" : 107,
             "visible" : true,
             "width" : 201,
             "widthFactor" : null
@@ -4907,125 +4796,9 @@
             "brightness" : 100,
             "brightnessEnabled" : 0,
             "centerAnchorX" : 0.5,
-            "centerAnchorY" : 0.21484375,
+            "centerAnchorY" : 0.1171875,
             "children" : [
-              {
-                "__class" : "TextNode",
-                "autoSize" : false,
-                "blendingEnabled" : 0,
-                "blendingMode" : "normal",
-                "blur" : 12,
-                "blurEnabled" : 0,
-                "blurType" : "layer",
-                "bottom" : 10,
-                "brightness" : 100,
-                "brightnessEnabled" : 0,
-                "centerAnchorX" : 0.5,
-                "centerAnchorY" : 0.5078125,
-                "constraintsLocked" : false,
-                "contrast" : 100,
-                "contrastEnabled" : 0,
-                "editable" : false,
-                "exportOptions" : [
 
-                ],
-                "grayscale" : 0,
-                "grayScaleEnabled" : 0,
-                "height" : 43,
-                "heightFactor" : null,
-                "hueRotate" : 0,
-                "hueRotateEnabled" : 0,
-                "id" : "l4GN991cl",
-                "invert" : 0,
-                "invertEnabled" : 0,
-                "left" : 0,
-                "locked" : false,
-                "name" : "teamShareCode",
-                "opacity" : 1,
-                "parentid" : ":k]':=B$",
-                "right" : 0,
-                "rotation" : 0,
-                "saturate" : 100,
-                "saturateEnabled" : 0,
-                "sepia" : 0,
-                "sepiaEnabled" : 0,
-                "shadows" : [
-
-                ],
-                "styledText" : {
-                  "__class" : "StyledTextDraft",
-                  "blocks" : [
-                    {
-                      "data" : {
-                        "emptyStyle" : [
-                          "LETTERSPACING:0",
-                          "LINEHEIGHT:1.2",
-                          "ALIGN:center",
-                          "FONT:Courier",
-                          "SIZE:36",
-                          "COLOR:rgba(96, 106, 119, 1.00)"
-                        ]
-                      },
-                      "depth" : 0,
-                      "entityRanges" : [
-
-                      ],
-                      "inlineStyleRanges" : [
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "LETTERSPACING:0"
-                        },
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "LINEHEIGHT:1.2"
-                        },
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "ALIGN:center"
-                        },
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "FONT:Courier"
-                        },
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "SIZE:36"
-                        },
-                        {
-                          "length" : 6,
-                          "offset" : 0,
-                          "style" : "COLOR:rgba(96, 106, 119, 1.00)"
-                        }
-                      ],
-                      "key" : "7ps79",
-                      "text" : "123ABC",
-                      "type" : "unstyled"
-                    }
-                  ],
-                  "cached" : {
-                    "html" : "<span data-offset-key=\"7ps79-0-0\" style=\"tab-size:4;font-weight:400;font-family:&quot;Courier&quot;, monospace;-webkit-text-fill-color:rgba(96, 106, 119, 1.00);font-size:36px;letter-spacing:0px;line-height:1.2\"><span data-text=\"true\">123ABC<\/span><\/span>",
-                    "os" : "10_13",
-                    "size" : {
-                      "height" : 43,
-                      "width" : 513
-                    },
-                    "width" : 512
-                  },
-                  "entityMap" : {
-
-                  }
-                },
-                "targetName" : "teamShareCode",
-                "top" : 11,
-                "visible" : true,
-                "width" : 512,
-                "widthFactor" : null
-              }
             ],
             "clip" : false,
             "constraintsLocked" : false,
@@ -5063,7 +4836,7 @@
             "invertEnabled" : 0,
             "left" : 0,
             "locked" : false,
-            "name" : null,
+            "name" : "teamShareCodeFrame",
             "opacity" : 1,
             "parentid" : "%8}t0H#E",
             "radius" : 0,
@@ -5079,8 +4852,8 @@
             "saturateEnabled" : 0,
             "sepia" : 0,
             "sepiaEnabled" : 0,
-            "targetName" : null,
-            "top" : 78,
+            "targetName" : "teamShareCodeFrame",
+            "top" : 28,
             "visible" : true,
             "width" : 512,
             "widthFactor" : null
@@ -7299,7 +7072,7 @@
                 "exportOptions" : [
 
                 ],
-                "fillColor" : "rgba(255, 255, 255, 0.7)",
+                "fillColor" : "rgba(255, 255, 255, 0.55)",
                 "fillEnabled" : true,
                 "fillGradient" : {
                   "__class" : "LinearGradient",
@@ -16386,7 +16159,7 @@
             "invertEnabled" : 0,
             "left" : null,
             "locked" : false,
-            "name" : "buttonStop",
+            "name" : "buttonRechargeStop",
             "opacity" : 1,
             "parentid" : "Fn3GSlisS",
             "radius" : 19,
@@ -16402,7 +16175,7 @@
             "saturateEnabled" : 0,
             "sepia" : 0,
             "sepiaEnabled" : 0,
-            "targetName" : null,
+            "targetName" : "buttonRechargeStop",
             "top" : null,
             "visible" : true,
             "width" : 38,
@@ -23518,7 +23291,6 @@
                     "locked" : false,
                     "name" : null,
                     "opacity" : 1,
-                    "originalFilename" : "Artboard.jpg",
                     "parentid" : "YfJBohlJ1",
                     "radius" : 0,
                     "radiusBottomLeft" : 0,
@@ -23759,9 +23531,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 121,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       },
                       {
                         "__class" : "FrameNode",
@@ -24361,9 +24131,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 49,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       }
                     ],
                     "clip" : false,
@@ -24847,9 +24615,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 59,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       }
                     ],
                     "clip" : false,
@@ -25247,9 +25013,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 107,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       }
                     ],
                     "clip" : false,
@@ -25647,9 +25411,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 118,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       }
                     ],
                     "clip" : false,
@@ -25845,9 +25607,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 101,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       },
                       {
                         "__class" : "FrameNode",
@@ -26245,9 +26005,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 65,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       },
                       {
                         "__class" : "FrameNode",
@@ -26847,9 +26605,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 33,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       }
                     ],
                     "clip" : false,
@@ -27131,9 +26887,7 @@
                         "top" : null,
                         "visible" : true,
                         "width" : 121,
-                        "widthFactor" : null,
-                        "x" : 112,
-                        "y" : 89
+                        "widthFactor" : null
                       },
                       {
                         "__class" : "FrameNode",
@@ -27505,9 +27259,7 @@
                     "top" : null,
                     "visible" : true,
                     "width" : 42,
-                    "widthFactor" : null,
-                    "x" : 112,
-                    "y" : 89
+                    "widthFactor" : null
                   },
                   {
                     "__class" : "FrameNode",

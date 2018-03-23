@@ -1,9 +1,14 @@
 {InputLayer} = require "input"
 
+Utils.insertCSS("[contenteditable]:focus { outline: 0px solid transparent; }") # removes selection border of `contenteditable´
+
+
+
 # testing variables 
 sandbox = true
 shouldStop = false
 testFirstRun = false
+demoMode = true
 
 # variable setup
 userAction = ''
@@ -283,8 +288,9 @@ Utils.delay 4, ->
 	# todo hide team UI, go to offline mode
 		teamListControl.visible = false
 		clearScrollView()
+		scrollEmptyStateLabel.midX = Screen.midX
 		scrollEmptyStateLabel.animate("disconnected")
-		scrollEmptyStateLabel.x = Align.center
+		scrollEmptyStateLabel.midX = Screen.midX
 		
 	
 		oldUserString = "" #reload user list after outage
@@ -335,6 +341,10 @@ tabbyDB.onChange "connection", (status) ->
 # 		updateUserCellView()
 		serverReady = true
 		
+		button_group.visible = true
+		buttonWin.visible = true
+		buttonHammering.visible = true
+		buttonWave.visible = true
 		getTeamSubscriptionsFromCloud(drawTeamToggleView)
 		#when we get the human names for teams back, then draw view
 		
@@ -1174,7 +1184,7 @@ teamFindFreeCodeAndCreateTeam = () ->
 				
 				#hacky hack to update force the toggle view to update after joining team
 				Utils.delay 2, ->
-					drawteamtoggleview()
+					drawTeamToggleView()
 				break
 				
 				#now we add this team to the user's account
@@ -1253,11 +1263,22 @@ teamAddToUserAccount = (callback) ->
 		
 
 
+# Utils.insertCSS("[contenteditable]:focus { outline: 0px solid transparent; }")
+
 teamAddedToUserAccountSuccess = () ->
+
 	# flow for post-create screen
 	getTeamSubscriptionsFromCloud()
-	teamShareCode.text = teamCode
+# 	teamShareCode.html = '''html: "<div contenteditable='true'>''' + teamCode
+	
+	htmlConstruction = '''<div contenteditable='true'>''' + teamCode
+	teamShareCodeFrame.style = { fontFamily: "monospace", weight: "bold", color: "black", padding: "20px"}
+	teamShareCodeFrame.html = htmlConstruction
 	flow.showNext(teamCreateSuccessScreen)
+
+
+
+#todo make this selectable
 	buttonToDashboard.visible = true
 
 
@@ -1781,7 +1802,7 @@ updateUserCellView = (callback) ->
 				backgroundColor: "#ffffff"
 				width:  cellWidth
 				height: cellHeight
-				opacity: 0.7
+				opacity: 0.55
 			
 			cell.onClick ->
 				userAction = 'cell.onClick'
@@ -2138,7 +2159,7 @@ Utils.interval 2, ->
 			@updateMouseX(Math.random(1),0)
 		else 
 			@updateMouseX(1,1)
-if sandbox
+if sandbox and !demoMode
 	sandBoxNote = new TextLayer
 		text: 'SANDBOX'
 		fontSize: 9
