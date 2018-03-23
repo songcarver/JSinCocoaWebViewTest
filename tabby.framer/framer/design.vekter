@@ -3384,42 +3384,42 @@
                       ],
                       "inlineStyleRanges" : [
                         {
-                          "length" : 11,
+                          "length" : 9,
                           "offset" : 0,
                           "style" : "FONT:SFUIText-Bold"
                         },
                         {
-                          "length" : 11,
+                          "length" : 9,
                           "offset" : 0,
                           "style" : "COLOR:hsl(0, 0%, 100%)"
                         },
                         {
-                          "length" : 11,
+                          "length" : 9,
                           "offset" : 0,
                           "style" : "LETTERSPACING:0"
                         },
                         {
-                          "length" : 11,
+                          "length" : 9,
                           "offset" : 0,
                           "style" : "SIZE:13"
                         },
                         {
-                          "length" : 11,
+                          "length" : 9,
                           "offset" : 0,
                           "style" : "LINEHEIGHT:1.4"
                         }
                       ],
                       "key" : "1vfse",
-                      "text" : "Invite Code",
+                      "text" : "Team name",
                       "type" : "unstyled"
                     }
                   ],
                   "cached" : {
-                    "html" : "<span data-offset-key=\"1vfse-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.4\"><span data-text=\"true\">Invite Code<\/span><\/span>",
+                    "html" : "<span data-offset-key=\"1vfse-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.4\"><span data-text=\"true\">Team name<\/span><\/span>",
                     "os" : "10_13",
                     "size" : {
                       "height" : 18,
-                      "width" : 75
+                      "width" : 76
                     },
                     "width" : 0
                   },
@@ -3430,7 +3430,7 @@
                 "targetName" : "teamManagementNameList",
                 "top" : 30,
                 "visible" : true,
-                "width" : 75,
+                "width" : 76,
                 "widthFactor" : null
               },
               {
@@ -3482,11 +3482,11 @@
                     {
                       "data" : {
                         "emptyStyle" : [
-                          "FONT:SFUIText-Bold",
                           "COLOR:hsl(0, 0%, 100%)",
                           "LETTERSPACING:0",
                           "SIZE:13",
-                          "LINEHEIGHT:1.4"
+                          "LINEHEIGHT:1.4",
+                          "FONT:CourierNewPS-BoldMT"
                         ]
                       },
                       "depth" : 0,
@@ -3494,11 +3494,6 @@
 
                       ],
                       "inlineStyleRanges" : [
-                        {
-                          "length" : 4,
-                          "offset" : 0,
-                          "style" : "FONT:SFUIText-Bold"
-                        },
                         {
                           "length" : 4,
                           "offset" : 0,
@@ -3518,6 +3513,11 @@
                           "length" : 4,
                           "offset" : 0,
                           "style" : "LINEHEIGHT:1.4"
+                        },
+                        {
+                          "length" : 4,
+                          "offset" : 0,
+                          "style" : "FONT:CourierNewPS-BoldMT"
                         }
                       ],
                       "key" : "1vfse",
@@ -3526,11 +3526,11 @@
                     }
                   ],
                   "cached" : {
-                    "html" : "<span data-offset-key=\"1vfse-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;SFUIText-Bold&quot;, &quot;SF UI Text&quot;, sans-serif;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.4\"><span data-text=\"true\">Name<\/span><\/span>",
+                    "html" : "<span data-offset-key=\"1vfse-0-0\" style=\"tab-size:4;font-weight:700;font-family:&quot;CourierNewPS-BoldMT&quot;, &quot;Courier New&quot;, monospace;-webkit-text-fill-color:hsl(0, 0%, 100%);font-size:13px;letter-spacing:0px;line-height:1.4\"><span data-text=\"true\">Name<\/span><\/span>",
                     "os" : "10_13",
                     "size" : {
                       "height" : 18,
-                      "width" : 39
+                      "width" : 33
                     },
                     "width" : 0
                   },
@@ -3541,7 +3541,7 @@
                 "targetName" : "teamManagementCodeList",
                 "top" : 30,
                 "visible" : true,
-                "width" : 39,
+                "width" : 33,
                 "widthFactor" : null
               },
               {

@@ -272,7 +272,7 @@ hasHeardFromServer = false
 #toDo - Make a mode here which fakes CocoaBridge
 
 
-if sandbox then username = "JS Bach"
+if sandbox then username = "Susan Tesla"
 if username  is ""  then username = "Tabby McTabby"
 
 
