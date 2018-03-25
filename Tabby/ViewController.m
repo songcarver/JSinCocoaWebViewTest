@@ -257,7 +257,9 @@
 													 @"photoFlipped",
 													 @"photoRotated:",
 													 @"writeKeyValuePairToMac:",
-													 @"setKeyValueFromMac:"
+													 @"setKeyValueFromMac:",
+													 													 @"showMacNotification:"
+													 
 													 ];
     
     return ![allowedSelectorNamesForJavaScript containsObject:NSStringFromSelector(aSelector)];
@@ -278,8 +280,8 @@
 
 
 // JS calls this and tells MacOS to show notification
-- (void) showMacNotification:(NSString *)text withAlertSound:(NSString *)alertSound{
-		NSLog(@"should show Mac notification");
+- (void) showMacNotification:(NSString *) text {
+	NSLog(@"should show Mac notification");
 
 	
 	NSUserNotification *notification = [[NSUserNotification alloc] init];
@@ -290,15 +292,15 @@
 	
 //	NSString * alertSound = @"nothing";
 	
-	NSLog(alertSound);
+	//NSLog(alertSound);
 	
-	notification.soundName = @"tabby_bell.aiff";
-	if ([alertSound isEqualToString: @"trophy"])
-	{notification.soundName = @"mediumCrowdCheer3.aiff";}
-	else if ([alertSound isEqualToString: @"hammer"])
-		{notification.soundName = @"hammer.aiff";}
+//	notification.soundName = @"tabby_bell.aiff";
+//	if ([alertSound isEqualToString: @"trophy"])
+//	{notification.soundName = @"mediumCrowdCheer3.aiff";}
+//	else if ([alertSound isEqualToString: @"hammer"])
+//		{notification.soundName = @"hammer.aiff";}
 	
-	notification.soundName = @"mediumCrowdCheer3.aiff";
+	// notification.soundName = @"mediumCrowdCheer3.aiff";
 	
 	[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
 }

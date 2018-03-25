@@ -5,11 +5,12 @@ Utils.insertCSS("[contenteditable]:focus { outline: 0px solid transparent; }") #
 
 
 # testing variables 
-sandbox = true
+sandbox = false
 shouldStop = false
 testFirstRun = false
-demoMode = true
+demoMode = false
 
+userArrayToDrawCells = []
 # variable setup
 userAction = ''
 ####################
@@ -26,7 +27,7 @@ newTeamName = ""
 teamName = ""
 haveConfetti = false
 teamPath = ''
-appVersion = 0.17
+appVersion = 0.20
 appVersionString = ''
 username = ''
 cocoaBridgeIsUp = false
@@ -379,7 +380,7 @@ allButtons = new Layer
 
 
 showMotivationOverlay = (key) ->
-	if key is '🏆' then showConfetti()
+# 	if key is '🏆' then showConfetti()
 	motivationOverlay.backgroundColor = '#D1C300'
 # 	motivationOverlay.opacity = 1
 	maxScreenDimension = 1.5 * Math.max(Screen.width, Screen.height)
@@ -517,15 +518,42 @@ for layers in buttonFrame.children
 	layers.onMouseDown (event, layer) ->
 		layer.stateSwitch('down')
 
-buttonWin.onClick ->
+
+buttonWinFunction = () ->
 	name = '🏆'
+	motivationOverlay.backgroundColor = myButtonColor[name]
+	writeNewEvent(username, name)
+	showMotivationOverlay(name)
+	buttonFramesReset()
+
+buttonWin.onClick ->
+	motivationOverlay.parent = homeScreen
+	buttonWinFunction()
+
+buttonWin2.onClick ->
+	motivationOverlay.parent = workSession
+	buttonWinFunction() 
+	
+
+
+buttonHammeringFunction = () ->
+	buttonHammering.onClick ->
+	name = '🔨'
 	motivationOverlay.backgroundColor = myButtonColor[name]
 	writeNewEvent(username, name)
 	showMotivationOverlay(name)
 	buttonFramesReset()
 		
 buttonHammering.onClick ->
-	name = '🔨'
+	motivationOverlay.parent = homeScreen
+	buttonHammeringFunction()
+	
+buttonHammering2.onClick ->
+	motivationOverlay.parent = workSession
+	buttonHammeringFunction()
+	
+buttonCoffee.onClick ->
+	name = '☕️'
 	motivationOverlay.backgroundColor = myButtonColor[name]
 	writeNewEvent(username, name)
 	showMotivationOverlay(name)
@@ -710,6 +738,7 @@ showSessionFinish = ->
 	
 	eventNotification  = 'You did it.'
 	message = eventNotification
+
 	try CocoaBridge.showMacNotification_(message) #send it to the mac	
 	flow.showNext(workSessionComplete)
 	startTimer(5 * 60 , showRelaxFinish, relaxTickUpdate)
@@ -728,6 +757,10 @@ showRelaxFinish = ->
 	
 	
 buttonStop.onClick ->
+	workSessionEnd = Date.now()
+	userPath = "/users/"+ username
+	workSessionEndPath = userPath + '/lastEvent/workSessionEnd'
+	tabbyDB.put(workSessionEndPath, workSessionEnd)
 	stoptimer()
 	flow.showNext(homeScreen, animate: false)
 	
@@ -810,9 +843,16 @@ drawTeamToggleView = (callback) -> # draw the text controls for turning on and o
 			
 			for iTeam, value of userTeams
 				if iTeam is layer.name # to solve for non-unique layer names
+					togglePath =  ''
+					togglePath = '/users/' + username + '/teams/' + iTeam
 					if value is true
 						userTeams[iTeam] = false
-					else userTeams[iTeam] = true
+						
+
+						tabbyDB.put(togglePath, false)
+					else 
+						userTeams[iTeam] = true
+						tabbyDB.put(togglePath, true)
 					updateUserTeamUI()
 					#todo update Cell view
 			
@@ -1272,7 +1312,7 @@ teamAddedToUserAccountSuccess = () ->
 # 	teamShareCode.html = '''html: "<div contenteditable='true'>''' + teamCode
 	
 	htmlConstruction = '''<div contenteditable='true'>''' + teamCode
-	teamShareCodeFrame.style = { fontFamily: "monospace", weight: "bold", color: "black", padding: "20px"}
+	teamShareCodeFrame.style = { fontFamily: "monospace", textAlign: "center", weight: "bold", color: "black", padding: "20px"}
 	teamShareCodeFrame.html = htmlConstruction
 	flow.showNext(teamCreateSuccessScreen)
 
@@ -1316,7 +1356,7 @@ showTeamName = () ->
 
 
 
-
+#tagEvent
 writeUserStatusEvent = (username, userEventKey) ->
 	if firebaseStatus is 'connected'
 		# this writes a key value into /users for the current username and the lastUpdate
@@ -1337,6 +1377,7 @@ writeUserStatusEvent = (username, userEventKey) ->
 		workInertia = Math.max(workInertia, 0)
 		tabbyDB.put(workInertiakey, workInertia)
 	
+#tagEvent
 writeNewEvent = (username, userEventKey) ->
 	# write a new entry for a win, hammer 🔨 or other event
 	if firebaseStatus is 'connected'
@@ -1368,8 +1409,12 @@ writeNewEvent = (username, userEventKey) ->
 			workSessionEnd = Date.now() + 1500000
 			workSessionEndPath = userPath + '/lastEvent/workSessionEnd'
 			tabbyDB.put(workSessionEndPath, workSessionEnd)
+			
 
 
+
+
+#tagEvent
 writeLastUpdatedEvent = (thisTime) ->
 	# writes in unixtime the last time the database was updated
 	if firebaseStatus is 'connected'
@@ -1435,7 +1480,7 @@ updateUserWorkInertia = (theUsers) ->
 
 
 
-############ Badge stuff
+############ Badge stuff #tagBadge
 updateUsersBadge = (theEvent) ->
 	return
 	#update the users's badge
@@ -1461,13 +1506,23 @@ updateUsersBadge = (theEvent) ->
 
 
 				
+				#tagEvents #showEvent #network event
 tabbyDB.onChange "/lastUpdate", (value) -> 
 	#onChange doesnt get called if there's no network
 	if firebaseStatus isnt 'connected' then return
 	if !hasHeardFromServer 
 		hasHeardFromServer = true
 		serverReady()
-		
+	
+	
+	#thumb
+	crossCheckEventUserNameWithCellView = (usernameToCheck) ->
+		for eachName, index in userArrayToDrawCells
+
+			if eachName is usernameToCheck 
+				return true
+			 
+		return false
 		
 	if ( Date.now() - value) < 5000 
 		#Don't do anything on launch, because the onChange gets called on launch. 
@@ -1478,6 +1533,10 @@ tabbyDB.onChange "/lastUpdate", (value) ->
 				if theEvent?
 					myArray = theEvent.username.split " "
 					eventNotification =  theEvent.eventString
+					if !crossCheckEventUserNameWithCellView(theEvent.username) then return
+					# if username doesn't match one in the cell view, then bail
+
+					
 					
 					
 					if theEvent.eventKey is '🏆' and theEvent.username isnt username  
@@ -1492,10 +1551,9 @@ tabbyDB.onChange "/lastUpdate", (value) ->
 						if theEvent.eventKey is '🏆' then alertSound = 'trophy'
 						if theEvent.eventKey is '🔨' then alertSound = 'hammer'
 						
-						message = eventNotification + ' withAlertSound:' + alertSound
+						message = eventNotification #+ ' withAlertSound:' + alertSound
 						try CocoaBridge.showMacNotification_(message) #send it to the mac	
-
-					updateUsersBadge(theEvent)
+# 					updateUsersBadge(theEvent)
 
 									 
 
@@ -1683,6 +1741,7 @@ makeStringFromObject = (theObject) ->
 	return theString
 
 
+#draw cell view #cellStuff
 updateUserCellView = (callback) ->
 	# here we update all the users in the scrolling view
 	if firebaseStatus isnt 'connected' then return
@@ -1724,7 +1783,6 @@ updateUserCellView = (callback) ->
 			tempStatusDictionary[eachUserName] = ''
 			# do some work to prep for badge later on
 			
-			#thumb
 			if theUserData.lastEvent?.eventTime?
 
 				if isFresh(theUserData.lastEvent.eventTime, 120) #make badges stay for 2 minutes
@@ -1867,16 +1925,18 @@ updateUserCellView = (callback) ->
 			if myArray[1]
 				userCellName += myArray[1].charAt(0)
 			
-			
-			
 			userCellName = userArrayToDrawCells[index]
+			theFirstNameOnly = ''
+			theFirstNameOnly = userCellName.split(' ')[0]
+			theFirstAndSecondNameWithNewLine = userCellName.replace(/\s/g, '\n')
+
 			cell.name = userCellName
 			cellLabel = new TextLayer
 				parent: cell
 				name: userCellName + ' label'
 				x: Align.center()
 				y: 0
-				text:  (userCellName.replace(/\s/g, '\n'))
+				text:  theFirstNameOnly
 				textAlign: 'center'
 				fontWeight: 600
 				fontSize: 9
@@ -1964,7 +2024,7 @@ inspectUser = (userToInspect) ->
 #### Loops
 
 
-# Motivation Overlay Setup
+# Motivation Sunburst Overlay Setup
 motivationOverlay = new Layer
 	parent: homeScreen
 	width: Screen.width
@@ -2339,12 +2399,12 @@ input1.onInputFocus ->
 
 
 
-buttonSuccessDone.onClick ->
-	drawTeamToggleView()
-	flow.showNext(homeScreen)
+# buttonSuccessDone.onClick ->
+# 	drawTeamToggleView()
+# 	flow.showNext(homeScreen)
 
-buttonHammering.onClick ->
-	writeNewEvent(username, '🔨')
+# buttonHammering.onClick ->
+# 	writeNewEvent(username, '🔨')
 
 
 buttonRecharge.onClick ->
@@ -2354,7 +2414,7 @@ buttonRecharge.onClick ->
 	buttonFramesReset()
 	
 	
-	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can get your blood flowing again.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.',
+	rechargeSuggestion.text = Utils.randomChoice(['A short nap can be really refreshing.','Feel more professional with some pants on.','Stretching is a great way to relieve tension.', 'Give your eyes a break from the screen', 'A minute of deep breathing centers the mind.', 'A short walk or roll can improve thinking.', 'As our favorite watch says, time to stand up!', 'Personally, I do push-ups.', 'Go talk to Chris Raethke.',
 	'Tell someone you love them.', 'Feel something furry, squishy or scratchy'
 	])
 	flow.showNext(screenRechargeSession)
