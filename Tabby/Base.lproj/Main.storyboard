@@ -690,7 +690,7 @@
                         <windowPositionMask key="initialPositionMask" bottomStrut="YES"/>
                         <rect key="contentRect" x="751" y="11" width="400" height="136"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <value key="minSize" type="size" width="298" height="134"/>
+                        <value key="minSize" type="size" width="346" height="134"/>
                         <value key="maxSize" type="size" width="852" height="298"/>
                         <toolbar key="toolbar" implicitIdentifier="573D4D21-FFDC-42D2-8585-E3930D2874D8" autosavesConfiguration="NO" allowsUserCustomization="NO" prefersToBeShown="NO" displayMode="iconOnly" sizeMode="small" id="Fm8-2m-Moo">
                             <allowedToolbarItems>

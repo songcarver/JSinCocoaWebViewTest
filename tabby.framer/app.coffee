@@ -2185,10 +2185,7 @@ Utils.interval 86400, ->
 tabbyDB.onChange "/users", (status) ->
 	#updateUserCellView?()
 	
-	
-	
-	
-	
+
 	
 # local storage test 	
 # getStorage = (key) ->
